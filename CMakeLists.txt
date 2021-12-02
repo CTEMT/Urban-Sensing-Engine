@@ -13,7 +13,7 @@ include(CTest)
 enable_testing()
 
 add_subdirectory(oRatio/smt/json)
-add_executable(${PROJECT_NAME} main.cpp urban_sensing_engine.cpp)
+add_executable(${PROJECT_NAME} main.cpp src/urban_sensing_engine.cpp src/rule.cpp)
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 target_link_libraries(${PROJECT_NAME} PahoMqttCpp::paho-mqttpp3 json)
 
