@@ -1,9 +1,13 @@
 #pragma once
 
+#include "rule.h"
 #include "mqtt/async_client.h"
 
 namespace use
 {
+  // the duration of each tick in milliseconds..
+  constexpr size_t tick_duration = 1000;
+
   class mqtt_callback : public virtual mqtt::callback
   {
   public:
@@ -25,7 +29,11 @@ namespace use
     urban_sensing_engine(const std::string &mqtt_uri, const std::string &mqtt_client_id = "urban_sensing_engine");
     ~urban_sensing_engine();
 
+    void start();
+
   private:
     mqtt_callback cb;
+    std::vector<rule *> rules;
+    std::unordered_map<std::string, std::string> state;
   };
 } // namespace use

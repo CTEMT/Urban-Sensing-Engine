@@ -1,0 +1,8 @@
+{
+    "condition": {
+        "type": "numeric",
+        "op": "GEq",
+        "var_name": "occupation",
+        "var_value": 0.7
+    }
+}

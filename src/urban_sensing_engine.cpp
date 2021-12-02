@@ -1,9 +1,41 @@
 #include "urban_sensing_engine.h"
+#include <filesystem>
+#include <fstream>
+#include <thread>
+#include <chrono>
 
 namespace use
 {
-    urban_sensing_engine::urban_sensing_engine(const std::string &mqtt_uri, const std::string &mqtt_client_id) : cb(mqtt_uri, mqtt_client_id) {}
+    urban_sensing_engine::urban_sensing_engine(const std::string &mqtt_uri, const std::string &mqtt_client_id) : cb(mqtt_uri, mqtt_client_id)
+    {
+        std::cout << "Loading rules.." << std::endl;
+        std::string path = std::filesystem::current_path();
+        for (const auto &entry : std::filesystem::directory_iterator(path + "/rules"))
+        {
+            std::cout << ".." << entry.path() << std::endl;
+            std::ifstream rule_file(entry.path());
+            rules.push_back(new rule(smt::json::from_json(rule_file)));
+        }
+    }
     urban_sensing_engine::~urban_sensing_engine() {}
+
+    void urban_sensing_engine::start()
+    {
+        std::thread t([this]()
+                      {
+                          std::chrono::steady_clock::time_point tick_time = std::chrono::steady_clock::now() + std::chrono::milliseconds(tick_duration);
+                          while (true)
+                          {
+                              for (const auto &r : rules)
+                                  if (r->applicable(state))
+                                  {
+                                  }
+
+                              std::this_thread::sleep_until(tick_time += std::chrono::milliseconds(tick_duration));
+                          }
+                      });
+        t.join();
+    }
 
     mqtt_callback::mqtt_callback(const std::string &mqtt_uri, const std::string &mqtt_client_id) : mqtt_client(mqtt_uri, mqtt_client_id)
     {
