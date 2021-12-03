@@ -6,9 +6,9 @@
 
 namespace use
 {
-    urban_sensing_engine::urban_sensing_engine(const std::string &mqtt_uri, const std::string &mqtt_client_id) : cb(mqtt_uri, mqtt_client_id)
+    urban_sensing_engine::urban_sensing_engine(const std::string &rest_uri, const std::string &mqtt_uri, const std::string &mqtt_client_id) : rest_client(U(rest_uri)), cb(*this, mqtt_uri, mqtt_client_id)
     {
-        std::cout << "Loading rules.." << std::endl;
+        std::cout << "loading rules.." << std::endl;
         std::string path = std::filesystem::current_path();
         for (const auto &entry : std::filesystem::directory_iterator(path + "/rules"))
         {
@@ -21,6 +21,7 @@ namespace use
 
     void urban_sensing_engine::start()
     {
+        std::cout << "starting sensing.." << std::endl;
         std::thread t([this]()
                       {
                           std::chrono::steady_clock::time_point tick_time = std::chrono::steady_clock::now() + std::chrono::milliseconds(tick_duration);
@@ -37,7 +38,25 @@ namespace use
         t.join();
     }
 
-    mqtt_callback::mqtt_callback(const std::string &mqtt_uri, const std::string &mqtt_client_id) : mqtt_client(mqtt_uri, mqtt_client_id)
+    std::vector<std::string> urban_sensing_engine::get_sensors()
+    {
+        std::cout << "retrieving sensors.." << std::endl;
+        std::vector<std::string> c_sens;
+        web::http::uri_builder builder(U("/list_collections"));
+        builder.append_query(U("database"), U("sensors"));
+        web::http::http_request req(web::http::methods::GET);
+        req.headers().set_content_type(U("application/json"));
+        req.set_request_uri(builder.to_string());
+        auto res = rest_client.request(req).get();
+        std::istringstream istr(res.extract_string().get());
+        const auto j_res = smt::json::from_json(istr);
+        const auto j_arr_res = static_cast<smt::array_val &>(*j_res);
+        for (size_t i = 0; i < j_arr_res.size(); ++i)
+            c_sens.emplace_back(static_cast<smt::string_val &>(*j_arr_res.get(i)).get());
+        return c_sens;
+    }
+
+    mqtt_callback::mqtt_callback(urban_sensing_engine &use, const std::string &mqtt_uri, const std::string &mqtt_client_id) : use(use), mqtt_client(mqtt_uri, mqtt_client_id)
     {
         mqtt::connect_options opts;
         opts.set_keep_alive_interval(20);
@@ -63,6 +82,10 @@ namespace use
     {
         std::cout << "connected.." << std::endl;
         mqtt_client.subscribe("#", 1);
+        const auto sensors = use.get_sensors();
+        for (const auto &s : sensors)
+            mqtt_client.subscribe(s, 1);
+        use.start();
     }
     void mqtt_callback::connection_lost(const std::string &cause)
     {
