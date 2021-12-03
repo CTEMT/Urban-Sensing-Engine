@@ -85,7 +85,6 @@ namespace use
         const auto sensors = use.get_sensors();
         for (const auto &s : sensors)
             mqtt_client.subscribe(s, 1);
-        use.start();
     }
     void mqtt_callback::connection_lost(const std::string &cause)
     {
