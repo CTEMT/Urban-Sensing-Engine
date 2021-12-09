@@ -61,6 +61,29 @@ namespace use
     double var_value;
   };
 
+  class effect
+  {
+  public:
+    effect() {}
+    virtual ~effect() {}
+
+    virtual void apply() const noexcept = 0;
+
+    static effect *from_json(const smt::json &c);
+  };
+
+  class message_effect : public effect
+  {
+  public:
+    message_effect(const std::string &message) : message(message) {}
+    ~message_effect() {}
+
+    void apply() const noexcept override;
+
+  private:
+    std::string message;
+  };
+
   class rule
   {
   public:
@@ -68,8 +91,10 @@ namespace use
     ~rule();
 
     bool applicable(const std::unordered_map<std::string, smt::json> &state) const { return cond->verify(state); }
+    void apply() { eff->apply(); };
 
   private:
     condition *cond;
+    effect *eff;
   };
 } // namespace use

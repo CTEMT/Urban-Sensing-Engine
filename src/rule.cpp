@@ -43,6 +43,8 @@ namespace use
             else if (j_op.get() == "LEq")
                 return new numeric_condition(op::LEq, s_ids, j_var_value.get());
         }
+        else
+            std::cerr << "unknown condition type " << cond_type.get() << std::endl;
         return nullptr;
     }
 
@@ -56,6 +58,19 @@ namespace use
     {
         return std::any_of(conditions.cbegin(), conditions.cend(), [state](const auto &c)
                            { return c->verify(state); });
+    }
+
+    effect *effect::from_json(const smt::json &c)
+    {
+        smt::string_val &eff_type = static_cast<smt::string_val &>(*c->get("type"));
+        if (eff_type.get() == "message")
+        {
+            smt::string_val &j_message = static_cast<smt::string_val &>(*c->get("type"));
+            return new message_effect(j_message.get());
+        }
+        else
+            std::cerr << "unknown effect type " << eff_type.get() << std::endl;
+        return nullptr;
     }
 
     bool numeric_condition::verify(const std::unordered_map<std::string, smt::json> &state) const noexcept
@@ -84,6 +99,13 @@ namespace use
         }
     }
 
-    rule::rule(const smt::json &r) : cond(condition::from_json(r->get("condition"))) {}
+    void message_effect::apply() const noexcept
+    {
+        std::cout << "**************************" << std::endl;
+        std::cout << message << std::endl;
+        std::cout << "**************************" << std::endl;
+    }
+
+    rule::rule(const smt::json &r) : cond(condition::from_json(r->get("condition"))), eff(effect::from_json(r->get("effect"))) {}
     rule::~rule() {}
 } // namespace use

@@ -4,5 +4,9 @@
         "op": "GEq",
         "var_name": "sensor5.temperature",
         "var_value": 45
+    },
+    "effect": {
+        "type": "message",
+        "text": "La temperatura del sensore5 ha superato la soglia critica di 45 gradi"
     }
 }
