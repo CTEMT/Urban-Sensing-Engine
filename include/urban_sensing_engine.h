@@ -39,11 +39,12 @@ namespace use
 
   private:
     std::vector<std::string> get_sensors();
+    void check();
 
   private:
     web::http::client::http_client rest_client;
     mqtt_callback cb;
     std::vector<rule *> rules;
-    std::unordered_map<std::string, std::string> state;
+    std::unordered_map<std::string, smt::json> state;
   };
 } // namespace use

@@ -1,4 +1,5 @@
 #include "rule.h"
+#include <sstream>
 #include <algorithm>
 
 namespace use
@@ -28,41 +29,59 @@ namespace use
         {
             smt::string_val &j_op = static_cast<smt::string_val &>(*c->get("op"));
             smt::string_val &j_var_name = static_cast<smt::string_val &>(*c->get("var_name"));
+            std::stringstream ss(j_var_name.get());
+            std::vector<std::string> s_ids;
+            while (ss.good())
+            {
+                std::string s_id;
+                std::getline(ss, s_id, '.');
+                s_ids.push_back(s_id);
+            }
             smt::double_val &j_var_value = static_cast<smt::double_val &>(*c->get("var_value"));
             if (j_op.get() == "GEq")
-                return new numeric_condition(op::GEq, j_var_name.get(), j_var_value.get());
+                return new numeric_condition(op::GEq, s_ids, j_var_value.get());
             else if (j_op.get() == "LEq")
-                return new numeric_condition(op::LEq, j_var_name.get(), j_var_value.get());
+                return new numeric_condition(op::LEq, s_ids, j_var_value.get());
         }
         return nullptr;
     }
 
-    bool and_condition::verify(const std::unordered_map<std::string, std::string> &state) const noexcept
+    bool and_condition::verify(const std::unordered_map<std::string, smt::json> &state) const noexcept
     {
         return std::all_of(conditions.cbegin(), conditions.cend(), [state](const auto &c)
                            { return c->verify(state); });
     }
 
-    bool or_condition::verify(const std::unordered_map<std::string, std::string> &state) const noexcept
+    bool or_condition::verify(const std::unordered_map<std::string, smt::json> &state) const noexcept
     {
         return std::any_of(conditions.cbegin(), conditions.cend(), [state](const auto &c)
                            { return c->verify(state); });
     }
 
-    bool numeric_condition::verify(const std::unordered_map<std::string, std::string> &state) const noexcept
+    bool numeric_condition::verify(const std::unordered_map<std::string, smt::json> &state) const noexcept
     {
-        if (state.find(var_name) == state.end())
+        if (state.find(var_name[0]) == state.end())
             return false;
         else
+        {
+            auto j_val = state.at(var_name[0]);
+            for (int i = 1; i < var_name.size(); ++i)
+                if (!j_val->has(var_name[i]))
+                    return false;
+                else
+                    j_val = j_val->get(var_name[i]);
+            const auto c_val = static_cast<smt::double_val &>(*j_val).get();
+
             switch (c_op)
             {
             case GEq:
-                return std::atof(state.at(var_name).c_str()) >= var_value;
+                return c_val >= var_value;
             case LEq:
-                return std::atof(state.at(var_name).c_str()) <= var_value;
+                return c_val <= var_value;
             default:
                 return false;
             }
+        }
     }
 
     rule::rule(const smt::json &r) : cond(condition::from_json(r->get("condition"))) {}
