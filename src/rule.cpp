@@ -37,11 +37,12 @@ namespace use
                 std::getline(ss, s_id, '.');
                 s_ids.push_back(s_id);
             }
-            smt::double_val &j_var_value = static_cast<smt::double_val &>(*c->get("var_value"));
+            const auto j_val = c->get("var_value");
+            double c_val = j_val->is_double() ? static_cast<smt::double_val &>(*j_val).get() : static_cast<smt::long_val &>(*j_val).get();
             if (j_op.get() == "GEq")
-                return new numeric_condition(op::GEq, s_ids, j_var_value.get());
+                return new numeric_condition(op::GEq, s_ids, c_val);
             else if (j_op.get() == "LEq")
-                return new numeric_condition(op::LEq, s_ids, j_var_value.get());
+                return new numeric_condition(op::LEq, s_ids, c_val);
         }
         else
             std::cerr << "unknown condition type " << cond_type.get() << std::endl;
@@ -65,7 +66,7 @@ namespace use
         smt::string_val &eff_type = static_cast<smt::string_val &>(*c->get("type"));
         if (eff_type.get() == "message")
         {
-            smt::string_val &j_message = static_cast<smt::string_val &>(*c->get("type"));
+            smt::string_val &j_message = static_cast<smt::string_val &>(*c->get("text"));
             return new message_effect(j_message.get());
         }
         else
@@ -85,7 +86,7 @@ namespace use
                     return false;
                 else
                     j_val = j_val->get(var_name[i]);
-            const auto c_val = static_cast<smt::double_val &>(*j_val).get();
+            double c_val = j_val->is_double() ? static_cast<smt::double_val &>(*j_val).get() : static_cast<smt::long_val &>(*j_val).get();
 
             switch (c_op)
             {

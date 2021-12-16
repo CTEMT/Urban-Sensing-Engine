@@ -58,8 +58,7 @@ namespace use
     {
         for (const auto &r : rules)
             if (r->applicable(state))
-            {
-            }
+                r->apply();
     }
 
     mqtt_callback::mqtt_callback(urban_sensing_engine &use, const std::string &mqtt_uri, const std::string &mqtt_client_id) : use(use), mqtt_client(mqtt_uri, mqtt_client_id)
@@ -137,7 +136,7 @@ namespace use
             try
             {
                 std::istringstream istr(msg->to_string());
-                use.state[msg->get_topic()] = smt::json::from_json(istr);
+                use.state.emplace(msg->get_topic(), smt::json::from_json(istr));
             }
             catch (const std::exception &e)
             {
