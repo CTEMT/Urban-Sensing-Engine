@@ -136,7 +136,7 @@ namespace use
             try
             {
                 std::istringstream istr(msg->to_string());
-                use.state.emplace(msg->get_topic(), smt::json::from_json(istr));
+                use.state.insert_or_assign(msg->get_topic(), smt::json::from_json(istr));
             }
             catch (const std::exception &e)
             {
