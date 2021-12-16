@@ -64,7 +64,6 @@ namespace use
 
     mqtt_callback::mqtt_callback(urban_sensing_engine &use, const std::string &mqtt_uri, const std::string &mqtt_client_id) : use(use), mqtt_client(mqtt_uri, mqtt_client_id)
     {
-        mqtt::connect_options opts;
         opts.set_keep_alive_interval(20);
         opts.set_clean_session(true);
         opts.set_user_name("data");
@@ -101,6 +100,17 @@ namespace use
     void mqtt_callback::connection_lost(const std::string &cause)
     {
         std::cout << "connection lost.." << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(2500));
+
+        try
+        {
+            std::cout << "reconnecting to the MQTT server.." << std::endl;
+            mqtt_client.connect(opts);
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << e.what() << '\n';
+        }
     }
     void mqtt_callback::message_arrived(mqtt::const_message_ptr msg)
     {

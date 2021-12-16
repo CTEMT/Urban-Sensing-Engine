@@ -23,6 +23,7 @@ namespace use
     void message_arrived(mqtt::const_message_ptr msg) override;
 
   private:
+    mqtt::connect_options opts;
     mqtt::async_client mqtt_client;
     urban_sensing_engine &use;
   };
