@@ -1,0 +1,12 @@
+{
+    "condition": {
+        "type": "numeric",
+        "op": "GEq",
+        "var_name": "sensor1.occupation",
+        "var_value": 0.7
+    },
+    "effect": {
+        "type": "text",
+        "message": "L'occupazione misurata dal sensore1 ha superato la soglia critica del 70%"
+    }
+}

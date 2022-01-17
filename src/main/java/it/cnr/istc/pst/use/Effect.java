@@ -1,0 +1,27 @@
+package it.cnr.istc.pst.use;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({ @Type(value = Effect.TextEffect.class, name = "text") })
+public abstract class Effect {
+
+    public abstract void apply(final UrbanSensingEngine use);
+
+    public static class TextEffect extends Effect {
+
+        private final String message;
+
+        public TextEffect(@JsonProperty("message") final String message) {
+            this.message = message;
+        }
+
+        @Override
+        public void apply(final UrbanSensingEngine use) {
+            use.printMessage(message);
+        }
+    }
+}

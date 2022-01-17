@@ -15,14 +15,15 @@ public class App {
     private static Properties PROPS = new Properties();
     private static UrbanSensingEngine USE;
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         LOG.info("Starting Urban Sensing Engine..");
         try {
             PROPS.load(App.class.getResourceAsStream("/config.properties"));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.log(Level.SEVERE, "Cannot read config properties file..", e);
         }
         USE = new UrbanSensingEngine(PROPS);
+        USE.load_rules();
         USE.connect();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

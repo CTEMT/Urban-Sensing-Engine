@@ -5,13 +5,23 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -20,44 +30,67 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-public class UrbanSensingEngine implements MqttCallback, IMqttMessageListener {
+public class UrbanSensingEngine implements MqttCallbackExtended, IMqttMessageListener {
 
     private static Logger LOG = Logger.getLogger(App.class.getName());
+    private static ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
     private static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private MqttClient mqtt_client;
-    private MqttConnectOptions conn_opts = new MqttConnectOptions();
+    private final MqttConnectOptions conn_opts = new MqttConnectOptions();
     private final HttpClient http_client = HttpClient.newBuilder().build();
     private final Properties props;
-    private final Map<String, JsonNode> state = new HashMap<>();
+    private final Collection<Rule> rules = new ArrayList<>();
+    private ScheduledFuture<?> check_handle;
+    final Map<String, JsonNode> state = new HashMap<>();
 
-    public UrbanSensingEngine(Properties props) {
+    public UrbanSensingEngine(final Properties props) {
         this.props = props;
         try {
             mqtt_client = new MqttClient(props.getProperty("MQTT_URI"),
                     "UrbanSensingEngine",
                     new MemoryPersistence());
-            conn_opts.setCleanSession(false);
+            conn_opts.setAutomaticReconnect(true);
+            conn_opts.setCleanSession(true);
             conn_opts.setUserName(props.getProperty("MQTT_USERNAME"));
             conn_opts.setPassword(props.getProperty("MQTT_PASSWORD").toCharArray());
             mqtt_client.setCallback(this);
-        } catch (MqttException e) {
+        } catch (final MqttException e) {
             LOG.log(Level.SEVERE, "MQTT connection failure..", e);
+        }
+    }
+
+    public void load_rules() {
+        rules.clear();
+        LOG.info("Loading rules..");
+        try (Stream<Path> paths = Files.walk(Paths.get("rules"))) {
+            paths
+                    .filter(Files::isRegularFile)
+                    .forEach((Path p) -> {
+                        LOG.info("Loading rule: " + p);
+                        try {
+                            rules.add(OBJECT_MAPPER.readValue(p.toFile(), Rule.class));
+                        } catch (IOException e) {
+                            LOG.log(Level.SEVERE, "Cannot load rule..", e);
+                        }
+                    });
+        } catch (final IOException e) {
+            LOG.log(Level.SEVERE, "Cannot load rules..", e);
         }
     }
 
     public List<String> get_sensors() {
         LOG.info("Retrieving sensors..");
-        var get_request = HttpRequest.newBuilder().GET()
+        final var get_request = HttpRequest.newBuilder().GET()
                 .uri(URI.create(props.getProperty("REST_URI") + "/list_collections?database=sensors")).build();
         try {
-            var response = http_client.send(get_request, BodyHandlers.ofString());
+            final var response = http_client.send(get_request, BodyHandlers.ofString());
             if (response.statusCode() == 200)
                 return OBJECT_MAPPER.readValue(response.body(), new TypeReference<List<String>>() {
                 });
@@ -74,14 +107,7 @@ public class UrbanSensingEngine implements MqttCallback, IMqttMessageListener {
             LOG.info("Connecting to the MQTT broker..");
             mqtt_client.connect(conn_opts);
             LOG.info("Urban Sensing Engine connected to the MQTT broker..");
-
-            var sensors = get_sensors();
-            LOG.info("Found " + sensors.size() + " sensors..");
-            for (var sensor : sensors) {
-                state.put(sensor, null);
-                mqtt_client.subscribe(sensor, this);
-            }
-        } catch (MqttException e) {
+        } catch (final MqttException e) {
             LOG.log(Level.SEVERE, "MQTT connection failure..", e);
         }
     }
@@ -91,28 +117,52 @@ public class UrbanSensingEngine implements MqttCallback, IMqttMessageListener {
             LOG.info("Disconnecting from the MQTT broker..");
             mqtt_client.disconnect();
             LOG.info("Urban Sensing Engine disconnected from the MQTT broker..");
-        } catch (MqttException e) {
+        } catch (final MqttException e) {
             LOG.log(Level.SEVERE, "MQTT connection failure..", e);
         }
     }
 
     @Override
-    public void connectionLost(Throwable cause) {
+    public void connectionLost(final Throwable cause) {
         LOG.log(Level.SEVERE, "MQTT connection lost..", cause);
-        connect();
+        check_handle.cancel(true);
     }
 
     @Override
-    public void messageArrived(String topic, MqttMessage message) throws Exception {
+    public void messageArrived(final String topic, final MqttMessage message) throws Exception {
         LOG.fine("Message arrived:\n" + topic + "\n" + message.toString());
         if (state.containsKey(topic))
             try {
                 state.put(topic, OBJECT_MAPPER.readTree(new String(message.getPayload())));
-            } catch (JsonProcessingException e) {
+            } catch (final JsonProcessingException e) {
             }
     }
 
     @Override
-    public void deliveryComplete(IMqttDeliveryToken token) {
+    public void deliveryComplete(final IMqttDeliveryToken token) {
+    }
+
+    @Override
+    public void connectComplete(final boolean reconnect, final String serverURI) {
+        final var sensors = get_sensors();
+        LOG.info("Found " + sensors.size() + " sensors..");
+        for (final var sensor : sensors) {
+            state.put(sensor, null);
+            try {
+                mqtt_client.subscribe(sensor, this);
+            } catch (final MqttException e) {
+                LOG.log(Level.SEVERE, "MQTT subscription failure..", e);
+            }
+        }
+        check_handle = EXECUTOR.scheduleAtFixedRate(() -> {
+            LOG.fine("check..");
+            for (var rule : rules)
+                if (rule.verify(this))
+                    rule.apply(this);
+        }, 1, 1, TimeUnit.SECONDS);
+    }
+
+    void printMessage(final String message) {
+        LOG.info(message);
     }
 }

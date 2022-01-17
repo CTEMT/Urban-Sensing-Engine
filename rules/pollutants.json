@@ -1,0 +1,12 @@
+{
+    "condition": {
+        "type": "numeric",
+        "op": "GEq",
+        "var_name": "sensore2.pollutants",
+        "var_value": 0.7
+    },
+    "effect": {
+        "type": "text",
+        "message": "L'inquinamento misurato dal sensore2 ha superato la soglia critica del 70%"
+    }
+}
