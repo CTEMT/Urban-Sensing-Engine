@@ -72,11 +72,11 @@ public class UrbanSensingEngine implements MqttCallbackExtended, IMqttMessageLis
         try (Stream<Path> paths = Files.walk(Paths.get("rules"))) {
             paths
                     .filter(Files::isRegularFile)
-                    .forEach((Path p) -> {
+                    .forEach((final Path p) -> {
                         LOG.info("Loading rule: " + p);
                         try {
                             rules.add(OBJECT_MAPPER.readValue(p.toFile(), Rule.class));
-                        } catch (IOException e) {
+                        } catch (final IOException e) {
                             LOG.log(Level.SEVERE, "Cannot load rule..", e);
                         }
                     });
@@ -156,10 +156,17 @@ public class UrbanSensingEngine implements MqttCallbackExtended, IMqttMessageLis
         }
         check_handle = EXECUTOR.scheduleAtFixedRate(() -> {
             LOG.fine("check..");
-            for (var rule : rules)
+            for (final var rule : rules)
                 if (rule.verify(this))
                     rule.apply(this);
         }, 1, 1, TimeUnit.SECONDS);
+    }
+
+    String contextualize(final String message) {
+        var c_message = message;
+        for (var f : get_all_fields().entrySet())
+            c_message = c_message.replaceAll("{" + f.getKey() + "}", f.getValue().asText());
+        return c_message;
     }
 
     void printMessage(final String message) {
@@ -169,8 +176,28 @@ public class UrbanSensingEngine implements MqttCallbackExtended, IMqttMessageLis
     void publishMessage(final String topic, final String message) {
         try {
             mqtt_client.publish(topic, message.getBytes(), 1, false);
-        } catch (MqttException e) {
+        } catch (final MqttException e) {
             LOG.log(Level.SEVERE, "MQTT publishing failure..", e);
         }
+    }
+
+    private Map<String, JsonNode> get_all_fields() {
+        Map<String, JsonNode> al_fields = new HashMap<>();
+        for (var s : state.entrySet())
+            al_fields.putAll(get_all_fields(s.getKey(), s.getValue()));
+        return al_fields;
+    }
+
+    private static Map<String, JsonNode> get_all_fields(final String field_name, final JsonNode node) {
+        var it = node.fields();
+        if (it.hasNext()) {
+            Map<String, JsonNode> c_fields = new HashMap<>();
+            while (it.hasNext()) {
+                var f_name = it.next();
+                c_fields.putAll(get_all_fields(field_name + "." + f_name.getKey(), f_name.getValue()));
+            }
+            return c_fields;
+        } else
+            return Collections.singletonMap(field_name, node);
     }
 }
