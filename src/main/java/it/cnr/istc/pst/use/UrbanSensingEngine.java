@@ -27,6 +27,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
@@ -41,14 +42,15 @@ public class UrbanSensingEngine implements MqttCallbackExtended, IMqttMessageLis
 
     private static Logger LOG = Logger.getLogger(App.class.getName());
     private static ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
-    private static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    static ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private MqttClient mqtt_client;
     private final MqttConnectOptions conn_opts = new MqttConnectOptions();
     private final HttpClient http_client = HttpClient.newBuilder().build();
     private final Properties props;
     private final Collection<Rule> rules = new ArrayList<>();
     private ScheduledFuture<?> check_handle;
-    final Map<String, JsonNode> state = new HashMap<>();
+    private final Map<String, JsonNode> state = new HashMap<>();
+    private Map<String, JsonNode> state_update = new HashMap<>();
 
     public UrbanSensingEngine(final Properties props) {
         this.props = props;
@@ -159,12 +161,26 @@ public class UrbanSensingEngine implements MqttCallbackExtended, IMqttMessageLis
             for (final var rule : rules)
                 if (rule.verify(this))
                     rule.apply(this);
+
+            if (state_update != null) {
+                for (var su : state_update.entrySet()) {
+                    final String[] vars = su.getKey().split(".");
+                    if (vars.length > 1) {
+                        var ctx_value = state.get(vars[0]);
+                        for (int i = 1; i < vars.length - 1; i++)
+                            ctx_value = state.get(vars[i]);
+                        ((ObjectNode) ctx_value).replace(vars[vars.length - 1], su.getValue());
+                    } else
+                        state.put(su.getKey(), su.getValue());
+                }
+                state_update = null;
+            }
         }, 1, 1, TimeUnit.SECONDS);
     }
 
     String contextualize(final String message) {
         var c_message = message;
-        for (var f : get_all_fields().entrySet())
+        for (final var f : get_all_fields().entrySet())
             c_message = c_message.replaceAll("{" + f.getKey() + "}", f.getValue().asText());
         return c_message;
     }
@@ -181,19 +197,37 @@ public class UrbanSensingEngine implements MqttCallbackExtended, IMqttMessageLis
         }
     }
 
+    JsonNode get(final String field_name) {
+        final String[] vars = field_name.split(".");
+        var ctx_value = state.get(vars[0]);
+        for (int i = 1; i < vars.length; i++)
+            ctx_value = state.get(vars[i]);
+        return ctx_value;
+    }
+
+    void set(final String field_name, final JsonNode node) {
+        if (state_update == null)
+            state_update = new HashMap<>();
+
+        if (state_update.containsKey(field_name) && state_update.get(field_name).equals(node))
+            LOG.warning("The update of field '" + field_name + "' will be overwritten");
+
+        state_update.put(field_name, node);
+    }
+
     private Map<String, JsonNode> get_all_fields() {
-        Map<String, JsonNode> al_fields = new HashMap<>();
-        for (var s : state.entrySet())
+        final Map<String, JsonNode> al_fields = new HashMap<>();
+        for (final var s : state.entrySet())
             al_fields.putAll(get_all_fields(s.getKey(), s.getValue()));
         return al_fields;
     }
 
     private static Map<String, JsonNode> get_all_fields(final String field_name, final JsonNode node) {
-        var it = node.fields();
+        final var it = node.fields();
         if (it.hasNext()) {
-            Map<String, JsonNode> c_fields = new HashMap<>();
+            final Map<String, JsonNode> c_fields = new HashMap<>();
             while (it.hasNext()) {
-                var f_name = it.next();
+                final var f_name = it.next();
                 c_fields.putAll(get_all_fields(field_name + "." + f_name.getKey(), f_name.getValue()));
             }
             return c_fields;

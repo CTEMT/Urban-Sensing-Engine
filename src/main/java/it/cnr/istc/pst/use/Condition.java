@@ -59,10 +59,7 @@ public abstract class Condition {
 
         @Override
         public boolean verify(final UrbanSensingEngine use) {
-            final String[] vars = var_name.split(".");
-            var ctx_value = use.state.get(vars[0]);
-            for (int i = 1; i < vars.length; i++)
-                ctx_value = use.state.get(vars[i]);
+            var ctx_value = use.get(var_name);
             switch (op) {
                 case Eq:
                     return ctx_value != null && ctx_value.asText().equals(var_value);
@@ -94,10 +91,7 @@ public abstract class Condition {
 
         @Override
         public boolean verify(final UrbanSensingEngine use) {
-            final String[] vars = var_name.split(".");
-            var ctx_value = use.state.get(vars[0]);
-            for (int i = 1; i < vars.length; i++)
-                ctx_value = use.state.get(vars[i]);
+            var ctx_value = use.get(var_name);
             switch (op) {
                 case Eq:
                     return ctx_value != null && ctx_value.asDouble() == var_value;
