@@ -165,4 +165,12 @@ public class UrbanSensingEngine implements MqttCallbackExtended, IMqttMessageLis
     void printMessage(final String message) {
         LOG.info(message);
     }
+
+    void publishMessage(final String topic, final String message) {
+        try {
+            mqtt_client.publish(topic, message.getBytes(), 1, false);
+        } catch (MqttException e) {
+            LOG.log(Level.SEVERE, "MQTT publishing failure..", e);
+        }
+    }
 }
