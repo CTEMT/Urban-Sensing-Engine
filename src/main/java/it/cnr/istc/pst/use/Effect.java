@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @JsonSubTypes({ @Type(value = Effect.AndEffect.class, name = "and"),
         @Type(value = Effect.TextEffect.class, name = "text"),
         @Type(value = Effect.MQTTEffect.class, name = "mqtt"),
+        @Type(value = Effect.SetEffect.class, name = "set"),
         @Type(value = Effect.IncreaseEffect.class, name = "increase"),
         @Type(value = Effect.AverageEffect.class, name = "average") })
 public abstract class Effect {
