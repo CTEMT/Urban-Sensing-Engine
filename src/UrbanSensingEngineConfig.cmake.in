@@ -1,0 +1,7 @@
+set(URBANSENSINGENGINE_VERSION 1.0.0)
+
+@PACKAGE_INIT@
+
+set_and_check(URBANSENSINGENGINE_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@/UrbanSensingEngine")
+
+check_required_components(UrbanSensingEngine)
