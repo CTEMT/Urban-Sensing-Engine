@@ -27,7 +27,7 @@ file(GLOB URBAN_SENSING_ENGINE_HEADERS include/*.h)
 
 add_executable(${PROJECT_NAME} ${URBAN_SENSING_ENGINE_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/include $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/extern/crow $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> $<INSTALL_INTERFACE:> ${Boost_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PRIVATE PlExA oRatio ratioCore RiDDLe SeMiTONE json ${CMAKE_THREAD_LIBS_INIT} ${PAHO_CPP_LIB})
+target_link_libraries(${PROJECT_NAME} PRIVATE PlExA oRatio ratioCore RiDDLe SeMiTONE json ${CMAKE_THREAD_LIBS_INIT} PahoMqttCpp::paho-mqttpp3-static)
 
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /W4)
