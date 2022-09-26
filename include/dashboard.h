@@ -11,13 +11,14 @@ namespace dashboard
   class dashboard
   {
   public:
-    dashboard(const std::string &host = "127.0.0.1", const unsigned short port = 8080);
+    dashboard(const std::string &root, const std::string &host = "127.0.0.1", const unsigned short port = 8080);
 
     void start();
     void wait_for_server_start();
     void stop();
 
   private:
+    const std::string root;
     const std::string host;
     const unsigned short port;
     crow::SimpleApp app;

@@ -3,7 +3,8 @@
 
 int main(int argc, char const *argv[])
 {
-    std::string mqtt_host = "tcp://localhost";
+    std::string root = "CTE-MT";
+    std::string mqtt_host = "tcp://127.0.0.1";
     std::string mqtt_port = "1883";
     std::string dashboard_host = "127.0.0.1";
 
@@ -14,11 +15,13 @@ int main(int argc, char const *argv[])
             mqtt_port = std::string(argv[++i]);
         else if (strcmp(argv[i], "-dashboard_host") == 0)
             dashboard_host = std::string(argv[++i]);
+        else if (strcmp(argv[i], "-root") == 0)
+            dashboard_host = std::string(argv[++i]);
 
-    use::urban_sensing_engine use(mqtt_host + ":" + mqtt_port);
+    use::urban_sensing_engine use(root, mqtt_host + ":" + mqtt_port);
     use.connect();
 
-    dashboard::dashboard srv(dashboard_host);
+    dashboard::dashboard srv(root, dashboard_host);
     auto srv_st = std::async(std::launch::async, [&]
                              { srv.start(); });
     srv.wait_for_server_start();
