@@ -28,6 +28,10 @@ namespace use
     void on_failure(const mqtt::token &tkn) override;
     void on_success(const mqtt::token &tkn) override;
 
+    void connected(const std::string &cause) override;
+    void connection_lost(const std::string &cause) override;
+    void message_arrived(mqtt::const_message_ptr msg) override;
+
   private:
     urban_sensing_engine &engine;
   };
@@ -38,6 +42,9 @@ namespace use
 
   public:
     urban_sensing_engine(const std::string &server_uri, const std::string &client_id = "urban_sensing_engine");
+
+    void connect();
+    void disconnect();
 
   private:
     mqtt::async_client mqtt_client;
