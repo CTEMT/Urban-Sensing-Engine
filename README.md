@@ -46,7 +46,7 @@ mosquitto_pub -t CTE-MT/sensors -m "[\"s0\", \"s1\", \"s2\"]" -r
 
 The Urban Sensing & Planning Engine has incorporated the following libraries into its source.
 
-    **CPIPS**
+  **CLIPS**
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so.                            
 
@@ -55,7 +55,7 @@ The Urban Sensing & Planning Engine has incorporated the following libraries int
     CLIPS is released as public domain software and as such you are under no obligation to pay for its use. However, if you derive commercial or monetary benefit from use of the software or just want to show support, please consider making a voluntary payment based on the worth of the software to you as compensation for the time and effort required to develop and maintain CLIPS. Payments can be made online at http://order.kagi.com/?JKT.
 
 
-    **Eclipse Paho MQTT C++ Client Library**
+  **Eclipse Paho MQTT C++ Client Library**
 
         Eclipse Public License - v 2.0
 
@@ -148,7 +148,7 @@ The Urban Sensing & Planning Engine has incorporated the following libraries int
     You may add additional accurate notices of copyright ownership.
 
 
-    **Crow**
+  **Crow**
 
     https://github.com/CrowCpp/Crow
 
