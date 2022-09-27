@@ -1,12 +1,9 @@
 #include "urban_sensing_engine.h"
 #include "logging.h"
+#include "use_defs.h"
 #include <sstream>
 #include <unordered_set>
 #include <chrono>
-
-#define SENSORS_TOPIC "/sensors"
-#define SENSOR_TOPIC "/sensor"
-#define MESSAGE_TOPIC "/message"
 
 namespace use
 {

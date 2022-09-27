@@ -5,13 +5,32 @@
 #include "executor_listener.h"
 #include "crow_all.h"
 #include <mutex>
+#include "mqtt/async_client.h"
 
 namespace dashboard
 {
-  class dashboard
+  class dashboard;
+
+  class mqtt_callback : public mqtt::callback
   {
   public:
-    dashboard(const std::string &root, const std::string &host = "127.0.0.1", const unsigned short port = 8080);
+    mqtt_callback(dashboard &engine);
+
+  private:
+    void connected(const std::string &cause) override;
+    void connection_lost(const std::string &cause) override;
+    void message_arrived(mqtt::const_message_ptr msg) override;
+
+  private:
+    dashboard &engine;
+  };
+
+  class dashboard
+  {
+    friend class mqtt_callback;
+
+  public:
+    dashboard(const std::string &root, const std::string &dashboard_host = "127.0.0.1", const unsigned short dashboard_port = 8080, const std::string &mqtt_server_uri = "tcp://localhost:1883", const std::string &mqtt_client_id = "dashboard");
 
     void start();
     void wait_for_server_start();
@@ -19,8 +38,9 @@ namespace dashboard
 
   private:
     const std::string root;
-    const std::string host;
-    const unsigned short port;
+    const std::string dashboard_host;
+    const unsigned short dashboard_port;
+    mqtt::async_client mqtt_client;
     crow::SimpleApp app;
     std::unordered_set<crow::websocket::connection *> users;
     std::mutex mtx;
