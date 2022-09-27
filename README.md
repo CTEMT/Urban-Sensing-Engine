@@ -36,10 +36,10 @@ sudo ldconfig
 
 **Testing the Urban Sensing & Planning Engine**
 
-To test the Urban Sensing & Planning Engine start a `mosquitto` broker and publish a retained message on the `<root>/sensors` topic representing a JSON array of strings.
+To test the Urban Sensing & Planning Engine start a `mosquitto` broker and publish a retained message on the `<root>/sensors` topic representing a JSON array of sensors.
 
 ```
-mosquitto_pub -t CTE-MT/sensors -m "[\"s0\", \"s1\", \"s2\"]" -r
+mosquitto_pub -t CTE-MT/sensors -m "[{\"id\": \"s0\", \"type\": \"temperature\"}, {\"id\": \"s1\", \"type\": \"gate\"}, {\"id\": \"s2\", \"type\": \"bus\"}]" -r
 ```
 
 ## Attributions

@@ -22,12 +22,32 @@ namespace use
     urban_sensing_engine &engine;
   };
 
+  class sensor
+  {
+  public:
+    sensor(const std::string &id, const std::string &type, Fact *fact);
+
+    const std::string &get_id() const { return id; }
+    const std::string &get_type() const { return type; }
+    Fact *get_fact() const { return fact; }
+
+    json::json &get_value() const { return *value; }
+    void set_value(std::unique_ptr<json::json> val) { value.swap(val); }
+
+  private:
+    const std::string id;
+    const std::string type;
+    Fact *fact;
+    std::unique_ptr<json::json> value;
+  };
+
   class urban_sensing_engine
   {
     friend class mqtt_callback;
 
   public:
     urban_sensing_engine(const std::string &root, const std::string &server_uri = "tcp://localhost:1883", const std::string &client_id = "urban_sensing_engine");
+    ~urban_sensing_engine();
 
     void connect();
     void disconnect();
@@ -37,7 +57,7 @@ namespace use
     mqtt::async_client mqtt_client;
     mqtt::connect_options options;
     mqtt_callback msg_callback;
-    std::unordered_map<std::string, std::unique_ptr<json::json>> state;
+    std::unordered_map<std::string, std::unique_ptr<sensor>> sensors;
     Environment *env;
   };
 } // namespace use
