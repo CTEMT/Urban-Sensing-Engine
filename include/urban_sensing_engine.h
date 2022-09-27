@@ -52,6 +52,8 @@ namespace use
     void connect();
     void disconnect();
 
+    friend void send_message(Environment *env, UDFContext *udfc, UDFValue *out);
+
   private:
     const std::string root;
     mqtt::async_client mqtt_client;

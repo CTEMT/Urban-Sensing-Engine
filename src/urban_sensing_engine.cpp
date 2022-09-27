@@ -6,9 +6,30 @@
 
 #define SENSORS_TOPIC "/sensors"
 #define SENSOR_TOPIC "/sensor"
+#define MESSAGE_TOPIC "/message"
 
 namespace use
 {
+    void send_message([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
+    {
+        UDFValue engine;
+        if (!UDFFirstArgument(udfc, NUMBER_BITS, &engine))
+            return;
+
+        UDFValue topic;
+        if (!UDFNextArgument(udfc, SYMBOL_BIT, &topic))
+            return;
+
+        UDFValue message;
+        if (!UDFNextArgument(udfc, STRING_BIT, &message))
+            return;
+
+        urban_sensing_engine &e = *reinterpret_cast<urban_sensing_engine *>(engine.integerValue->contents);
+
+        auto msg = mqtt::make_message(e.root + MESSAGE_TOPIC + '/' + topic.lexemeValue->contents, message.lexemeValue->contents);
+        e.mqtt_client.publish(msg);
+    }
+
     mqtt_callback::mqtt_callback(urban_sensing_engine &engine) : engine(engine) {}
 
     void mqtt_callback::connected([[maybe_unused]] const std::string &cause)
@@ -21,7 +42,7 @@ namespace use
     void mqtt_callback::connection_lost([[maybe_unused]] const std::string &cause)
     {
         LOG_WARN("MQTT connection lost! trying to reconnect..");
-        engine.mqtt_client.reconnect();
+        engine.mqtt_client.reconnect()->wait();
     }
     void mqtt_callback::message_arrived(mqtt::const_message_ptr msg)
     {
@@ -98,8 +119,10 @@ namespace use
 
         mqtt_client.set_callback(msg_callback);
 
+        AddUDF(env, "send_message", "v", 3, 3, "lss", send_message, "send_message", NULL);
         LOG("Loading policy rules..");
         Load(env, "rules/rules.clp");
+        AssertString(env, ("(configuration (engine_ptr " + std::to_string(reinterpret_cast<uintptr_t>(this)) + "))").c_str());
         LOG("done..");
     }
     urban_sensing_engine::~urban_sensing_engine() { DestroyEnvironment(env); }

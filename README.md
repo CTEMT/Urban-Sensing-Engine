@@ -42,6 +42,12 @@ To test the Urban Sensing & Planning Engine start a `mosquitto` broker and publi
 mosquitto_pub -t CTE-MT/sensors -m "[{\"id\": \"s0\", \"type\": \"temperature\"}, {\"id\": \"s1\", \"type\": \"gate\"}, {\"id\": \"s2\", \"type\": \"bus\"}]" -r
 ```
 
+Simulate the `s0` sensor by sending some values on the `CTE-MT/sensor/s0` topic.
+
+```
+mosquitto_pub -t CTE-MT/sensor/s0 -m "{\"temperature\": 40}"
+```
+
 ## Attributions
 
 The Urban Sensing & Planning Engine has incorporated the following libraries into its source.
