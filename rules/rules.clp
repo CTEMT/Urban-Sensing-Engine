@@ -11,25 +11,25 @@
     (slot v1 (default 0))
     (slot v2 (default 0))
     (slot v3 (default 0))
+    (slot local_time (default 0))
     (slot average (default 0))
 )
 
 (defrule compute_s0_average
-    (sensor_value (sensor_id s0) (val ?v))
+    ?val <- (sensor_value (sensor_id s0) (local_time ?t) (val ?v))
     ?vals <- (s0_vals (v0 ?v0) (v1 ?v1) (v2 ?v2) (v3 ?v3))
     =>
-    (println (/ (+ ?v1 ?v2 ?v3 ?v) 4))
-    (modify ?vals (v0 ?v1) (v1 ?v2) (v2 ?v3) (v3 ?v) (average (/ (+ ?v1 ?v2 ?v3 ?v) 4)))
+    (modify ?vals (v0 ?v1) (v1 ?v2) (v2 ?v3) (v3 ?v) (local_time ?t) (average (/ (+ ?v1 ?v2 ?v3 ?v) 4)))
+    (retract ?val)
 )
 
 (defrule s0_high
-    (s0_vals (average ?avg))
-    (>= ?avg 37.5)
+    (s0_vals (average ?avg&:(>= ?avg 37.5)))
     (configuration (engine_ptr ?ptr))
     =>
-    (send_message ?ptr "warning" "La temperatura del sensore 's0' ha superato la soglia di guardia di 37.5")
+    (send_message ?ptr warning (str-cat "La temperatura media del sensore 's0', di " ?avg ", ha superato la soglia di guardia di 37.5"))
 )
 
-(deffacts initial
-    (s0)
+(deffacts initial_facts
+    (s0_vals)
 )

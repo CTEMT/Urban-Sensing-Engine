@@ -95,13 +95,15 @@ namespace use
             json::object &j_val = j_value;
 
             auto time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-            std::string val_fact = "(sensor_value (sensor_id " + sensor_id + ") (local_time " + std::to_string(time) + ") (value ";
+            std::string val_fact = "(sensor_value (sensor_id " + sensor_id + ") (local_time " + std::to_string(time) + ") (val ";
             for (const auto &[id, val] : j_val)
             {
                 json::string_val &j_v = val;
                 val_fact += j_v;
             }
             val_fact += "))";
+
+            AssertString(engine.env, val_fact.c_str());
 
             auto val = std::make_unique<json::json>(std::move(j_value));
             engine.sensors.at(sensor_id)->set_value(std::move(val));
@@ -119,10 +121,14 @@ namespace use
 
         mqtt_client.set_callback(msg_callback);
 
-        AddUDF(env, "send_message", "v", 3, 3, "lss", send_message, "send_message", NULL);
+        AddUDF(env, "send_message", "v", 3, 3, "lys", send_message, "send_message", NULL);
+
         LOG("Loading policy rules..");
         Load(env, "rules/rules.clp");
+        Reset(env);
+
         AssertString(env, ("(configuration (engine_ptr " + std::to_string(reinterpret_cast<uintptr_t>(this)) + "))").c_str());
+        Run(env, -1);
         LOG("done..");
     }
     urban_sensing_engine::~urban_sensing_engine() { DestroyEnvironment(env); }
