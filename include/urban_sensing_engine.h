@@ -2,6 +2,7 @@
 
 #include "json.h"
 #include "mqtt/async_client.h"
+#include "clips.h"
 
 namespace use
 {
@@ -37,5 +38,6 @@ namespace use
     mqtt::connect_options options;
     mqtt_callback msg_callback;
     std::unordered_map<std::string, std::unique_ptr<json::json>> state;
+    Environment *env;
   };
 } // namespace use

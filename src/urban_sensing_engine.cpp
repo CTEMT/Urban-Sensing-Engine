@@ -66,7 +66,7 @@ namespace use
         }
     }
 
-    urban_sensing_engine::urban_sensing_engine(const std::string &root, const std::string &server_uri, const std::string &client_id) : root(root), mqtt_client(server_uri, client_id), msg_callback(*this)
+    urban_sensing_engine::urban_sensing_engine(const std::string &root, const std::string &server_uri, const std::string &client_id) : root(root), mqtt_client(server_uri, client_id), msg_callback(*this), env(CreateEnvironment())
     {
         options.set_clean_session(false);
         options.set_keep_alive_interval(20);

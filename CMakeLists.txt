@@ -18,8 +18,8 @@ find_package(PahoMqttCpp REQUIRED)
 include(CTest)
 enable_testing()
 
-option(CLIPS_INCLUDE_DIR "CLPIS include directory" /usr/local/include/clips)
-option(CLIPS_LIB_DIR "CLPIS library directory" /usr/local/lib)
+set(CLIPS_INCLUDE_DIR /usr/local/include/clips CACHE PATH "CLPIS include directory")
+set(CLIPS_LIB_DIR /usr/local/lib CACHE PATH "CLPIS library directory")
 
 set(COMPUTE_NAMES ON CACHE BOOL "Computes the objects' names" FORCE)
 
