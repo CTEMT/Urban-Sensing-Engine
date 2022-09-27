@@ -24,7 +24,8 @@
 )
 
 (defrule s0_high
-    (s0_vals (average ?avg&:(>= ?avg 37.5)))
+    (s0_vals (average ?avg))
+    (test (>= ?avg 37.5))
     (configuration (engine_ptr ?ptr))
     =>
     (send_message ?ptr warning (str-cat "La temperatura media del sensore 's0', di " ?avg ", ha superato la soglia di guardia di 37.5"))
