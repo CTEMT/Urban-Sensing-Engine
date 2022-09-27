@@ -5,6 +5,13 @@
 
 (deftemplate sensor_value (slot sensor_id) (slot local_time) (multislot val))
 
+(defrule notify_bus_position
+    ?val <- (sensor_value (sensor_id ?id) (val ?lat ?long))
+    (sensor (id ?id) (sensor_type bus))
+    =>
+    (println (str-cat "L'autobus " ?id " si trova alle coordinate [" ?lat ", " ?long "]"))
+    (retract ?val)
+)
 
 (deftemplate s0_vals
     (slot v0 (default 0))

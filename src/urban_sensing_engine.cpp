@@ -95,10 +95,11 @@ namespace use
             json::object &j_val = j_value;
 
             auto time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-            std::string val_fact = "(sensor_value (sensor_id " + sensor_id + ") (local_time " + std::to_string(time) + ") (val ";
+            std::string val_fact = "(sensor_value (sensor_id " + sensor_id + ") (local_time " + std::to_string(time) + ") (val";
             for (const auto &[id, val] : j_val)
             {
                 json::string_val &j_v = val;
+                val_fact += ' ';
                 val_fact += j_v;
             }
             val_fact += "))";
