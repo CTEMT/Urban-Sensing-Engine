@@ -1,5 +1,6 @@
 #pragma once
 
+#include "json.h"
 #include "mqtt/async_client.h"
 
 namespace use
@@ -35,5 +36,6 @@ namespace use
     mqtt::async_client mqtt_client;
     mqtt::connect_options options;
     mqtt_callback msg_callback;
+    std::unordered_map<std::string, std::unique_ptr<json::json>> state;
   };
 } // namespace use
