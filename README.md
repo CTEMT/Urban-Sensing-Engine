@@ -39,7 +39,7 @@ sudo ldconfig
 To test the Urban Sensing & Planning Engine start a `mosquitto` broker and publish a retained message on the `<root>/sensors` topic representing a JSON array of sensors.
 
 ```
-mosquitto_pub -t CTE-MT/sensors -m "[{\"id\": \"s0\", \"type\": \"temperature\"}, {\"id\": \"s1\", \"type\": \"gate\"}, {\"id\": \"s2\", \"type\": \"bus\"}]" -r
+mosquitto_pub -t CTE-MT/sensors -m "[{\"id\": \"s0\", \"type\": \"temperature\"}, {\"id\": \"s1\", \"type\": \"gate\"}, {\"id\": \"s2\", \"type\": \"bus\"}, {\"id\": \"s3\", \"type\": \"air_monitoring\"}]" -r
 ```
 
 Subscribe to the `warning` topic to receive notifications.
@@ -52,6 +52,7 @@ Simulate the `s0` sensor by sending some values on the `CTE-MT/sensor/s0` topic.
 
 ```
 mosquitto_pub -t CTE-MT/sensor/s0 -m "{\"temperature\": 40}"
+mosquitto_pub -t CTE-MT/sensor/s3 -m "{\"pm10\": 6, \"pm2.5\": 5}"
 ```
 
 ## Attributions

@@ -1,7 +1,7 @@
 (deftemplate configuration (slot engine_ptr))
 
 (deftemplate sensor_type (slot name))
-(deftemplate sensor (slot id) (slot sensor_type) (slot location))
+(deftemplate sensor (slot id) (slot sensor_type) (multislot location))
 
 (deftemplate sensor_value (slot sensor_id) (slot local_time) (multislot val))
 
@@ -11,6 +11,14 @@
     =>
     (println (str-cat "L'autobus " ?id " si trova alle coordinate [" ?lat ", " ?long "]"))
     (retract ?val)
+)
+
+(defrule air_quality_warning
+    (sensor_value (sensor_id ?s) (val ?pm10 ?pm2_5))
+    (sensor (id ?s) (sensor_type air_monitoring))
+    (test (or (> ?pm10 40) (> ?pm2_5 25)))
+    =>
+    (println (str-cat "Attenzione! La qualità dell'aria percepita dal sensore " ?s " ha superato i limiti di soglia."))
 )
 
 (deftemplate s0_vals
