@@ -32,6 +32,8 @@ namespace dashboard
          {
             crow::mustache::context ctx;
             ctx["title"] = root + " Dashboard";
+            ctx["latitude"] = 40.666379;
+            ctx["longitude"] = 16.604320;
             return crow::mustache::load("index.html").render(ctx); });
     }
 
