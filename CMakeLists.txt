@@ -26,6 +26,8 @@ set(USE_MQTT_HOST "tcp://127.0.0.1" CACHE STRING "The Urban Sensing & Planning E
 set(USE_MQTT_PORT "1883" CACHE STRING "The Urban Sensing & Planning Engine MQTT Port")
 set(USE_DASHBOARD_HOST "127.0.0.1" CACHE STRING "The Urban Sensing & Planning Engine Dashboard Host")
 set(USE_DASHBOARD_PORT "8080" CACHE STRING "The Urban Sensing & Planning Engine Dashboard Port")
+set(USE_DASHBOARD_LAT "40.666379" CACHE STRING "The Urban Sensing & Planning Engine Map Latitude")
+set(USE_DASHBOARD_LNG "16.604320" CACHE STRING "The Urban Sensing & Planning Engine Map Longitude")
 
 set(COMPUTE_NAMES ON CACHE BOOL "Computes the objects' names" FORCE)
 
@@ -39,7 +41,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURR
 target_link_directories(${PROJECT_NAME} PUBLIC ${CLIPS_LIB_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE PlExA oRatio ratioCore RiDDLe SeMiTONE json ${CMAKE_THREAD_LIBS_INIT} PahoMqttCpp::paho-mqttpp3-static clips)
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE VERBOSE_LOG USE_ROOT="${USE_ROOT}" USE_MQTT_HOST="${USE_MQTT_HOST}" USE_MQTT_PORT="${USE_MQTT_PORT}" USE_DASHBOARD_HOST="${USE_DASHBOARD_HOST}" USE_DASHBOARD_PORT=${USE_DASHBOARD_PORT})
+target_compile_definitions(${PROJECT_NAME} PRIVATE VERBOSE_LOG USE_ROOT="${USE_ROOT}" USE_MQTT_HOST="${USE_MQTT_HOST}" USE_MQTT_PORT="${USE_MQTT_PORT}" USE_DASHBOARD_HOST="${USE_DASHBOARD_HOST}" USE_DASHBOARD_PORT=${USE_DASHBOARD_PORT} USE_DASHBOARD_LAT=${USE_DASHBOARD_LAT} USE_DASHBOARD_LNG=${USE_DASHBOARD_LNG})
 
 if(MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /W4)
