@@ -7,9 +7,10 @@
 
 (defrule notify_bus_position
     ?val <- (sensor_value (sensor_id ?id) (val ?lat ?lng))
-    (sensor (id ?id) (sensor_type bus))
+    ?bus <- (sensor (id ?id) (sensor_type bus))
     =>
     (println (str-cat "L'autobus " ?id " si trova alle coordinate [" ?lat ", " ?lng "]"))
+    (modify ?bus (location ?lat ?lng))
     (retract ?val)
 )
 
