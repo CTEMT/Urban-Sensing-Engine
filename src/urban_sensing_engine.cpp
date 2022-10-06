@@ -7,7 +7,7 @@
 
 namespace use
 {
-    void send_message([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
+    void send_map_message([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
     {
         UDFValue engine;
         if (!UDFFirstArgument(udfc, NUMBER_BITS, &engine))
@@ -140,7 +140,7 @@ namespace use
 
         mqtt_client.set_callback(msg_callback);
 
-        AddUDF(env, "send_message", "v", 5, 5, "lydds", send_message, "send_message", NULL);
+        AddUDF(env, "send_map_message", "v", 5, 5, "lydds", send_map_message, "send_map_message", NULL);
 
         LOG("Loading policy rules..");
         Load(env, "rules/rules.clp");

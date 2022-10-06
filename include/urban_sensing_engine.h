@@ -52,7 +52,7 @@ namespace use
     void connect();
     void disconnect();
 
-    friend void send_message(Environment *env, UDFContext *udfc, UDFValue *out);
+    friend void send_map_message(Environment *env, UDFContext *udfc, UDFValue *out);
 
   private:
     const std::string root;

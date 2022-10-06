@@ -19,7 +19,7 @@
     (test (or (> ?pm10 40) (> ?pm2_5 25)))
     (configuration (engine_ptr ?ptr))
     =>
-    (send_message ?ptr warning ?lat ?lng (str-cat "Attenzione! La qualità dell'aria percepita dal sensore " ?s " ha superato i limiti di soglia"))
+    (send_map_message ?ptr warning ?lat ?lng (str-cat "Attenzione! La qualità dell'aria percepita dal sensore " ?s " ha superato i limiti di soglia"))
     (retract ?val)
 )
 
@@ -47,7 +47,7 @@
     (configuration (engine_ptr ?ptr))
     =>
     (println (str-cat "La temperatura media del sensore 's0', di " ?avg ", ha superato la soglia di guardia di 37.5"))
-    (send_message ?ptr warning ?lat ?lng (str-cat "La temperatura media del sensore 's0', di " ?avg ", ha superato la soglia di guardia di 37.5"))
+    (send_map_message ?ptr warning ?lat ?lng (str-cat "La temperatura media del sensore 's0', di " ?avg ", ha superato la soglia di guardia di 37.5"))
 )
 
 (deffacts initial_facts
