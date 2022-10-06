@@ -36,11 +36,19 @@ namespace dashboard
     void wait_for_server_start();
     void stop();
 
+    void connect();
+    void disconnect();
+
+  private:
+    void broadcast(const std::string &msg);
+
   private:
     const std::string root;
     const std::string dashboard_host;
     const unsigned short dashboard_port;
     mqtt::async_client mqtt_client;
+    mqtt::connect_options options;
+    mqtt_callback msg_callback;
     crow::SimpleApp app;
     std::unordered_set<crow::websocket::connection *> users;
     std::mutex mtx;

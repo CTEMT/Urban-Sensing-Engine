@@ -24,16 +24,18 @@ int main(int argc, char const *argv[])
     use::urban_sensing_engine use(root, mqtt_host + ":" + mqtt_port);
     use.connect();
 
-    dashboard::dashboard srv(root, dashboard_host, dashboard_port, mqtt_host + ":" + mqtt_port);
+    dashboard::dashboard dashboard_srv(root, dashboard_host, dashboard_port, mqtt_host + ":" + mqtt_port);
     auto srv_st = std::async(std::launch::async, [&]
-                             { srv.start(); });
-    srv.wait_for_server_start();
+                             { dashboard_srv.start(); });
+    dashboard_srv.wait_for_server_start();
+    dashboard_srv.connect();
 
     while (std::tolower(std::cin.get()) != 'q')
         ;
 
+    dashboard_srv.disconnect();
+    dashboard_srv.stop();
     use.disconnect();
-    srv.stop();
 
     return 0;
 }

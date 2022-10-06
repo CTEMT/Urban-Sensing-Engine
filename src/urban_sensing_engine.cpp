@@ -13,18 +13,33 @@ namespace use
         if (!UDFFirstArgument(udfc, NUMBER_BITS, &engine))
             return;
 
-        UDFValue topic;
-        if (!UDFNextArgument(udfc, SYMBOL_BIT, &topic))
+        UDFValue type;
+        if (!UDFNextArgument(udfc, SYMBOL_BIT, &type))
             return;
 
-        UDFValue message;
-        if (!UDFNextArgument(udfc, STRING_BIT, &message))
+        UDFValue lat;
+        if (!UDFNextArgument(udfc, NUMBER_BITS, &lat))
             return;
 
-        urban_sensing_engine &e = *reinterpret_cast<urban_sensing_engine *>(engine.integerValue->contents);
+        UDFValue lng;
+        if (!UDFNextArgument(udfc, NUMBER_BITS, &lng))
+            return;
 
-        auto msg = mqtt::make_message(e.root + MESSAGE_TOPIC + '/' + topic.lexemeValue->contents, message.lexemeValue->contents);
-        e.mqtt_client.publish(msg);
+        UDFValue content;
+        if (!UDFNextArgument(udfc, STRING_BIT, &content))
+            return;
+
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(engine.integerValue->contents);
+
+        json::json msg;
+        msg["type"] = type.lexemeValue->contents;
+        json::object loc;
+        loc["lat"] = lat.floatValue->contents;
+        loc["lng"] = lng.floatValue->contents;
+        msg["location"] = std::move(loc);
+        msg["content"] = content.lexemeValue->contents;
+
+        e.mqtt_client.publish(mqtt::make_message(e.root + MESSAGE_TOPIC, msg.dump()));
     }
 
     mqtt_callback::mqtt_callback(urban_sensing_engine &engine) : engine(engine) {}
@@ -67,7 +82,12 @@ namespace use
                     LOG_DEBUG("Subscribing to '" + engine.root + SENSOR_TOPIC + '/' + sensor_id + "' topic..");
                     engine.mqtt_client.subscribe(engine.root + SENSOR_TOPIC + '/' + sensor_id, 1);
 
-                    auto *s_fact = AssertString(engine.env, ("(sensor (id " + sensor_id + ") (sensor_type " + sensor_type + "))").c_str());
+                    json::number_val &j_lat = j_sensor["location"]["lat"];
+                    double lat = j_lat;
+                    json::number_val &j_lng = j_sensor["location"]["lng"];
+                    double lng = j_lng;
+
+                    auto *s_fact = AssertString(engine.env, ("(sensor (id " + sensor_id + ") (sensor_type " + sensor_type + ") (location " + std::to_string(lat) + " " + std::to_string(lng) + "))").c_str());
                     engine.sensors.emplace(sensor_id, std::make_unique<sensor>(sensor_id, sensor_type, s_fact));
                 }
             }
@@ -108,6 +128,7 @@ namespace use
         }
 
         Run(engine.env, -1);
+        Eval(engine.env, "(facts)", NULL);
     }
 
     sensor::sensor(const std::string &id, const std::string &type, Fact *fact) : id(id), type(type), fact(fact) {}
@@ -119,7 +140,7 @@ namespace use
 
         mqtt_client.set_callback(msg_callback);
 
-        AddUDF(env, "send_message", "v", 3, 3, "lys", send_message, "send_message", NULL);
+        AddUDF(env, "send_message", "v", 5, 5, "lydds", send_message, "send_message", NULL);
 
         LOG("Loading policy rules..");
         Load(env, "rules/rules.clp");
