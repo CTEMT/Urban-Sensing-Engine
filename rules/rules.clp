@@ -1,9 +1,16 @@
 (deftemplate configuration (slot engine_ptr))
+(deftemplate solver (slot solver_ptr))
 
 (deftemplate sensor_type (slot name))
 (deftemplate sensor (slot id) (slot sensor_type) (multislot location))
 
 (deftemplate sensor_value (slot sensor_id) (slot local_time) (multislot val))
+
+(defrule new_configuration
+    (configuration (engine_ptr ?engine_ptr))
+    =>
+    (assert (solver (solver_ptr (new_solver ?engine_ptr))))
+)
 
 (defrule notify_bus_position
     ?val <- (sensor_value (sensor_id ?id) (val ?lat ?lng))
@@ -47,7 +54,6 @@
     (test (>= ?avg 37.5))
     (configuration (engine_ptr ?ptr))
     =>
-    (println (str-cat "La temperatura media del sensore 's0', di " ?avg ", ha superato la soglia di guardia di 37.5"))
     (send_map_message ?ptr warning ?lat ?lng (str-cat "La temperatura media del sensore 's0', di " ?avg ", ha superato la soglia di guardia di 37.5"))
 )
 

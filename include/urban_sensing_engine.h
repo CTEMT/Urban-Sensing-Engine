@@ -1,6 +1,6 @@
 #pragma once
 
-#include "json.h"
+#include "solver.h"
 #include "mqtt/async_client.h"
 #include "clips.h"
 
@@ -54,12 +54,16 @@ namespace use
 
     friend void send_map_message(Environment *env, UDFContext *udfc, UDFValue *out);
 
+    friend void new_solver(Environment *env, UDFContext *udfc, UDFValue *out);
+    friend void delete_solver(Environment *env, UDFContext *udfc, UDFValue *out);
+
   private:
     const std::string root;
     mqtt::async_client mqtt_client;
     mqtt::connect_options options;
     mqtt_callback msg_callback;
     std::unordered_map<std::string, std::unique_ptr<sensor>> sensors;
+    std::list<std::unique_ptr<ratio::solver::solver>> solvers;
     Environment *env;
   };
 } // namespace use

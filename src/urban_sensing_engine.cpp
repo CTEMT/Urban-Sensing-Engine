@@ -9,9 +9,10 @@ namespace use
 {
     void send_map_message([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
     {
-        UDFValue engine;
-        if (!UDFFirstArgument(udfc, NUMBER_BITS, &engine))
+        UDFValue engine_ptr;
+        if (!UDFFirstArgument(udfc, NUMBER_BITS, &engine_ptr))
             return;
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(engine_ptr.integerValue->contents);
 
         UDFValue type;
         if (!UDFNextArgument(udfc, SYMBOL_BIT, &type))
@@ -29,17 +30,66 @@ namespace use
         if (!UDFNextArgument(udfc, STRING_BIT, &content))
             return;
 
-        auto &e = *reinterpret_cast<urban_sensing_engine *>(engine.integerValue->contents);
+        if (e.mqtt_client.is_connected())
+        {
+            json::json msg;
+            msg["type"] = type.lexemeValue->contents;
+            json::object loc;
+            loc["lat"] = lat.floatValue->contents;
+            loc["lng"] = lng.floatValue->contents;
+            msg["location"] = std::move(loc);
+            msg["content"] = content.lexemeValue->contents;
 
-        json::json msg;
-        msg["type"] = type.lexemeValue->contents;
-        json::object loc;
-        loc["lat"] = lat.floatValue->contents;
-        loc["lng"] = lng.floatValue->contents;
-        msg["location"] = std::move(loc);
-        msg["content"] = content.lexemeValue->contents;
+            e.mqtt_client.publish(mqtt::make_message(e.root + MESSAGE_TOPIC, msg.dump()));
+        }
+    }
 
-        e.mqtt_client.publish(mqtt::make_message(e.root + MESSAGE_TOPIC, msg.dump()));
+    void new_solver(Environment *env, UDFContext *udfc, UDFValue *out)
+    {
+        UDFValue engine_ptr;
+        if (!UDFFirstArgument(udfc, NUMBER_BITS, &engine_ptr))
+            return;
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(engine_ptr.integerValue->contents);
+
+        auto slv = std::make_unique<ratio::solver::solver>();
+        out->integerValue = CreateInteger(env, reinterpret_cast<uintptr_t>(slv.get()));
+
+        e.solvers.push_back(std::move(slv));
+
+        if (e.mqtt_client.is_connected())
+        {
+            json::json msg;
+            msg["type"] = "new_reasoner";
+            msg["id"] = reinterpret_cast<uintptr_t>(slv.get());
+
+            e.mqtt_client.publish(mqtt::make_message(e.root + SOLVER_TOPIC, msg.dump()));
+        }
+    }
+
+    void delete_solver([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
+    {
+        UDFValue engine_ptr;
+        if (!UDFFirstArgument(udfc, NUMBER_BITS, &engine_ptr))
+            return;
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(engine_ptr.integerValue->contents);
+
+        UDFValue slv_ptr;
+        if (!UDFFirstArgument(udfc, NUMBER_BITS, &slv_ptr))
+            return;
+        auto slv = reinterpret_cast<ratio::solver::solver *>(slv_ptr.integerValue->contents);
+
+        auto slv_it = std::find_if(e.solvers.cbegin(), e.solvers.cend(), [slv](auto &slv_ptr)
+                                   { return slv_ptr.get() == slv; });
+        e.solvers.erase(slv_it);
+
+        if (e.mqtt_client.is_connected())
+        {
+            json::json msg;
+            msg["type"] = "deleted_reasoner";
+            msg["id"] = reinterpret_cast<uintptr_t>(slv);
+
+            e.mqtt_client.publish(mqtt::make_message(e.root + SOLVER_TOPIC, msg.dump()));
+        }
     }
 
     mqtt_callback::mqtt_callback(urban_sensing_engine &engine) : engine(engine) {}
@@ -128,7 +178,9 @@ namespace use
         }
 
         Run(engine.env, -1);
+#ifdef VERBOSE_LOG
         Eval(engine.env, "(facts)", NULL);
+#endif
     }
 
     sensor::sensor(const std::string &id, const std::string &type, Fact *fact) : id(id), type(type), fact(fact) {}
@@ -141,6 +193,8 @@ namespace use
         mqtt_client.set_callback(msg_callback);
 
         AddUDF(env, "send_map_message", "v", 5, 5, "lydds", send_map_message, "send_map_message", NULL);
+        AddUDF(env, "new_solver", "l", 1, 1, "l", new_solver, "new_solver", NULL);
+        AddUDF(env, "delete_solver", "v", 2, 2, "ll", delete_solver, "delete_solver", NULL);
 
         LOG("Loading policy rules..");
         Load(env, "rules/rules.clp");
