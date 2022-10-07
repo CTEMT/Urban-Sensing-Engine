@@ -1,6 +1,7 @@
 #include "urban_sensing_engine.h"
 #include "logging.h"
 #include "use_defs.h"
+#include "use_executor.h"
 #include <sstream>
 #include <unordered_set>
 #include <chrono>
@@ -46,21 +47,25 @@ namespace use
 
     void new_solver(Environment *env, UDFContext *udfc, UDFValue *out)
     {
+        LOG_DEBUG("Creating new solver..");
+
         UDFValue engine_ptr;
         if (!UDFFirstArgument(udfc, NUMBER_BITS, &engine_ptr))
             return;
         auto &e = *reinterpret_cast<urban_sensing_engine *>(engine_ptr.integerValue->contents);
 
-        auto slv = std::make_unique<ratio::solver::solver>();
-        out->integerValue = CreateInteger(env, reinterpret_cast<uintptr_t>(slv.get()));
+        auto slv = new ratio::solver::solver();
+        auto exec = new ratio::executor::executor(*slv);
+        auto use_exec = std::make_unique<use_executor>(e, *exec);
+        out->integerValue = CreateInteger(env, reinterpret_cast<uintptr_t>(use_exec.get()));
 
-        e.solvers.push_back(std::move(slv));
+        e.executors.push_back(std::move(use_exec));
 
         if (e.mqtt_client.is_connected())
         {
             json::json msg;
             msg["type"] = "new_reasoner";
-            msg["id"] = reinterpret_cast<uintptr_t>(slv.get());
+            msg["id"] = reinterpret_cast<uintptr_t>(use_exec.get());
 
             e.mqtt_client.publish(mqtt::make_message(e.root + SOLVER_TOPIC, msg.dump()));
         }
@@ -73,20 +78,24 @@ namespace use
             return;
         auto &e = *reinterpret_cast<urban_sensing_engine *>(engine_ptr.integerValue->contents);
 
-        UDFValue slv_ptr;
-        if (!UDFFirstArgument(udfc, NUMBER_BITS, &slv_ptr))
+        UDFValue exec_ptr;
+        if (!UDFFirstArgument(udfc, NUMBER_BITS, &exec_ptr))
             return;
-        auto slv = reinterpret_cast<ratio::solver::solver *>(slv_ptr.integerValue->contents);
+        auto use_exec = reinterpret_cast<use_executor *>(exec_ptr.integerValue->contents);
+        auto exec = &use_exec->get_executor();
+        auto slv = &exec->get_solver();
 
-        auto slv_it = std::find_if(e.solvers.cbegin(), e.solvers.cend(), [slv](auto &slv_ptr)
-                                   { return slv_ptr.get() == slv; });
-        e.solvers.erase(slv_it);
+        auto use_exec_it = std::find_if(e.executors.cbegin(), e.executors.cend(), [use_exec](auto &slv_ptr)
+                                        { return slv_ptr.get() == use_exec; });
+        e.executors.erase(use_exec_it);
+        delete exec;
+        delete slv;
 
         if (e.mqtt_client.is_connected())
         {
             json::json msg;
             msg["type"] = "deleted_reasoner";
-            msg["id"] = reinterpret_cast<uintptr_t>(slv);
+            msg["id"] = reinterpret_cast<uintptr_t>(use_exec);
 
             e.mqtt_client.publish(mqtt::make_message(e.root + SOLVER_TOPIC, msg.dump()));
         }
@@ -202,7 +211,6 @@ namespace use
 
         AssertString(env, ("(configuration (engine_ptr " + std::to_string(reinterpret_cast<uintptr_t>(this)) + "))").c_str());
         Run(env, -1);
-        LOG("done..");
     }
     urban_sensing_engine::~urban_sensing_engine() { DestroyEnvironment(env); }
 

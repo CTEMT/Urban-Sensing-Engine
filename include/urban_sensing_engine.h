@@ -1,12 +1,13 @@
 #pragma once
 
-#include "solver.h"
+#include "json.h"
 #include "mqtt/async_client.h"
 #include "clips.h"
 
 namespace use
 {
   class urban_sensing_engine;
+  class use_executor;
 
   class mqtt_callback : public mqtt::callback
   {
@@ -44,6 +45,7 @@ namespace use
   class urban_sensing_engine
   {
     friend class mqtt_callback;
+    friend class use_executor;
 
   public:
     urban_sensing_engine(const std::string &root, const std::string &server_uri = "tcp://localhost:1883", const std::string &client_id = "urban_sensing_engine");
@@ -63,7 +65,7 @@ namespace use
     mqtt::connect_options options;
     mqtt_callback msg_callback;
     std::unordered_map<std::string, std::unique_ptr<sensor>> sensors;
-    std::list<std::unique_ptr<ratio::solver::solver>> solvers;
+    std::list<std::unique_ptr<use_executor>> executors;
     Environment *env;
   };
 } // namespace use
