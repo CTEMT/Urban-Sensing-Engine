@@ -51,6 +51,8 @@
             <div id="map" class="card"></div>
         </div>
         <div class="tab-pane fade m-2" id="pills-statistics" role="tabpanel" aria-labelledby="pills-statistics-tab">
+            <div id="chart">
+            </div>
         </div>
         <div class="tab-pane fade m-2" id="pills-planning" role="tabpanel" aria-labelledby="pills-planning-tab">
         </div>
@@ -61,6 +63,7 @@
         crossorigin="anonymous"></script>
     <script src="https://unpkg.com/leaflet@1.9.1/dist/leaflet.js"
         integrity="sha256-NDI0K41gVbWqfkkaHj15IzU7PtMoelkzyKp8TOaFQ3s=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src='static/main.js'></script>
     <script>init_map({{ latitude }}, {{ longitude }});</script>
 </body>
