@@ -509,6 +509,420 @@ const flow_type_month_options = {
 const flow_type_month_chart = new ApexCharts(document.querySelector('#flow_type_month'), flow_type_month_options);
 flow_type_month_chart.render();
 
+const flow_month_options = {
+    chart: {
+        type: 'heatmap'
+    },
+    title: {
+        text: 'Distribuzione del traffico per POI e mese'
+    },
+    colors: ["#008FFB"],
+    series: [{
+        name: 'Piazza Vittorio Veneto',
+        data: [{
+            x: 'Gen',
+            y: 2
+        }, {
+            x: 'Feb',
+            y: 3
+        }, {
+            x: 'Mar',
+            y: 5
+        }, {
+            x: 'Apr',
+            y: 3
+        }, {
+            x: 'Mag',
+            y: 5
+        }, {
+            x: 'Giu',
+            y: 4
+        }, {
+            x: 'Lug',
+            y: 5
+        }, {
+            x: 'Ago',
+            y: 3
+        }, {
+            x: 'Set',
+            y: 4
+        }, {
+            x: 'Ott',
+            y: 5
+        }, {
+            x: 'Nov',
+            y: 2
+        }, {
+            x: 'Dic',
+            y: 3
+        }]
+    },
+    {
+        name: "Parco Villa Unità d'Italia",
+        data: [{
+            x: 'Gen',
+            y: 15
+        }, {
+            x: 'Feb',
+            y: 18
+        }, {
+            x: 'Mar',
+            y: 13
+        }, {
+            x: 'Apr',
+            y: 13
+        }, {
+            x: 'Mag',
+            y: 13
+        }, {
+            x: 'Giu',
+            y: 13
+        }, {
+            x: 'Lug',
+            y: 13
+        }, {
+            x: 'Ago',
+            y: 13
+        }, {
+            x: 'Set',
+            y: 13
+        }, {
+            x: 'Ott',
+            y: 13
+        }, {
+            x: 'Nov',
+            y: 13
+        }, {
+            x: 'Dic',
+            y: 13
+        }]
+    },
+    {
+        name: 'Via Lucana',
+        data: [{
+            x: 'Gen',
+            y: 5
+        }, {
+            x: 'Feb',
+            y: 6
+        }, {
+            x: 'Mar',
+            y: 5
+        }, {
+            x: 'Apr',
+            y: 7
+        }, {
+            x: 'Mag',
+            y: 6
+        }, {
+            x: 'Giu',
+            y: 7
+        }, {
+            x: 'Lug',
+            y: 8
+        }, {
+            x: 'Ago',
+            y: 8
+        }, {
+            x: 'Set',
+            y: 7
+        }, {
+            x: 'Ott',
+            y: 6
+        }, {
+            x: 'Nov',
+            y: 5
+        }, {
+            x: 'Dic',
+            y: 8
+        }]
+    },
+    {
+        name: 'Via XX Settembre',
+        data: [{
+            x: 'Gen',
+            y: 2
+        }, {
+            x: 'Feb',
+            y: 3
+        }, {
+            x: 'Mar',
+            y: 2
+        }, {
+            x: 'Apr',
+            y: 4
+        }, {
+            x: 'Mag',
+            y: 6
+        }, {
+            x: 'Giu',
+            y: 4
+        }, {
+            x: 'Lug',
+            y: 5
+        }, {
+            x: 'Ago',
+            y: 6
+        }, {
+            x: 'Set',
+            y: 5
+        }, {
+            x: 'Ott',
+            y: 2
+        }, {
+            x: 'Nov',
+            y: 3
+        }, {
+            x: 'Dic',
+            y: 4
+        }]
+    },
+    {
+        name: 'Chiesa di Santa Maria de Armenis',
+        data: [{
+            x: 'Gen',
+            y: 3
+        }, {
+            x: 'Feb',
+            y: 4
+        }, {
+            x: 'Mar',
+            y: 3
+        }, {
+            x: 'Apr',
+            y: 4
+        }, {
+            x: 'Mag',
+            y: 6
+        }, {
+            x: 'Giu',
+            y: 4
+        }, {
+            x: 'Lug',
+            y: 3
+        }, {
+            x: 'Ago',
+            y: 2
+        }, {
+            x: 'Set',
+            y: 3
+        }, {
+            x: 'Ott',
+            y: 2
+        }, {
+            x: 'Nov',
+            y: 3
+        }, {
+            x: 'Dic',
+            y: 2
+        }]
+    },
+    {
+        name: 'Chiesa di San Biagio',
+        data: [{
+            x: 'Gen',
+            y: 13
+        }, {
+            x: 'Feb',
+            y: 14
+        }, {
+            x: 'Mar',
+            y: 13
+        }, {
+            x: 'Apr',
+            y: 14
+        }, {
+            x: 'Mag',
+            y: 16
+        }, {
+            x: 'Giu',
+            y: 14
+        }, {
+            x: 'Lug',
+            y: 13
+        }, {
+            x: 'Ago',
+            y: 12
+        }, {
+            x: 'Set',
+            y: 13
+        }, {
+            x: 'Ott',
+            y: 12
+        }, {
+            x: 'Nov',
+            y: 13
+        }, {
+            x: 'Dic',
+            y: 12
+        }]
+    }]
+};
+const flow_month_chart = new ApexCharts(document.querySelector('#flow_month'), flow_month_options);
+flow_month_chart.render();
+
+const flow_day_options = {
+    chart: {
+        type: 'heatmap'
+    },
+    title: {
+        text: 'Distribuzione del traffico per POI e giorno della settimana'
+    },
+    colors: ["#008FFB"],
+    series: [{
+        name: 'Piazza Vittorio Veneto',
+        data: [{
+            x: 'Lun',
+            y: 2
+        }, {
+            x: 'Mar',
+            y: 3
+        }, {
+            x: 'Mer',
+            y: 5
+        }, {
+            x: 'Gio',
+            y: 3
+        }, {
+            x: 'Ven',
+            y: 5
+        }, {
+            x: 'Sab',
+            y: 4
+        }, {
+            x: 'Dom',
+            y: 5
+        }]
+    },
+    {
+        name: "Parco Villa Unità d'Italia",
+        data: [{
+            x: 'Lun',
+            y: 15
+        }, {
+            x: 'Mar',
+            y: 18
+        }, {
+            x: 'Mer',
+            y: 13
+        }, {
+            x: 'Gio',
+            y: 13
+        }, {
+            x: 'Ven',
+            y: 13
+        }, {
+            x: 'Sab',
+            y: 13
+        }, {
+            x: 'Dom',
+            y: 13
+        }]
+    },
+    {
+        name: 'Via Lucana',
+        data: [{
+            x: 'Lun',
+            y: 5
+        }, {
+            x: 'Mar',
+            y: 6
+        }, {
+            x: 'Mer',
+            y: 5
+        }, {
+            x: 'Gio',
+            y: 7
+        }, {
+            x: 'Ven',
+            y: 6
+        }, {
+            x: 'Sab',
+            y: 7
+        }, {
+            x: 'Dom',
+            y: 8
+        }]
+    },
+    {
+        name: 'Via XX Settembre',
+        data: [{
+            x: 'Lun',
+            y: 2
+        }, {
+            x: 'Mar',
+            y: 3
+        }, {
+            x: 'Mer',
+            y: 2
+        }, {
+            x: 'Gio',
+            y: 4
+        }, {
+            x: 'Ven',
+            y: 6
+        }, {
+            x: 'Sab',
+            y: 4
+        }, {
+            x: 'Dom',
+            y: 5
+        }]
+    },
+    {
+        name: 'Chiesa di Santa Maria de Armenis',
+        data: [{
+            x: 'Lun',
+            y: 3
+        }, {
+            x: 'Mar',
+            y: 4
+        }, {
+            x: 'Mer',
+            y: 3
+        }, {
+            x: 'Gio',
+            y: 4
+        }, {
+            x: 'Ven',
+            y: 6
+        }, {
+            x: 'Sab',
+            y: 4
+        }, {
+            x: 'Dom',
+            y: 3
+        }]
+    },
+    {
+        name: 'Chiesa di San Biagio',
+        data: [{
+            x: 'Lun',
+            y: 13
+        }, {
+            x: 'Mar',
+            y: 14
+        }, {
+            x: 'Mer',
+            y: 13
+        }, {
+            x: 'Gio',
+            y: 14
+        }, {
+            x: 'Ven',
+            y: 16
+        }, {
+            x: 'Sab',
+            y: 14
+        }, {
+            x: 'Dom',
+            y: 13
+        }]
+    }]
+};
+const flow_day_chart = new ApexCharts(document.querySelector('#flow_day'), flow_day_options);
+flow_day_chart.render();
+
 function setup_ws() {
     ws = new WebSocket('ws://' + location.hostname + ':' + location.port + '/use');
     ws.onmessage = msg => {
