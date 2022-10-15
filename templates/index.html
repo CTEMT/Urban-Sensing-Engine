@@ -64,7 +64,19 @@
             <div id="map" class="card"></div>
         </div>
         <div class="tab-pane fade m-2" id="pills-buildings" role="tabpanel" aria-labelledby="pills-buildings-tab">
-            <div id="buildings"></div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="buildingsAnalysis" id="CO2Production"
+                    value="CO2Production" checked>
+                <label class="form-check-label" for="CO2Production">Produzione di CO2</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="buildingsAnalysis" id="EnergyConsumption"
+                    value="EnergyConsumption">
+                <label class="form-check-label" for="EnergyConsumption">Consumo di energia</label>
+            </div>
+            <div id="buildings">
+                <img id="buildings_img" src="static/figures/BS_co2.jpg" alt="CO2 production">
+            </div>
         </div>
         <div class="tab-pane fade m-2" id="pills-statistics" role="tabpanel" aria-labelledby="pills-statistics-tab">
             <div id="chart"></div>

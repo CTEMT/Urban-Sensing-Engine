@@ -75,6 +75,16 @@ document.getElementById('show_participatory_data_2').addEventListener('change', 
     }
 });
 
+document.getElementById('CO2Production').addEventListener('change', (event) => {
+    if (event.currentTarget.checked)
+        document.getElementById('buildings_img').src = 'static/figures/BS_co2.jpg';
+});
+
+document.getElementById('EnergyConsumption').addEventListener('change', (event) => {
+    if (event.currentTarget.checked)
+        document.getElementById('buildings_img').src = 'static/figures/BS_primary_energy.jpg';
+});
+
 function show_message(lat, lng, message) {
     const popup = L.popup().setLatLng([lat, lng]).setContent(message).openOn(monitoring_map);
 }
