@@ -24,10 +24,10 @@ var participatory_data_1 = {
 };
 
 var participatory_cfg_1 = {
-    "radius": 0.001,
-    "maxOpacity": .7,
-    "scaleRadius": true,
-    "useLocalExtrema": false,
+    'radius': 0.001,
+    'maxOpacity': .7,
+    'scaleRadius': true,
+    'useLocalExtrema': false,
     latField: 'lat',
     lngField: 'lng',
     valueField: 'count'
@@ -48,10 +48,10 @@ var participatory_data_2 = {
 };
 
 var participatory_cfg_2 = {
-    "radius": 0.001,
-    "maxOpacity": .7,
-    "scaleRadius": true,
-    "useLocalExtrema": false,
+    'radius': 0.001,
+    'maxOpacity': .7,
+    'scaleRadius': true,
+    'useLocalExtrema': false,
     latField: 'lat',
     lngField: 'lng',
     valueField: 'count'
@@ -88,6 +88,426 @@ document.getElementById('EnergyConsumption').addEventListener('change', (event) 
 function show_message(lat, lng, message) {
     const popup = L.popup().setLatLng([lat, lng]).setContent(message).openOn(monitoring_map);
 }
+
+const flow_type_options = {
+    chart: {
+        type: 'bar',
+        stacked: true,
+        stackType: '100%'
+    },
+    title: {
+        text: 'Distribuzione del tipo di flusso sui POI'
+    },
+    plotOptions: {
+        bar: {
+            horizontal: true
+        }
+    },
+    series: [{
+        name: 'Pedonale',
+        data: [{
+            x: 'Piazza Vittorio Veneto',
+            y: 15
+        }, {
+            x: "Parco Villa Unità d'Italia",
+            y: 18
+        }, {
+            x: 'Via Lucana',
+            y: 13
+        }, {
+            x: 'Via XX Settembre',
+            y: 13
+        }, {
+            x: 'Chiesa di Santa Maria de Armenis',
+            y: 13
+        }, {
+            x: 'Chiesa di San Biagio',
+            y: 13
+        }]
+    }, {
+        name: 'Viecolare',
+        data: [{
+            x: 'Piazza Vittorio Veneto',
+            y: 5
+        }, {
+            x: "Parco Villa Unità d'Italia",
+            y: 6
+        }, {
+            x: 'Via Lucana',
+            y: 5
+        }, {
+            x: 'Via XX Settembre',
+            y: 7
+        }, {
+            x: 'Chiesa di Santa Maria de Armenis',
+            y: 6
+        }, {
+            x: 'Chiesa di San Biagio',
+            y: 5
+        }]
+    }, {
+        name: 'Altro',
+        data: [{
+            x: 'Piazza Vittorio Veneto',
+            y: 2
+        }, {
+            x: "Parco Villa Unità d'Italia",
+            y: 2
+        }, {
+            x: 'Via Lucana',
+            y: 3
+        }, {
+            x: 'Via XX Settembre',
+            y: 2
+        }, {
+            x: 'Chiesa di Santa Maria de Armenis',
+            y: 1
+        }, {
+            x: 'Chiesa di San Biagio',
+            y: 2
+        }]
+    }]
+};
+const flow_type_chart = new ApexCharts(document.querySelector('#flow_type'), flow_type_options);
+flow_type_chart.render();
+
+const flow_type_month_options = {
+    chart: {
+        type: 'bar',
+        stacked: true,
+        stackType: '100%'
+    },
+    title: {
+        text: 'Distribuzione del  flusso per tipo di veicolo e mese'
+    },
+    plotOptions: {
+        bar: {
+            horizontal: true
+        }
+    },
+    series: [{
+        name: 'Autoarticolato',
+        data: [{
+            x: 'Gen',
+            y: 2
+        }, {
+            x: 'Feb',
+            y: 3
+        }, {
+            x: 'Mar',
+            y: 5
+        }, {
+            x: 'Apr',
+            y: 3
+        }, {
+            x: 'Mag',
+            y: 5
+        }, {
+            x: 'Giu',
+            y: 4
+        }, {
+            x: 'Lug',
+            y: 5
+        }, {
+            x: 'Ago',
+            y: 3
+        }, {
+            x: 'Set',
+            y: 4
+        }, {
+            x: 'Ott',
+            y: 5
+        }, {
+            x: 'Nov',
+            y: 2
+        }, {
+            x: 'Dic',
+            y: 3
+        }]
+    },
+    {
+        name: 'Autovettura',
+        data: [{
+            x: 'Gen',
+            y: 15
+        }, {
+            x: 'Feb',
+            y: 18
+        }, {
+            x: 'Mar',
+            y: 13
+        }, {
+            x: 'Apr',
+            y: 13
+        }, {
+            x: 'Mag',
+            y: 13
+        }, {
+            x: 'Giu',
+            y: 13
+        }, {
+            x: 'Lug',
+            y: 13
+        }, {
+            x: 'Ago',
+            y: 13
+        }, {
+            x: 'Set',
+            y: 13
+        }, {
+            x: 'Ott',
+            y: 13
+        }, {
+            x: 'Nov',
+            y: 13
+        }, {
+            x: 'Dic',
+            y: 13
+        }]
+    },
+    {
+        name: 'Autovettura con rimorchio',
+        data: [{
+            x: 'Gen',
+            y: 5
+        }, {
+            x: 'Feb',
+            y: 6
+        }, {
+            x: 'Mar',
+            y: 5
+        }, {
+            x: 'Apr',
+            y: 7
+        }, {
+            x: 'Mag',
+            y: 6
+        }, {
+            x: 'Giu',
+            y: 7
+        }, {
+            x: 'Lug',
+            y: 8
+        }, {
+            x: 'Ago',
+            y: 8
+        }, {
+            x: 'Set',
+            y: 7
+        }, {
+            x: 'Ott',
+            y: 6
+        }, {
+            x: 'Nov',
+            y: 5
+        }, {
+            x: 'Dic',
+            y: 8
+        }]
+    },
+    {
+        name: 'Bus',
+        data: [{
+            x: 'Gen',
+            y: 2
+        }, {
+            x: 'Feb',
+            y: 3
+        }, {
+            x: 'Mar',
+            y: 2
+        }, {
+            x: 'Apr',
+            y: 4
+        }, {
+            x: 'Mag',
+            y: 6
+        }, {
+            x: 'Giu',
+            y: 4
+        }, {
+            x: 'Lug',
+            y: 5
+        }, {
+            x: 'Ago',
+            y: 6
+        }, {
+            x: 'Set',
+            y: 5
+        }, {
+            x: 'Ott',
+            y: 2
+        }, {
+            x: 'Nov',
+            y: 3
+        }, {
+            x: 'Dic',
+            y: 4
+        }]
+    },
+    {
+        name: 'Camion',
+        data: [{
+            x: 'Gen',
+            y: 3
+        }, {
+            x: 'Feb',
+            y: 4
+        }, {
+            x: 'Mar',
+            y: 3
+        }, {
+            x: 'Apr',
+            y: 4
+        }, {
+            x: 'Mag',
+            y: 6
+        }, {
+            x: 'Giu',
+            y: 4
+        }, {
+            x: 'Lug',
+            y: 3
+        }, {
+            x: 'Ago',
+            y: 2
+        }, {
+            x: 'Set',
+            y: 3
+        }, {
+            x: 'Ott',
+            y: 2
+        }, {
+            x: 'Nov',
+            y: 3
+        }, {
+            x: 'Dic',
+            y: 2
+        }]
+    },
+    {
+        name: 'Motocicletta',
+        data: [{
+            x: 'Gen',
+            y: 13
+        }, {
+            x: 'Feb',
+            y: 14
+        }, {
+            x: 'Mar',
+            y: 13
+        }, {
+            x: 'Apr',
+            y: 14
+        }, {
+            x: 'Mag',
+            y: 16
+        }, {
+            x: 'Giu',
+            y: 14
+        }, {
+            x: 'Lug',
+            y: 13
+        }, {
+            x: 'Ago',
+            y: 12
+        }, {
+            x: 'Set',
+            y: 13
+        }, {
+            x: 'Ott',
+            y: 12
+        }, {
+            x: 'Nov',
+            y: 13
+        }, {
+            x: 'Dic',
+            y: 12
+        }]
+    },
+    {
+        name: 'Van',
+        data: [{
+            x: 'Gen',
+            y: 3
+        }, {
+            x: 'Feb',
+            y: 6
+        }, {
+            x: 'Mar',
+            y: 4
+        }, {
+            x: 'Apr',
+            y: 6
+        }, {
+            x: 'Mag',
+            y: 7
+        }, {
+            x: 'Giu',
+            y: 8
+        }, {
+            x: 'Lug',
+            y: 6
+        }, {
+            x: 'Ago',
+            y: 7
+        }, {
+            x: 'Set',
+            y: 8
+        }, {
+            x: 'Ott',
+            y: 2
+        }, {
+            x: 'Nov',
+            y: 3
+        }, {
+            x: 'Dic',
+            y: 8
+        }]
+    },
+    {
+        name: 'Altro',
+        data: [{
+            x: 'Gen',
+            y: 3
+        }, {
+            x: 'Feb',
+            y: 4
+        }, {
+            x: 'Mar',
+            y: 3
+        }, {
+            x: 'Apr',
+            y: 4
+        }, {
+            x: 'Mag',
+            y: 6
+        }, {
+            x: 'Giu',
+            y: 4
+        }, {
+            x: 'Lug',
+            y: 3
+        }, {
+            x: 'Ago',
+            y: 2
+        }, {
+            x: 'Set',
+            y: 3
+        }, {
+            x: 'Ott',
+            y: 2
+        }, {
+            x: 'Nov',
+            y: 3
+        }, {
+            x: 'Dic',
+            y: 2
+        }]
+    }]
+};
+const flow_type_month_chart = new ApexCharts(document.querySelector('#flow_type_month'), flow_type_month_options);
+flow_type_month_chart.render();
 
 function setup_ws() {
     ws = new WebSocket('ws://' + location.hostname + ':' + location.port + '/use');
