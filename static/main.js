@@ -4,6 +4,8 @@ const monitoring_tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(monitoring_map);
 
+const toast_container = document.getElementById('toast-container');
+
 let ws;
 setup_ws();
 
@@ -20,7 +22,9 @@ var participatory_data_1 = {
         { lat: 37.5050772, lng: 15.0830304, count: 2 },
         { lat: 37.5050772, lng: 15.0920304, count: 2 },
         { lat: 37.5100772, lng: 15.0730304, count: 2 },
-        { lat: 37.5200772, lng: 15.0720304, count: 2 }]
+        { lat: 37.5200772, lng: 15.0720304, count: 2 },
+        { lat: 37.5190772, lng: 15.0790304, count: 2 },
+        { lat: 37.5290772, lng: 15.0770304, count: 2 }]
 };
 
 var participatory_cfg_1 = {
@@ -85,7 +89,22 @@ document.getElementById('EnergyConsumption').addEventListener('change', (event) 
         document.getElementById('buildings_img').src = 'static/figures/BS_primary_energy.jpg';
 });
 
-function show_message(lat, lng, message) {
+function show_message(message) {
+    const html = `<div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                      <div class="toast-header">
+                          <strong class="me-auto">${document.title}</strong>
+                          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                      </div>
+                      <div class="toast-body">${message}</div>
+                  </div>`.trim();
+    const template = document.createElement('template');
+    template.innerHTML = html;
+    const toast = template.content.firstChild;
+    toast_container.appendChild(toast);
+    new bootstrap.Toast(toast).show();
+}
+
+function show_map_message(lat, lng, message) {
     const popup = L.popup().setLatLng([lat, lng]).setContent(message).openOn(monitoring_map);
 }
 
@@ -928,8 +947,11 @@ function setup_ws() {
     ws.onmessage = msg => {
         const c_msg = JSON.parse(msg.data);
         switch (c_msg.type) {
-            case 'warning':
-                show_message(c_msg.location.lat, c_msg.location.lng, c_msg.content)
+            case 'message':
+                show_message(c_msg.content);
+                break;
+            case 'map_message':
+                show_map_message(c_msg.location.lat, c_msg.location.lng, c_msg.content)
                 break;
             default:
                 console.log(c_msg);
