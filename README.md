@@ -42,17 +42,34 @@ To test the Urban Sensing & Planning Engine start a `mosquitto` broker and publi
 mosquitto_pub -t CTE-MT/sensors -m "[{\"id\": \"s0\", \"type\": \"temperature\", \"location\": {\"lat\": 40.666379, \"lng\": 16.604320}}, {\"id\": \"s1\", \"type\": \"gate\", \"location\": {\"lat\": 40.666379, \"lng\": 16.604320}}, {\"id\": \"s2\", \"type\": \"bus\", \"location\": {\"lat\": 40.666379, \"lng\": 16.604320}}, {\"id\": \"s3\", \"type\": \"air_monitoring\", \"location\": {\"lat\": 40.666379, \"lng\": 16.604320}}]" -r
 ```
 
-Subscribe to the `warning` topic to receive notifications.
+Subscribe to the `message` topic to receive notifications.
 
 ```
-mosquitto_sub -t CTE-MT/message/warning
+mosquitto_sub -t CTE-MT/message
 ```
 
-Simulate the `s0` sensor by sending some values on the `CTE-MT/sensor/s0` topic.
+Simulate the `s0` sensor by sending some values on the `UISH/sensor/s0` topic and the `s3` sensor by sending some values on the `UISH/sensor/s3` topic.
 
 ```
 mosquitto_pub -t CTE-MT/sensor/s0 -m "{\"temperature\": 40}"
 mosquitto_pub -t CTE-MT/sensor/s3 -m "{\"pm10\": 6, \"pm2.5\": 5}"
+```
+
+```
+mosquitto_pub -t UISH/sensors -m "[{\"id\": \"s0\", \"type\": \"temperature\", \"location\": {\"lat\": 37.5078, \"lng\": 15.083}}, {\"id\": \"s1\", \"type\": \"gate\", \"location\": {\"lat\": 37.5078, \"lng\": 15.083}}, {\"id\": \"s2\", \"type\": \"bus\", \"location\": {\"lat\": 37.5078, \"lng\": 15.083}}, {\"id\": \"s3\", \"type\": \"air_monitoring\", \"location\": {\"lat\": 37.5078, \"lng\": 15.083}}]" -r
+```
+
+Subscribe to the `message` topic to receive notifications.
+
+```
+mosquitto_sub -t UISH/message
+```
+
+Simulate the `s0` sensor by sending some values on the `UISH/sensor/s0` topic and the `s3` sensor by sending some values on the `UISH/sensor/s3` topic.
+
+```
+mosquitto_pub -t UISH/sensor/s0 -m "{\"temperature\": 40}"
+mosquitto_pub -t UISH/sensor/s3 -m "{\"pm10\": 6, \"pm2.5\": 5}"
 ```
 
 ## Attributions

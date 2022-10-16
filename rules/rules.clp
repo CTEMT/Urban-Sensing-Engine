@@ -1,15 +1,25 @@
 (deftemplate configuration (slot engine_ptr))
-(deftemplate solver (slot solver_ptr))
+(deftemplate solver (slot solver_ptr) (slot solver_type))
 
 (deftemplate sensor_type (slot name))
 (deftemplate sensor (slot id) (slot sensor_type) (multislot location))
 
 (deftemplate sensor_value (slot sensor_id) (slot local_time) (multislot val))
 
+(deftemplate average_temp
+    (slot sensor_id)
+    (slot v0 (default 0))
+    (slot v1 (default 0))
+    (slot v2 (default 0))
+    (slot v3 (default 0))
+    (slot local_time (default 0))
+    (slot average (default 0))
+)
+
 (defrule new_configuration
     (configuration (engine_ptr ?engine_ptr))
     =>
-    (assert (solver (solver_ptr (new_solver ?engine_ptr))))
+    (assert (solver (solver_ptr (new_solver ?engine_ptr)) (solver_type generic)))
 )
 
 (defrule notify_bus_position
@@ -31,32 +41,25 @@
     (retract ?val)
 )
 
-(deftemplate s0_vals
-    (slot v0 (default 0))
-    (slot v1 (default 0))
-    (slot v2 (default 0))
-    (slot v3 (default 0))
-    (slot local_time (default 0))
-    (slot average (default 0))
+(defrule new_temp_sensor
+    (sensor (id ?s) (sensor_type temperature))
+    =>
+    (assert (average_temp (sensor_id ?s)))
 )
 
-(defrule compute_s0_average
-    ?val <- (sensor_value (sensor_id s0) (local_time ?t) (val ?v))
-    ?vals <- (s0_vals (v0 ?v0) (v1 ?v1) (v2 ?v2) (v3 ?v3))
+(defrule compute_average_temp
+    ?val <- (sensor_value (sensor_id ?s) (local_time ?t) (val ?v))
+    ?vals <- (average_temp (sensor_id ?s) (v0 ?v0) (v1 ?v1) (v2 ?v2) (v3 ?v3))
     =>
     (modify ?vals (v0 ?v1) (v1 ?v2) (v2 ?v3) (v3 ?v) (local_time ?t) (average (/ (+ ?v1 ?v2 ?v3 ?v) 4)))
     (retract ?val)
 )
 
-(defrule s0_high
-    (sensor (id s0) (location ?lat ?lng))
-    (s0_vals (average ?avg))
+(defrule high_temp
+    (sensor (id ?s) (location ?lat ?lng))
+    (average_temp (sensor_id ?s) (average ?avg))
     (test (>= ?avg 37.5))
     (configuration (engine_ptr ?ptr))
     =>
-    (send_map_message ?ptr warning ?lat ?lng (str-cat "La temperatura media del sensore 's0', di " ?avg ", ha superato la soglia di guardia di 37.5"))
-)
-
-(deffacts initial_facts
-    (s0_vals)
+    (send_map_message ?ptr warning ?lat ?lng (str-cat "La temperatura media del sensore '" ?s "', di " ?avg "°, ha superato la soglia di guardia di 37.5°"))
 )
