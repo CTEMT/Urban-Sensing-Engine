@@ -8,6 +8,32 @@
 
 namespace use
 {
+    void send_message([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
+    {
+        UDFValue engine_ptr;
+        if (!UDFFirstArgument(udfc, NUMBER_BITS, &engine_ptr))
+            return;
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(engine_ptr.integerValue->contents);
+
+        UDFValue level;
+        if (!UDFNextArgument(udfc, SYMBOL_BIT, &level))
+            return;
+
+        UDFValue content;
+        if (!UDFNextArgument(udfc, STRING_BIT, &content))
+            return;
+
+        if (e.mqtt_client.is_connected())
+        {
+            json::json msg;
+            msg["type"] = "message";
+            msg["level"] = level.lexemeValue->contents;
+            msg["content"] = content.lexemeValue->contents;
+
+            e.mqtt_client.publish(mqtt::make_message(e.root + MESSAGE_TOPIC, msg.dump()));
+        }
+    }
+
     void send_map_message([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
     {
         UDFValue engine_ptr;
@@ -15,8 +41,8 @@ namespace use
             return;
         auto &e = *reinterpret_cast<urban_sensing_engine *>(engine_ptr.integerValue->contents);
 
-        UDFValue type;
-        if (!UDFNextArgument(udfc, SYMBOL_BIT, &type))
+        UDFValue level;
+        if (!UDFNextArgument(udfc, SYMBOL_BIT, &level))
             return;
 
         UDFValue lat;
@@ -34,7 +60,8 @@ namespace use
         if (e.mqtt_client.is_connected())
         {
             json::json msg;
-            msg["type"] = type.lexemeValue->contents;
+            msg["type"] = "map_message";
+            msg["level"] = level.lexemeValue->contents;
             json::object loc;
             loc["lat"] = lat.floatValue->contents;
             loc["lng"] = lng.floatValue->contents;
@@ -201,6 +228,7 @@ namespace use
 
         mqtt_client.set_callback(msg_callback);
 
+        AddUDF(env, "send_message", "v", 3, 3, "lys", send_message, "send_message", NULL);
         AddUDF(env, "send_map_message", "v", 5, 5, "lydds", send_map_message, "send_map_message", NULL);
         AddUDF(env, "new_solver", "l", 1, 1, "l", new_solver, "new_solver", NULL);
         AddUDF(env, "delete_solver", "v", 2, 2, "ll", delete_solver, "delete_solver", NULL);
