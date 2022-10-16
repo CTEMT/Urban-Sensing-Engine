@@ -13,21 +13,27 @@ function init_map(lat, lng) {
     monitoring_map.setView([lat, lng], 16);
 }
 
-var participatory_data_1 = {
-    max: 3,
-    data: [
-        { lat: 37.5078772, lng: 15.0830304, count: 3 },
-        { lat: 37.5070772, lng: 15.0930304, count: 2 },
-        { lat: 37.5060772, lng: 15.0920304, count: 2 },
-        { lat: 37.5050772, lng: 15.0830304, count: 2 },
-        { lat: 37.5050772, lng: 15.0920304, count: 2 },
-        { lat: 37.5100772, lng: 15.0730304, count: 2 },
-        { lat: 37.5200772, lng: 15.0720304, count: 2 },
-        { lat: 37.5190772, lng: 15.0790304, count: 2 },
-        { lat: 37.5290772, lng: 15.0770304, count: 2 }]
-};
+var participatory_data_1 = [
+    { lat: 37.5078772, lng: 15.0830304, count: 3 },
+    { lat: 37.5070772, lng: 15.0930304, count: 2 },
+    { lat: 37.5060772, lng: 15.0920304, count: 2 },
+    { lat: 37.5050772, lng: 15.0830304, count: 2 },
+    { lat: 37.5050772, lng: 15.0920304, count: 2 },
+    { lat: 37.5100772, lng: 15.0730304, count: 2 },
+    { lat: 37.5200772, lng: 15.0720304, count: 2 },
+    { lat: 37.5190772, lng: 15.0790304, count: 2 },
+    { lat: 37.5290772, lng: 15.0770304, count: 2 }];
 
-var participatory_cfg_1 = {
+var participatory_data_2 = [
+    { lat: 37.5078772, lng: 15.0970304, count: 3 },
+    { lat: 37.5070772, lng: 15.0770304, count: 2 },
+    { lat: 37.5060772, lng: 15.0820324, count: 2 },
+    { lat: 37.5050772, lng: 15.0735324, count: 2 },
+    { lat: 37.5050772, lng: 15.0925304, count: 2 },
+    { lat: 37.5100772, lng: 15.0835334, count: 2 },
+    { lat: 37.5200772, lng: 15.0825334, count: 2 }];
+
+var participatory_cfg = {
     'radius': 0.001,
     'maxOpacity': .7,
     'scaleRadius': true,
@@ -36,48 +42,20 @@ var participatory_cfg_1 = {
     lngField: 'lng',
     valueField: 'count'
 };
-const participatory_layer_1 = new HeatmapOverlay(participatory_cfg_1);
-participatory_layer_1.setData(participatory_data_1);
+const participatory_layer = new HeatmapOverlay(participatory_cfg);
+participatory_layer.addTo(monitoring_map);
 
-var participatory_data_2 = {
-    max: 3,
-    data: [
-        { lat: 37.5078772, lng: 15.0970304, count: 3 },
-        { lat: 37.5070772, lng: 15.0770304, count: 2 },
-        { lat: 37.5060772, lng: 15.0820324, count: 2 },
-        { lat: 37.5050772, lng: 15.0735324, count: 2 },
-        { lat: 37.5050772, lng: 15.0925304, count: 2 },
-        { lat: 37.5100772, lng: 15.0835334, count: 2 },
-        { lat: 37.5200772, lng: 15.0825334, count: 2 }]
+const participatory_data_change = (event) => {
+    const spa_1 = document.getElementById('show_participatory_data_1');
+    const spa_2 = document.getElementById('show_participatory_data_2');
+    const c_data = [];
+    if (spa_1.checked) c_data.push(...participatory_data_1);
+    if (spa_2.checked) c_data.push(...participatory_data_2);
+    participatory_layer.setData({ max: 3, data: c_data });
 };
 
-var participatory_cfg_2 = {
-    'radius': 0.001,
-    'maxOpacity': .7,
-    'scaleRadius': true,
-    'useLocalExtrema': false,
-    latField: 'lat',
-    lngField: 'lng',
-    valueField: 'count'
-};
-const participatory_layer_2 = new HeatmapOverlay(participatory_cfg_2);
-participatory_layer_2.setData(participatory_data_2);
-
-document.getElementById('show_participatory_data_1').addEventListener('change', (event) => {
-    if (event.currentTarget.checked) {
-        participatory_layer_1.addTo(monitoring_map);
-    } else {
-        participatory_layer_1.removeFrom(monitoring_map);
-    }
-});
-
-document.getElementById('show_participatory_data_2').addEventListener('change', (event) => {
-    if (event.currentTarget.checked) {
-        participatory_layer_2.addTo(monitoring_map);
-    } else {
-        participatory_layer_2.removeFrom(monitoring_map);
-    }
-});
+document.getElementById('show_participatory_data_1').addEventListener('change', participatory_data_change);
+document.getElementById('show_participatory_data_2').addEventListener('change', participatory_data_change);
 
 document.getElementById('CO2Production').addEventListener('change', (event) => {
     if (event.currentTarget.checked)
