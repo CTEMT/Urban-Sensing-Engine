@@ -88,33 +88,49 @@ function show_map_message(lat, lng, message) {
     const popup = L.popup().setLatLng([lat, lng]).setContent(message).openOn(monitoring_map);
 }
 
-function set_solvers(solvers) {
+function set_solvers(current_solvers) {
     const c_solvers = new Set();
     const solvers_pills = document.getElementById('pills-solvers');
-    for (const slv of solvers) {
+    const solvers_content = document.getElementById('solvers-pills-tabContent');
+    for (const slv of current_solvers) {
         c_solvers.add(slv);
+        if (!solvers.has(slv)) {
+            const timelines_pill_html = `
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="timelines-${slv}-tab" data-bs-toggle="pill" data-bs-target="#pills-${slv}-timelines" role="tab" aria-controls="pills-${slv}-timelines" aria-selected="false"><i class="bi bi-bar-chart-steps"></i> Timelines</button>
+            </li>`.trim();
+            const timelines_pill_template = document.createElement('template');
+            timelines_pill_template.innerHTML = timelines_pill_html;
+            const timelines_pill = timelines_pill_template.content.firstChild;
+            solvers_pills.appendChild(timelines_pill);
 
-        const timelines_pill_html = `
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="timelines-${slv}-tab" data-bs-toggle="pill"
-                data-bs-target="#timelines-${slv}" role="tab" aria-controls="timelines-${slv}"
-                aria-selected="false"><i class="bi bi-bar-chart-steps"></i> Timelines</button>
-        </li>`.trim();
-        const timelines_pill_template = document.createElement('template');
-        timelines_pill_template.innerHTML = timelines_pill_html;
-        const timelines_pill = timelines_pill_template.content.firstChild;
-        solvers_pills.appendChild(timelines_pill);
+            const timelines_content_html = `
+            <div class="tab-pane fade h-100 show active" id="pills-${slv}-timelines" role="tabpanel" aria-labelledby="timelines-${slv}-tab">
+                <div class="h-100" id="timelines-${slv}">Timelines</div>
+            </div>`.trim();
+            const timelines_content_template = document.createElement('template');
+            timelines_content_template.innerHTML = timelines_content_html;
+            const timelines_content = timelines_content_template.content.firstChild;
+            solvers_content.appendChild(timelines_content);
 
-        const graph_pill_html = `
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="graph-${slv}-tab" data-bs-toggle="pill"
-                data-bs-target="#graph-${slv}" role="tab" aria-controls="graph-${slv}"
-                aria-selected="false"><i class="bi bi-diagram-3"></i> Graph</button>
-        </li>`.trim();
-        const graph_pill_template = document.createElement('template');
-        graph_pill_template.innerHTML = graph_pill_html;
-        const graph_pill = graph_pill_template.content.firstChild;
-        solvers_pills.appendChild(graph_pill);
+            const graph_pill_html = `
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="graph-${slv}-tab" data-bs-toggle="pill" data-bs-target="#pills-${slv}-graph" role="tab" aria-controls="pills-${slv}-graph" aria-selected="false"><i class="bi bi-diagram-3"></i> Graph</button>
+            </li>`.trim();
+            const graph_pill_template = document.createElement('template');
+            graph_pill_template.innerHTML = graph_pill_html;
+            const graph_pill = graph_pill_template.content.firstChild;
+            solvers_pills.appendChild(graph_pill);
+
+            const graph_content_html = `
+            <div class="tab-pane fade h-100" id="pills-${slv}-graph" role="tabpanel" aria-labelledby="graph-${slv}-tab">
+                <div class="h-100" id="graph-${slv}">Graph</div>
+            </div>`.trim();
+            const graph_content_template = document.createElement('template');
+            graph_content_template.innerHTML = graph_content_html;
+            const graph_content = graph_content_template.content.firstChild;
+            solvers_content.appendChild(graph_content);
+        }
     }
 }
 
