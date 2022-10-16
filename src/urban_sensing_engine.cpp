@@ -91,10 +91,14 @@ namespace use
         if (e.mqtt_client.is_connected())
         {
             json::json msg;
-            msg["type"] = "new_reasoner";
-            msg["id"] = reinterpret_cast<uintptr_t>(use_exec.get());
+            msg["type"] = "solvers";
+            json::array solvers;
+            solvers.reserve(e.executors.size());
+            for (const auto &exec : e.executors)
+                solvers.push_back(reinterpret_cast<uintptr_t>(exec.get()));
+            msg["solvers"] = std::move(solvers);
 
-            e.mqtt_client.publish(mqtt::make_message(e.root + SOLVER_TOPIC, msg.dump()));
+            e.mqtt_client.publish(mqtt::make_message(e.root + SOLVER_TOPIC, msg.dump(), 1, true));
         }
     }
 
@@ -232,13 +236,6 @@ namespace use
         AddUDF(env, "send_map_message", "v", 5, 5, "lydds", send_map_message, "send_map_message", NULL);
         AddUDF(env, "new_solver", "l", 1, 1, "l", new_solver, "new_solver", NULL);
         AddUDF(env, "delete_solver", "v", 2, 2, "ll", delete_solver, "delete_solver", NULL);
-
-        LOG("Loading policy rules..");
-        Load(env, "rules/rules.clp");
-        Reset(env);
-
-        AssertString(env, ("(configuration (engine_ptr " + std::to_string(reinterpret_cast<uintptr_t>(this)) + "))").c_str());
-        Run(env, -1);
     }
     urban_sensing_engine::~urban_sensing_engine() { DestroyEnvironment(env); }
 
@@ -253,6 +250,15 @@ namespace use
         {
             LOG_ERR(e.what());
         }
+    }
+    void urban_sensing_engine::load_rules()
+    {
+        LOG("Loading policy rules..");
+        Load(env, "rules/rules.clp");
+        Reset(env);
+
+        AssertString(env, ("(configuration (engine_ptr " + std::to_string(reinterpret_cast<uintptr_t>(this)) + "))").c_str());
+        Run(env, -1);
     }
     void urban_sensing_engine::disconnect()
     {

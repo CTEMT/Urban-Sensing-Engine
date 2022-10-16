@@ -52,6 +52,7 @@ namespace use
     ~urban_sensing_engine();
 
     void connect();
+    void load_rules();
     void disconnect();
 
     friend void send_message(Environment *env, UDFContext *udfc, UDFValue *out);

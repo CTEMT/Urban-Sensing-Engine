@@ -23,6 +23,7 @@ int main(int argc, char const *argv[])
 
     use::urban_sensing_engine use(root, mqtt_host + ":" + mqtt_port);
     use.connect();
+    use.load_rules();
 
     dashboard::dashboard dashboard_srv(root, dashboard_host, dashboard_port, mqtt_host + ":" + mqtt_port);
     auto srv_st = std::async(std::launch::async, [&]

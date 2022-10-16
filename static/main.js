@@ -6,6 +6,8 @@ const monitoring_tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}
 
 const toast_container = document.getElementById('toast-container');
 
+const solvers = new Map();
+
 let ws;
 setup_ws();
 
@@ -84,6 +86,36 @@ function show_message(message) {
 
 function show_map_message(lat, lng, message) {
     const popup = L.popup().setLatLng([lat, lng]).setContent(message).openOn(monitoring_map);
+}
+
+function set_solvers(solvers) {
+    const c_solvers = new Set();
+    const solvers_pills = document.getElementById('pills-solvers');
+    for (const slv of solvers) {
+        c_solvers.add(slv);
+
+        const timelines_pill_html = `
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="timelines-${slv}-tab" data-bs-toggle="pill"
+                data-bs-target="#timelines-${slv}" role="tab" aria-controls="timelines-${slv}"
+                aria-selected="false"><i class="bi bi-bar-chart-steps"></i> Timelines</button>
+        </li>`.trim();
+        const timelines_pill_template = document.createElement('template');
+        timelines_pill_template.innerHTML = timelines_pill_html;
+        const timelines_pill = timelines_pill_template.content.firstChild;
+        solvers_pills.appendChild(timelines_pill);
+
+        const graph_pill_html = `
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="graph-${slv}-tab" data-bs-toggle="pill"
+                data-bs-target="#graph-${slv}" role="tab" aria-controls="graph-${slv}"
+                aria-selected="false"><i class="bi bi-diagram-3"></i> Graph</button>
+        </li>`.trim();
+        const graph_pill_template = document.createElement('template');
+        graph_pill_template.innerHTML = graph_pill_html;
+        const graph_pill = graph_pill_template.content.firstChild;
+        solvers_pills.appendChild(graph_pill);
+    }
 }
 
 const flow_type_options = {
@@ -930,6 +962,9 @@ function setup_ws() {
                 break;
             case 'map_message':
                 show_map_message(c_msg.location.lat, c_msg.location.lng, c_msg.content)
+                break;
+            case 'solvers':
+                set_solvers(c_msg.solvers);
                 break;
             default:
                 console.log(c_msg);

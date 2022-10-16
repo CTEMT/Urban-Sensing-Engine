@@ -10,6 +10,9 @@ namespace dashboard
     {
         LOG("MQTT client connected!");
 
+        LOG_DEBUG("Subscribing to '" + engine.root + SOLVER_TOPIC "' topic..");
+        engine.mqtt_client.subscribe(engine.root + SOLVER_TOPIC, 1);
+
         LOG_DEBUG("Subscribing to '" + engine.root + MESSAGE_TOPIC "' topic..");
         engine.mqtt_client.subscribe(engine.root + MESSAGE_TOPIC, 1);
     }
@@ -21,6 +24,21 @@ namespace dashboard
     void mqtt_callback::message_arrived(mqtt::const_message_ptr msg)
     {
         LOG_DEBUG("Message arrived on topic " + msg->get_topic() + "..");
+
+        if (msg->get_topic() == engine.root + SOLVER_TOPIC)
+        {
+            std::stringstream ss;
+            ss << msg->get_payload();
+            auto j_solvers = json::load(ss);
+            json::array &c_solvers = j_solvers["solvers"];
+            for (const auto &slv : c_solvers)
+            {
+                json::number_val &slv_ptr = slv;
+                engine.solvers.insert(slv_ptr);
+            }
+
+            engine.broadcast(msg->get_payload());
+        }
 
         if (msg->get_topic() == engine.root + MESSAGE_TOPIC)
             engine.broadcast(msg->get_payload());
@@ -43,7 +61,15 @@ namespace dashboard
             .websocket()
             .onopen([&](crow::websocket::connection &conn)
                     { std::lock_guard<std::mutex> _(mtx);
-                users.insert(&conn); })
+                users.insert(&conn);
+
+                json::json j_msg;
+                json::array c_solvers;
+                for (const auto &slv : solvers)
+                    c_solvers.push_back(slv);
+                j_msg["type"] = "solvers";
+                j_msg["solvers"] = std::move(c_solvers);
+                broadcast(j_msg.dump()); })
             .onclose([&](crow::websocket::connection &conn, const std::string &)
                      { std::lock_guard<std::mutex> _(mtx); users.erase(&conn); })
             .onmessage([&](crow::websocket::connection &, const std::string &, bool) {});

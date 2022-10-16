@@ -51,6 +51,7 @@ namespace dashboard
     mqtt_callback msg_callback;
     crow::SimpleApp app;
     std::unordered_set<crow::websocket::connection *> users;
+    std::unordered_set<uintptr_t> solvers;
     std::mutex mtx;
   };
 } // namespace dashboard
