@@ -42,6 +42,25 @@ namespace dashboard
   private:
     void broadcast(const std::string &msg);
 
+    class solver
+    {
+    public:
+      solver(uintptr_t id) : id(id){}
+
+      uintptr_t get_id() const { return id; }
+
+      json::object &get_state() { return state; }
+      void set_state(json::json s) { state = std::move(s); }
+
+      json::object &get_graph() { return graph; }
+      void set_graph(json::json g) { graph = std::move(g); }
+
+    private:
+      uintptr_t id;
+      json::json state;
+      json::json graph;
+    };
+
   private:
     const std::string root;
     const std::string dashboard_host;
@@ -51,7 +70,7 @@ namespace dashboard
     mqtt_callback msg_callback;
     crow::SimpleApp app;
     std::unordered_set<crow::websocket::connection *> users;
-    std::unordered_set<uintptr_t> solvers;
+    std::unordered_map<uintptr_t, solver> solvers;
     std::mutex mtx;
   };
 } // namespace dashboard

@@ -96,8 +96,8 @@ function set_solvers(current_solvers) {
         c_solvers.add(slv);
         if (!solvers.has(slv)) {
             const timelines_pill_html = `
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="timelines-${slv}-tab" data-bs-toggle="pill" data-bs-target="#pills-${slv}-timelines" role="tab" aria-controls="pills-${slv}-timelines" aria-selected="false"><i class="bi bi-bar-chart-steps"></i> Timelines</button>
+            <li class="nav-item" id="timelines-${slv}-li" role="presentation">
+                <button class="nav-link active" id="timelines-${slv}-tab" data-bs-toggle="pill" data-bs-target="#slv-${slv}-timelines" role="tab" aria-controls="slv-${slv}-timelines" aria-selected="false"><i class="bi bi-bar-chart-steps"></i> Timelines</button>
             </li>`.trim();
             const timelines_pill_template = document.createElement('template');
             timelines_pill_template.innerHTML = timelines_pill_html;
@@ -105,8 +105,8 @@ function set_solvers(current_solvers) {
             solvers_pills.appendChild(timelines_pill);
 
             const timelines_content_html = `
-            <div class="tab-pane fade h-100 show active" id="pills-${slv}-timelines" role="tabpanel" aria-labelledby="timelines-${slv}-tab">
-                <div class="h-100" id="timelines-${slv}">Timelines</div>
+            <div class="tab-pane fade h-100 show active" id="slv-${slv}-timelines" role="tabpanel" aria-labelledby="timelines-${slv}-tab">
+                <div class="h-100" id="timelines-${slv}"></div>
             </div>`.trim();
             const timelines_content_template = document.createElement('template');
             timelines_content_template.innerHTML = timelines_content_html;
@@ -114,8 +114,8 @@ function set_solvers(current_solvers) {
             solvers_content.appendChild(timelines_content);
 
             const graph_pill_html = `
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="graph-${slv}-tab" data-bs-toggle="pill" data-bs-target="#pills-${slv}-graph" role="tab" aria-controls="pills-${slv}-graph" aria-selected="false"><i class="bi bi-diagram-3"></i> Graph</button>
+            <li class="nav-item" id="graph-${slv}-li" role="presentation">
+                <button class="nav-link" id="graph-${slv}-tab" data-bs-toggle="pill" data-bs-target="#slv-${slv}-graph" role="tab" aria-controls="slv-${slv}-graph" aria-selected="false"><i class="bi bi-diagram-3"></i> Graph</button>
             </li>`.trim();
             const graph_pill_template = document.createElement('template');
             graph_pill_template.innerHTML = graph_pill_html;
@@ -123,15 +123,24 @@ function set_solvers(current_solvers) {
             solvers_pills.appendChild(graph_pill);
 
             const graph_content_html = `
-            <div class="tab-pane fade h-100" id="pills-${slv}-graph" role="tabpanel" aria-labelledby="graph-${slv}-tab">
-                <div class="h-100" id="graph-${slv}">Graph</div>
+            <div class="tab-pane fade h-100" id="slv-${slv}-graph" role="tabpanel" aria-labelledby="graph-${slv}-tab">
+                <div class="h-100" id="graph-${slv}"></div>
             </div>`.trim();
             const graph_content_template = document.createElement('template');
             graph_content_template.innerHTML = graph_content_html;
             const graph_content = graph_content_template.content.firstChild;
             solvers_content.appendChild(graph_content);
+
+            solvers.set(slv, new ReasonerD3(`timelines-${slv}`, `graph-${slv}`));
         }
     }
+    for (const [slv_id, r] of solvers)
+        if (!c_solvers.has(slv_id)) {
+            document.getElementById(`timelines-${slv_id}-li`).remove();
+            document.getElementById(`${slv_id}-timelines`).remove();
+            document.getElementById(`graph-${slv_id}-li`).remove();
+            document.getElementById(`${slv_id}-graph`).remove();
+        }
 }
 
 const flow_type_options = {

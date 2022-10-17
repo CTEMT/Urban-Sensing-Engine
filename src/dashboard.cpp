@@ -47,21 +47,21 @@ namespace dashboard
                 engine.mqtt_client.subscribe(engine.root + SOLVERS_TOPIC + '/' + std::to_string(slv_id) + "/graph", QOS);
 
                 solvers_set.insert(slv_id);
-                engine.solvers.insert(slv_id);
+                engine.solvers.emplace(slv_id, slv_id);
             }
             for (auto it = engine.solvers.begin(); it != engine.solvers.end();)
-                if (!solvers_set.count(*it))
+                if (!solvers_set.count(it->first))
                 {
-                    LOG_DEBUG("Unsubscribing from '" + engine.root + SOLVERS_TOPIC + '/' + std::to_string(*it) + "/state' topic..");
-                    engine.mqtt_client.unsubscribe(engine.root + SOLVERS_TOPIC + '/' + std::to_string(*it) + "/state");
+                    LOG_DEBUG("Unsubscribing from '" + engine.root + SOLVERS_TOPIC + '/' + std::to_string(it->first) + "/state' topic..");
+                    engine.mqtt_client.unsubscribe(engine.root + SOLVERS_TOPIC + '/' + std::to_string(it->first) + "/state");
 
-                    LOG_DEBUG("Unsubscribing from '" + engine.root + SOLVERS_TOPIC + '/' + std::to_string(*it) + "/graph' topic..");
-                    engine.mqtt_client.unsubscribe(engine.root + SOLVERS_TOPIC + '/' + std::to_string(*it) + "/graph");
+                    LOG_DEBUG("Unsubscribing from '" + engine.root + SOLVERS_TOPIC + '/' + std::to_string(it->first) + "/graph' topic..");
+                    engine.mqtt_client.unsubscribe(engine.root + SOLVERS_TOPIC + '/' + std::to_string(it->first) + "/graph");
 
-                    LOG_DEBUG("Unsubscribing from '" + engine.root + SOLVERS_TOPIC + '/' + std::to_string(*it) + "' topic..");
-                    engine.mqtt_client.unsubscribe(engine.root + SOLVERS_TOPIC + '/' + std::to_string(*it));
+                    LOG_DEBUG("Unsubscribing from '" + engine.root + SOLVERS_TOPIC + '/' + std::to_string(it->first) + "' topic..");
+                    engine.mqtt_client.unsubscribe(engine.root + SOLVERS_TOPIC + '/' + std::to_string(it->first));
 
-                    engine.solvers.erase(*it);
+                    engine.solvers.erase(it->first);
                 }
                 else
                     ++it;
@@ -71,6 +71,27 @@ namespace dashboard
 
         if (msg->get_topic() == engine.root + MESSAGE_TOPIC)
             engine.broadcast(msg->get_payload());
+
+        for (auto &[slv_id, slv] : engine.solvers)
+            if (msg->get_topic() == engine.root + SOLVERS_TOPIC + '/' + std::to_string(slv_id))
+            {
+            }
+            else if (msg->get_topic() == engine.root + SOLVERS_TOPIC + '/' + std::to_string(slv_id) + "/state")
+            {
+                std::stringstream ss;
+                ss << msg->get_payload();
+                auto j_state = json::load(ss);
+
+                slv.set_state(std::move(j_state));
+            }
+            else if (msg->get_topic() == engine.root + SOLVERS_TOPIC + '/' + std::to_string(slv_id) + "/graph")
+            {
+                std::stringstream ss;
+                ss << msg->get_payload();
+                auto j_graph = json::load(ss);
+
+                slv.set_graph(std::move(j_graph));
+            }
     }
 
     dashboard::dashboard(const std::string &root, const std::string &dashboard_host, const unsigned short dashboard_port, const std::string &mqtt_server_uri, const std::string &mqtt_client_id) : root(root), dashboard_host(dashboard_host), dashboard_port(dashboard_port), mqtt_client(mqtt_server_uri, mqtt_client_id), msg_callback(*this)
@@ -94,8 +115,8 @@ namespace dashboard
 
                 json::json j_msg;
                 json::array c_solvers;
-                for (const auto &slv : solvers)
-                    c_solvers.push_back(slv);
+                for (const auto &[slv_id, slv] : solvers)
+                    c_solvers.push_back(slv_id);
                 j_msg["type"] = "solvers";
                 j_msg["solvers"] = std::move(c_solvers);
                 broadcast(j_msg.dump()); })
