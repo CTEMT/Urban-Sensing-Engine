@@ -39,6 +39,13 @@ elseif(LOCATION STREQUAL Catania)
     set(USE_DASHBOARD_LNG "15.0830304" CACHE STRING "The Urban Sensing & Planning Engine Map Longitude")
 endif()
 
+option(SOLVING_MONITORING "Notify the GUI of any changes during the resolution process" OFF)
+
+message(STATUS "Solving monitoring:     ${SOLVING_MONITORING}")
+if(SOLVING_MONITORING)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE SOLVING_MONITORING)
+endif()
+
 set(COMPUTE_NAMES ON CACHE BOOL "Computes the objects' names" FORCE)
 
 add_subdirectory(extern/plexa)

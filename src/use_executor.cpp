@@ -14,6 +14,7 @@ namespace use
 
     void use_executor::state_changed()
     {
+#ifdef SOLVING_MONITORING
         json::json j_sc;
         j_sc["type"] = "state_changed";
         j_sc["state"] = to_json(exec.get_solver());
@@ -24,7 +25,8 @@ namespace use
         j_sc["executing"] = std::move(j_executing);
         j_sc["time"] = to_json(current_time);
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_sc.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)) + "/state", j_sc.dump(), QOS, true));
+#endif
     }
 
     void use_executor::started_solving()
@@ -32,7 +34,7 @@ namespace use
         json::json j_ss;
         j_ss["type"] = "started_solving";
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_ss.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_ss.dump()));
     }
     void use_executor::solution_found()
     {
@@ -49,7 +51,20 @@ namespace use
         j_sf["executing"] = std::move(j_executing);
         j_sf["time"] = to_json(current_time);
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_sf.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)) + "/state", j_sf.dump(), QOS, true));
+
+        json::json j_gr;
+        j_gr["type"] = "graph";
+        json::array j_flaws;
+        for (const auto &f : flaws)
+            j_flaws.push_back(to_json(*f));
+        j_gr["flaws"] = std::move(j_flaws);
+        json::array j_resolvers;
+        for (const auto &r : resolvers)
+            j_resolvers.push_back(to_json(*r));
+        j_gr["resolvers"] = std::move(j_resolvers);
+
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)) + "/graph", j_gr.dump(), QOS, true));
     }
     void use_executor::inconsistent_problem()
     {
@@ -59,13 +74,14 @@ namespace use
         json::json j_ip;
         j_ip["type"] = "inconsistent_problem";
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_ip.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_ip.dump()));
     }
 
     void use_executor::flaw_created(const ratio::solver::flaw &f)
     {
         flaws.insert(&f);
 
+#ifdef SOLVING_MONITORING
         json::json j_fc;
         j_fc["type"] = "flaw_created";
         j_fc["id"] = get_id(f);
@@ -86,28 +102,34 @@ namespace use
         j_fc["pos"] = std::move(j_pos);
         j_fc["data"] = f.get_data();
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_fc.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_fc.dump()));
+#endif
     }
-    void use_executor::flaw_state_changed(const ratio::solver::flaw &f)
+    void use_executor::flaw_state_changed([[maybe_unused]] const ratio::solver::flaw &f)
     {
+#ifdef SOLVING_MONITORING
         json::json j_fsc;
         j_fsc["type"] = "flaw_state_changed";
         j_fsc["id"] = get_id(f);
         j_fsc["state"] = slv.get_sat_core()->value(f.get_phi());
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_fsc.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_fsc.dump()));
+#endif
     }
-    void use_executor::flaw_cost_changed(const ratio::solver::flaw &f)
+    void use_executor::flaw_cost_changed([[maybe_unused]] const ratio::solver::flaw &f)
     {
+#ifdef SOLVING_MONITORING
         json::json j_fcc;
         j_fcc["type"] = "flaw_cost_changed";
         j_fcc["id"] = get_id(f);
         j_fcc["cost"] = to_json(f.get_estimated_cost());
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_fcc.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_fcc.dump()));
+#endif
     }
-    void use_executor::flaw_position_changed(const ratio::solver::flaw &f)
+    void use_executor::flaw_position_changed([[maybe_unused]] const ratio::solver::flaw &f)
     {
+#ifdef SOLVING_MONITORING
         json::json j_fpc;
         j_fpc["type"] = "flaw_position_changed";
         j_fpc["id"] = get_id(f);
@@ -119,24 +141,28 @@ namespace use
             j_pos["ub"] = ub;
         j_fpc["pos"] = std::move(j_pos);
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_fpc.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_fpc.dump()));
+#endif
     }
     void use_executor::current_flaw(const ratio::solver::flaw &f)
     {
         c_flaw = &f;
         c_resolver = nullptr;
 
+#ifdef SOLVING_MONITORING
         json::json j_cf;
         j_cf["type"] = "current_flaw";
         j_cf["id"] = get_id(f);
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_cf.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_cf.dump()));
+#endif
     }
 
     void use_executor::resolver_created(const ratio::solver::resolver &r)
     {
         resolvers.insert(&r);
 
+#ifdef SOLVING_MONITORING
         json::json j_rc;
         j_rc["type"] = "resolver_created";
         j_rc["id"] = get_id(r);
@@ -151,36 +177,43 @@ namespace use
         j_rc["intrinsic_cost"] = to_json(r.get_intrinsic_cost());
         j_rc["data"] = r.get_data();
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_rc.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_rc.dump()));
+#endif
     }
-    void use_executor::resolver_state_changed(const ratio::solver::resolver &r)
+    void use_executor::resolver_state_changed([[maybe_unused]] const ratio::solver::resolver &r)
     {
+#ifdef SOLVING_MONITORING
         json::json j_rsc;
         j_rsc["type"] = "resolver_state_changed";
         j_rsc["id"] = get_id(r);
         j_rsc["state"] = slv.get_sat_core()->value(r.get_rho());
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_rsc.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_rsc.dump()));
+#endif
     }
     void use_executor::current_resolver(const ratio::solver::resolver &r)
     {
         c_resolver = &r;
 
+#ifdef SOLVING_MONITORING
         json::json j_cr;
         j_cr["type"] = "current_resolver";
         j_cr["id"] = get_id(r);
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_cr.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_cr.dump()));
+#endif
     }
 
-    void use_executor::causal_link_added(const ratio::solver::flaw &f, const ratio::solver::resolver &r)
+    void use_executor::causal_link_added([[maybe_unused]] const ratio::solver::flaw &f, [[maybe_unused]] const ratio::solver::resolver &r)
     {
+#ifdef SOLVING_MONITORING
         json::json j_cla;
         j_cla["type"] = "causal_link_added";
         j_cla["flaw_id"] = get_id(f);
         j_cla["resolver_id"] = get_id(r);
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_cla.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_cla.dump()));
+#endif
     }
 
     void use_executor::tick(const semitone::rational &time)
@@ -191,7 +224,7 @@ namespace use
         j_t["type"] = "tick";
         j_t["time"] = to_json(time);
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_t.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_t.dump()));
     }
     void use_executor::starting(const std::unordered_set<ratio::core::atom *> &atoms)
     {
@@ -202,7 +235,7 @@ namespace use
             starting.push_back(get_id(*a));
         j_st["starting"] = std::move(starting);
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_st.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_st.dump()));
     }
     void use_executor::start(const std::unordered_set<ratio::core::atom *> &atoms)
     {
@@ -215,7 +248,7 @@ namespace use
             start.push_back(get_id(*a));
         j_st["start"] = std::move(start);
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_st.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_st.dump()));
     }
     void use_executor::ending(const std::unordered_set<ratio::core::atom *> &atoms)
     {
@@ -226,7 +259,7 @@ namespace use
             ending.push_back(get_id(*a));
         j_en["ending"] = std::move(ending);
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_en.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_en.dump()));
     }
     void use_executor::end(const std::unordered_set<ratio::core::atom *> &atoms)
     {
@@ -240,6 +273,6 @@ namespace use
             end.push_back(get_id(*a));
         j_en["end"] = std::move(end);
 
-        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_en.dump()));
+        use.mqtt_client.publish(mqtt::make_message(use.root + SOLVERS_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_en.dump()));
     }
 } // namespace use

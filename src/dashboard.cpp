@@ -10,8 +10,8 @@ namespace dashboard
     {
         LOG("MQTT client connected!");
 
-        LOG_DEBUG("Subscribing to '" + engine.root + SOLVER_TOPIC "' topic..");
-        engine.mqtt_client.subscribe(engine.root + SOLVER_TOPIC, 1);
+        LOG_DEBUG("Subscribing to '" + engine.root + SOLVERS_TOPIC "' topic..");
+        engine.mqtt_client.subscribe(engine.root + SOLVERS_TOPIC, 1);
 
         LOG_DEBUG("Subscribing to '" + engine.root + MESSAGE_TOPIC "' topic..");
         engine.mqtt_client.subscribe(engine.root + MESSAGE_TOPIC, 1);
@@ -25,17 +25,46 @@ namespace dashboard
     {
         LOG_DEBUG("Message arrived on topic " + msg->get_topic() + "..");
 
-        if (msg->get_topic() == engine.root + SOLVER_TOPIC)
+        if (msg->get_topic() == engine.root + SOLVERS_TOPIC)
         {
             std::stringstream ss;
             ss << msg->get_payload();
             auto j_solvers = json::load(ss);
             json::array &c_solvers = j_solvers["solvers"];
-            for (const auto &slv : c_solvers)
+            std::unordered_set<uintptr_t> solvers_set;
+            for (const auto &j_slv : c_solvers)
             {
-                json::number_val &slv_ptr = slv;
-                engine.solvers.insert(slv_ptr);
+                json::number_val &j_slv_id = j_slv;
+                uintptr_t slv_id = j_slv_id;
+
+                LOG_DEBUG("Subscribing to '" + engine.root + SOLVERS_TOPIC + '/' + std::to_string(slv_id) + "' topic..");
+                engine.mqtt_client.subscribe(engine.root + SOLVERS_TOPIC + '/' + std::to_string(slv_id), QOS);
+
+                LOG_DEBUG("Subscribing to '" + engine.root + SOLVERS_TOPIC + '/' + std::to_string(slv_id) + "/state' topic..");
+                engine.mqtt_client.subscribe(engine.root + SOLVERS_TOPIC + '/' + std::to_string(slv_id) + "/state", QOS);
+
+                LOG_DEBUG("Subscribing to '" + engine.root + SOLVERS_TOPIC + '/' + std::to_string(slv_id) + "/graph' topic..");
+                engine.mqtt_client.subscribe(engine.root + SOLVERS_TOPIC + '/' + std::to_string(slv_id) + "/graph", QOS);
+
+                solvers_set.insert(slv_id);
+                engine.solvers.insert(slv_id);
             }
+            for (auto it = engine.solvers.begin(); it != engine.solvers.end();)
+                if (!solvers_set.count(*it))
+                {
+                    LOG_DEBUG("Unsubscribing from '" + engine.root + SOLVERS_TOPIC + '/' + std::to_string(*it) + "/state' topic..");
+                    engine.mqtt_client.unsubscribe(engine.root + SOLVERS_TOPIC + '/' + std::to_string(*it) + "/state");
+
+                    LOG_DEBUG("Unsubscribing from '" + engine.root + SOLVERS_TOPIC + '/' + std::to_string(*it) + "/graph' topic..");
+                    engine.mqtt_client.unsubscribe(engine.root + SOLVERS_TOPIC + '/' + std::to_string(*it) + "/graph");
+
+                    LOG_DEBUG("Unsubscribing from '" + engine.root + SOLVERS_TOPIC + '/' + std::to_string(*it) + "' topic..");
+                    engine.mqtt_client.unsubscribe(engine.root + SOLVERS_TOPIC + '/' + std::to_string(*it));
+
+                    engine.solvers.erase(*it);
+                }
+                else
+                    ++it;
 
             engine.broadcast(msg->get_payload());
         }

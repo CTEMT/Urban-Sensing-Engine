@@ -98,7 +98,7 @@ namespace use
                 solvers.push_back(reinterpret_cast<uintptr_t>(exec.get()));
             msg["solvers"] = std::move(solvers);
 
-            e.mqtt_client.publish(mqtt::make_message(e.root + SOLVER_TOPIC, msg.dump(), 1, true));
+            e.mqtt_client.publish(mqtt::make_message(e.root + SOLVERS_TOPIC, msg.dump(), QOS, true));
         }
     }
 
@@ -128,7 +128,7 @@ namespace use
             msg["type"] = "deleted_reasoner";
             msg["id"] = reinterpret_cast<uintptr_t>(use_exec);
 
-            e.mqtt_client.publish(mqtt::make_message(e.root + SOLVER_TOPIC, msg.dump()));
+            e.mqtt_client.publish(mqtt::make_message(e.root + SOLVERS_TOPIC, msg.dump()));
         }
     }
 
@@ -181,15 +181,17 @@ namespace use
                     engine.sensors.emplace(sensor_id, std::make_unique<sensor>(sensor_id, sensor_type, s_fact));
                 }
             }
-            for (const auto &[sensor_id, sensor] : engine.sensors)
-                if (!sensors_set.count(sensor_id))
+            for (auto it = engine.sensors.begin(); it != engine.sensors.end();)
+                if (!sensors_set.count(it->first))
                 {
-                    LOG_DEBUG("Unsubscribing from '" + engine.root + SENSOR_TOPIC + '/' + sensor_id + "' topic..");
-                    engine.mqtt_client.unsubscribe(engine.root + SENSOR_TOPIC + '/' + sensor_id);
+                    LOG_DEBUG("Unsubscribing from '" + engine.root + SENSOR_TOPIC + '/' + it->first + "' topic..");
+                    engine.mqtt_client.unsubscribe(engine.root + SENSOR_TOPIC + '/' + it->first);
 
-                    Retract(engine.sensors.at(sensor_id)->get_fact());
-                    engine.sensors.erase(sensor_id);
+                    Retract(engine.sensors.at(it->first)->get_fact());
+                    engine.sensors.erase(it->first);
                 }
+                else
+                    ++it;
         }
         else if (msg->get_topic().rfind(engine.root + SENSOR_TOPIC + '/', 0) == 0)
         { // we have a new sensor value..
