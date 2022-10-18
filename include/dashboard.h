@@ -47,15 +47,6 @@ namespace dashboard
     public:
       solver(uintptr_t id) : id(id){}
 
-      uintptr_t get_id() const { return id; }
-
-      json::object &get_state() { return state; }
-      void set_state(json::json s) { state = std::move(s); }
-
-      json::object &get_graph() { return graph; }
-      void set_graph(json::json g) { graph = std::move(g); }
-
-    private:
       uintptr_t id;
       json::json state;
       json::json graph;

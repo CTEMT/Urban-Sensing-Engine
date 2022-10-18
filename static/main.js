@@ -991,6 +991,12 @@ function setup_ws() {
             case 'solvers':
                 set_solvers(c_msg.solvers);
                 break;
+            case 'solution_found':
+                solvers.get(c_msg.id).state_changed(c_msg);
+                break;
+            case 'graph':
+                solvers.get(c_msg.id).graph(c_msg);
+                break;
             default:
                 console.log(c_msg);
         }

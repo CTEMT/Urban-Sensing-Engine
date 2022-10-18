@@ -81,16 +81,18 @@ namespace dashboard
                 std::stringstream ss;
                 ss << msg->get_payload();
                 auto j_state = json::load(ss);
+                j_state["id"] = slv_id;
 
-                slv.set_state(std::move(j_state));
+                slv.state = std::move(j_state);
             }
             else if (msg->get_topic() == engine.root + SOLVERS_TOPIC + '/' + std::to_string(slv_id) + "/graph")
             {
                 std::stringstream ss;
                 ss << msg->get_payload();
                 auto j_graph = json::load(ss);
+                j_graph["id"] = slv_id;
 
-                slv.set_graph(std::move(j_graph));
+                slv.graph = std::move(j_graph);
             }
     }
 
@@ -119,7 +121,13 @@ namespace dashboard
                     c_solvers.push_back(slv_id);
                 j_msg["type"] = "solvers";
                 j_msg["solvers"] = std::move(c_solvers);
-                broadcast(j_msg.dump()); })
+                broadcast(j_msg.dump());
+                
+                for (auto &[slv_id, slv] : solvers)
+                {
+                    broadcast(slv.state.dump());
+                    broadcast(slv.graph.dump());
+                } })
             .onclose([&](crow::websocket::connection &conn, const std::string &)
                      { std::lock_guard<std::mutex> _(mtx); users.erase(&conn); })
             .onmessage([&](crow::websocket::connection &, const std::string &, bool) {});
