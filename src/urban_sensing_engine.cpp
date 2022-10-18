@@ -84,7 +84,7 @@ namespace use
         auto slv = new ratio::solver::solver();
         auto exec = new ratio::executor::executor(*slv);
         auto use_exec = std::make_unique<use_executor>(e, *exec);
-        out->integerValue = CreateInteger(env, reinterpret_cast<uintptr_t>(use_exec.get()));
+        uintptr_t exec_ptr = reinterpret_cast<uintptr_t>(use_exec.get());
 
         e.executors.push_back(std::move(use_exec));
 
@@ -100,9 +100,11 @@ namespace use
 
             e.mqtt_client.publish(mqtt::make_message(e.root + SOLVERS_TOPIC, msg.dump(), QOS, true));
         }
+
+        out->integerValue = CreateInteger(env, exec_ptr);
     }
 
-    void read_problem([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
+    void read_script([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
     {
         UDFValue exec_ptr;
         if (!UDFFirstArgument(udfc, NUMBER_BITS, &exec_ptr))
@@ -112,22 +114,35 @@ namespace use
         auto slv = &exec->get_solver();
 
         UDFValue riddle;
-        UDFValue files;
-        if (UDFNextArgument(udfc, STRING_BIT, &riddle))
-        { // we read a riddle script..
-            slv->read(riddle.lexemeValue->contents);
-            slv->solve();
-        }
-        else if (UDFNextArgument(udfc, MULTIFIELD_BIT, &files))
-        {
-            std::vector<std::string> fs;
-            for (size_t i = 0; i < files.multifieldValue->length; ++i)
-                fs.push_back(files.multifieldValue->contents[i].lexemeValue->contents);
-            slv->read(fs);
-            slv->solve();
-        }
-        else
+        if (!UDFNextArgument(udfc, STRING_BIT, &riddle))
             return;
+
+        // we read a riddle script..
+        LOG_DEBUG("Reading RiDDLe snippet..");
+        slv->read(riddle.lexemeValue->contents);
+        slv->solve();
+    }
+
+    void read_files([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
+    {
+        UDFValue exec_ptr;
+        if (!UDFFirstArgument(udfc, NUMBER_BITS, &exec_ptr))
+            return;
+        auto use_exec = reinterpret_cast<use_executor *>(exec_ptr.integerValue->contents);
+        auto exec = &use_exec->get_executor();
+        auto slv = &exec->get_solver();
+
+        UDFValue riddle;
+        if (!UDFNextArgument(udfc, MULTIFIELD_BIT, &riddle))
+            return;
+
+        // we read some riddle files..
+        LOG_DEBUG("Reading RiDDLe files..");
+        std::vector<std::string> fs;
+        for (size_t i = 0; i < riddle.multifieldValue->length; ++i)
+            fs.push_back(riddle.multifieldValue->contents[i].lexemeValue->contents);
+        slv->read(fs);
+        slv->solve();
     }
 
     void delete_solver([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
@@ -168,6 +183,9 @@ namespace use
 
         LOG_DEBUG("Subscribing to '" + engine.root + SENSORS_TOPIC "' topic..");
         engine.mqtt_client.subscribe(engine.root + SENSORS_TOPIC, 1);
+
+        LOG_DEBUG("Subscribing to '" + engine.root + PARTICIPATORY_TOPIC "/#' topic..");
+        engine.mqtt_client.subscribe(engine.root + PARTICIPATORY_TOPIC + "/#", 1);
     }
     void mqtt_callback::connection_lost([[maybe_unused]] const std::string &cause)
     {
@@ -188,24 +206,34 @@ namespace use
             std::unordered_set<std::string> sensors_set;
             for (size_t i = 0; i < sensors.size(); ++i)
             {
-                json::json &j_sensor = sensors[i];
+                json::object &j_sensor = sensors[i];
                 json::string_val &j_id = j_sensor["id"];
                 std::string sensor_id = j_id;
                 sensors_set.insert(sensor_id);
                 json::string_val &j_type = j_sensor["type"];
                 std::string sensor_type = j_type;
-                AssertString(engine.env, ("(sensor_type (name " + sensor_type + "))").c_str());
+
+                if (engine.sensor_types.insert(sensor_type).second)
+                    AssertString(engine.env, ("(sensor_type (name " + sensor_type + "))").c_str());
+
                 if (!engine.sensors.count(sensor_id))
                 {
                     LOG_DEBUG("Subscribing to '" + engine.root + SENSOR_TOPIC + '/' + sensor_id + "' topic..");
                     engine.mqtt_client.subscribe(engine.root + SENSOR_TOPIC + '/' + sensor_id, 1);
 
-                    json::number_val &j_lat = j_sensor["location"]["lat"];
-                    double lat = j_lat;
-                    json::number_val &j_lng = j_sensor["location"]["lng"];
-                    double lng = j_lng;
+                    std::string fact_str = "(sensor (id " + sensor_id + ") (sensor_type " + sensor_type + ")";
+                    if (j_sensor.has("location"))
+                    {
+                        json::number_val &j_lat = j_sensor["location"]["lat"];
+                        double lat = j_lat;
+                        json::number_val &j_lng = j_sensor["location"]["lng"];
+                        double lng = j_lng;
 
-                    auto *s_fact = AssertString(engine.env, ("(sensor (id " + sensor_id + ") (sensor_type " + sensor_type + ") (location " + std::to_string(lat) + " " + std::to_string(lng) + "))").c_str());
+                        fact_str += " (location " + std::to_string(lat) + " " + std::to_string(lng) + ")";
+                    }
+                    fact_str += ')';
+
+                    auto *s_fact = AssertString(engine.env, fact_str.c_str());
                     engine.sensors.emplace(sensor_id, std::make_unique<sensor>(sensor_id, sensor_type, s_fact));
                 }
             }
@@ -232,19 +260,46 @@ namespace use
             json::object &j_val = j_value;
 
             auto time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-            std::string val_fact = "(sensor_value (sensor_id " + sensor_id + ") (local_time " + std::to_string(time) + ") (val";
+            std::string fact_str = "(sensor_value (sensor_id " + sensor_id + ") (local_time " + std::to_string(time) + ") (val";
             for (const auto &[id, val] : j_val)
             {
                 json::string_val &j_v = val;
-                val_fact += ' ';
-                val_fact += j_v;
+                fact_str += ' ';
+                fact_str += j_v;
             }
-            val_fact += "))";
+            fact_str += "))";
 
-            AssertString(engine.env, val_fact.c_str());
+            AssertString(engine.env, fact_str.c_str());
 
             auto val = std::make_unique<json::json>(std::move(j_value));
             engine.sensors.at(sensor_id)->set_value(std::move(val));
+        }
+        else if (msg->get_topic().rfind(engine.root + PARTICIPATORY_TOPIC + '/', 0) == 0)
+        { // we have a new participatory data..
+            std::string user_id = msg->get_topic();
+            user_id.erase(0, (engine.root + PARTICIPATORY_TOPIC + '/').length());
+
+            std::stringstream ss;
+            ss << msg->get_payload();
+            auto j_participatory = json::load(ss);
+
+            json::string_val &j_type = j_participatory["type"];
+            std::string participatory_type = j_type;
+
+            LOG_DEBUG("User " + user_id + " has added a new " + participatory_type + " participatory data..");
+
+            auto time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+            std::string fact_str = "(participatory_data (user_id " + user_id + ") (participatory_type " + participatory_type + ") (local_time " + std::to_string(time) + ") (val";
+            json::object &j_val = j_participatory["value"];
+            for (const auto &[id, val] : j_val)
+            {
+                json::string_val &j_v = val;
+                fact_str += ' ';
+                fact_str += j_v;
+            }
+            fact_str += "))";
+
+            AssertString(engine.env, fact_str.c_str());
         }
 
         Run(engine.env, -1);
@@ -265,7 +320,8 @@ namespace use
         AddUDF(env, "send_message", "v", 3, 3, "lys", send_message, "send_message", NULL);
         AddUDF(env, "send_map_message", "v", 5, 5, "lydds", send_map_message, "send_map_message", NULL);
         AddUDF(env, "new_solver", "l", 1, 1, "l", new_solver, "new_solver", NULL);
-        AddUDF(env, "read_problem", "v", 2, 2, "l*", read_problem, "read_problem", NULL);
+        AddUDF(env, "read_script", "v", 2, 2, "ls", read_script, "read_script", NULL);
+        AddUDF(env, "read_files", "v", 2, 2, "lm", read_files, "read_files", NULL);
         AddUDF(env, "delete_solver", "v", 2, 2, "ll", delete_solver, "delete_solver", NULL);
     }
     urban_sensing_engine::~urban_sensing_engine() { DestroyEnvironment(env); }
@@ -290,6 +346,9 @@ namespace use
 
         AssertString(env, ("(configuration (engine_ptr " + std::to_string(reinterpret_cast<uintptr_t>(this)) + "))").c_str());
         Run(env, -1);
+#ifdef VERBOSE_LOG
+        Eval(env, "(facts)", NULL);
+#endif
     }
     void urban_sensing_engine::disconnect()
     {

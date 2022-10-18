@@ -3,6 +3,7 @@
 #include "json.h"
 #include "mqtt/async_client.h"
 #include "clips.h"
+#include <unordered_set>
 
 namespace use
 {
@@ -59,7 +60,8 @@ namespace use
     friend void send_map_message(Environment *env, UDFContext *udfc, UDFValue *out);
 
     friend void new_solver(Environment *env, UDFContext *udfc, UDFValue *out);
-    friend void read_problem(Environment *env, UDFContext *udfc, UDFValue *out);
+    friend void read_script(Environment *env, UDFContext *udfc, UDFValue *out);
+    friend void read_files(Environment *env, UDFContext *udfc, UDFValue *out);
     friend void delete_solver(Environment *env, UDFContext *udfc, UDFValue *out);
 
   private:
@@ -67,6 +69,7 @@ namespace use
     mqtt::async_client mqtt_client;
     mqtt::connect_options options;
     mqtt_callback msg_callback;
+    std::unordered_set<std::string> sensor_types;
     std::unordered_map<std::string, std::unique_ptr<sensor>> sensors;
     std::list<std::unique_ptr<use_executor>> executors;
     Environment *env;
