@@ -124,7 +124,7 @@ namespace dashboard
                      { std::lock_guard<std::mutex> _(mtx); users.erase(&conn); })
             .onmessage([&](crow::websocket::connection &, const std::string &, bool) {});
 
-        options.set_clean_session(false);
+        options.set_clean_session(true);
         options.set_keep_alive_interval(20);
 
         mqtt_client.set_callback(msg_callback);

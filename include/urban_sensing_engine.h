@@ -59,6 +59,7 @@ namespace use
     friend void send_map_message(Environment *env, UDFContext *udfc, UDFValue *out);
 
     friend void new_solver(Environment *env, UDFContext *udfc, UDFValue *out);
+    friend void read_problem(Environment *env, UDFContext *udfc, UDFValue *out);
     friend void delete_solver(Environment *env, UDFContext *udfc, UDFValue *out);
 
   private:

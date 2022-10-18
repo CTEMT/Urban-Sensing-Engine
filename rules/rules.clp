@@ -5,6 +5,7 @@
 (deftemplate sensor (slot id) (slot sensor_type) (multislot location))
 
 (deftemplate sensor_value (slot sensor_id) (slot local_time) (multislot val))
+(deftemplate participatory (slot participatory_type) (slot local_time) (multislot location) (multislot val))
 
 (deftemplate average_temp
     (slot sensor_id)
@@ -19,7 +20,14 @@
 (defrule new_configuration
     (configuration (engine_ptr ?engine_ptr))
     =>
-    (assert (solver (solver_ptr (new_solver ?engine_ptr)) (solver_type generic)))
+    (assert (solver (solver_ptr (new_solver ?engine_ptr)) (solver_type maintenance)))
+)
+
+(defrule maintenance_request
+    (participatory (participatory_type road_failure))
+    (solver (solver_ptr ?slv) (solver_type maintenance))
+    =>
+    (read_problem ?slv (create$ "rules/urban_intelligence_domain.rddl" "rules/urban_intelligence_02_03.rddl"))
 )
 
 (defrule notify_bus_position

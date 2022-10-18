@@ -102,6 +102,34 @@ namespace use
         }
     }
 
+    void read_problem([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
+    {
+        UDFValue exec_ptr;
+        if (!UDFFirstArgument(udfc, NUMBER_BITS, &exec_ptr))
+            return;
+        auto use_exec = reinterpret_cast<use_executor *>(exec_ptr.integerValue->contents);
+        auto exec = &use_exec->get_executor();
+        auto slv = &exec->get_solver();
+
+        UDFValue riddle;
+        UDFValue files;
+        if (UDFNextArgument(udfc, STRING_BIT, &riddle))
+        { // we read a riddle script..
+            slv->read(riddle.lexemeValue->contents);
+            slv->solve();
+        }
+        else if (UDFNextArgument(udfc, MULTIFIELD_BIT, &files))
+        {
+            std::vector<std::string> fs;
+            for (size_t i = 0; i < files.multifieldValue->length; ++i)
+                fs.push_back(files.multifieldValue->contents[i].lexemeValue->contents);
+            slv->read(fs);
+            slv->solve();
+        }
+        else
+            return;
+    }
+
     void delete_solver([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
     {
         UDFValue engine_ptr;
@@ -229,7 +257,7 @@ namespace use
 
     urban_sensing_engine::urban_sensing_engine(const std::string &root, const std::string &server_uri, const std::string &client_id) : root(root), mqtt_client(server_uri, client_id), msg_callback(*this), env(CreateEnvironment())
     {
-        options.set_clean_session(false);
+        options.set_clean_session(true);
         options.set_keep_alive_interval(20);
 
         mqtt_client.set_callback(msg_callback);
@@ -237,6 +265,7 @@ namespace use
         AddUDF(env, "send_message", "v", 3, 3, "lys", send_message, "send_message", NULL);
         AddUDF(env, "send_map_message", "v", 5, 5, "lydds", send_map_message, "send_map_message", NULL);
         AddUDF(env, "new_solver", "l", 1, 1, "l", new_solver, "new_solver", NULL);
+        AddUDF(env, "read_problem", "v", 2, 2, "l*", read_problem, "read_problem", NULL);
         AddUDF(env, "delete_solver", "v", 2, 2, "ll", delete_solver, "delete_solver", NULL);
     }
     urban_sensing_engine::~urban_sensing_engine() { DestroyEnvironment(env); }

@@ -56,7 +56,7 @@ mosquitto_pub -t CTE-MT/sensor/s3 -m "{\"pm10\": 6, \"pm2.5\": 5}"
 ```
 
 ```
-mosquitto_pub -t UISH/sensors -m "[{\"id\": \"s0\", \"type\": \"temperature\", \"location\": {\"lat\": 37.5078, \"lng\": 15.083}}, {\"id\": \"s1\", \"type\": \"gate\", \"location\": {\"lat\": 37.5078, \"lng\": 15.083}}, {\"id\": \"s2\", \"type\": \"bus\", \"location\": {\"lat\": 37.5078, \"lng\": 15.083}}, {\"id\": \"s3\", \"type\": \"air_monitoring\", \"location\": {\"lat\": 37.5078, \"lng\": 15.083}}]" -r
+mosquitto_pub -t UISH/sensors -m "[{\"id\": \"s0\", \"type\": \"temperature\", \"location\": {\"lat\": 37.5078, \"lng\": 15.083}}, {\"id\": \"s1\", \"type\": \"gate\", \"location\": {\"lat\": 37.4978, \"lng\": 15.073}}, {\"id\": \"s2\", \"type\": \"bus\", \"location\": {\"lat\": 37.5078, \"lng\": 15.083}}, {\"id\": \"s3\", \"type\": \"air_monitoring\", \"location\": {\"lat\": 37.5078, \"lng\": 15.083}}, {\"id\": \"s4\", \"type\": \"participatory\", \"location\": {\"lat\": 37.5178, \"lng\": 15.093}}]" -r
 ```
 
 Subscribe to the `message` topic to receive notifications.

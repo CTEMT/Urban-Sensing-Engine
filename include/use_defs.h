@@ -4,4 +4,4 @@
 #define SENSOR_TOPIC "/sensor"
 #define MESSAGE_TOPIC "/message"
 #define SOLVERS_TOPIC "/solvers"
-#define QOS 1
+#define QOS 2
