@@ -1,9 +1,9 @@
-MunicipalTechnician mt0 = new MunicipalTechnician();
-MunicipalTechnician mt1 = new MunicipalTechnician();
-fact mt0_rm = new DoesRoadMaintainance(mt:mt0);
-fact mt0_bm = new DoesBuildingMaintainance(mt:mt0);
-fact mt1_rm = new DoesRoadMaintainance(mt:mt1);
-fact mt1_gsm = new DoesGreenSpaceMaintainance(mt:mt1);
+MunicipalTechnician Francesco = new MunicipalTechnician();
+MunicipalTechnician Giulia = new MunicipalTechnician();
+fact mt0_rm = new DoesRoadMaintainance(mt:Francesco);
+fact mt0_bm = new DoesBuildingMaintainance(mt:Francesco);
+fact mt1_rm = new DoesRoadMaintainance(mt:Giulia);
+fact mt1_gsm = new DoesGreenSpaceMaintainance(mt:Giulia);
 
 Road r0 = new Road();
 Road r1 = new Road();

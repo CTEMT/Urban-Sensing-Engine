@@ -24,7 +24,6 @@ class Maintainance : Agent {
 
     predicate RoadMaintainanceDocuments(Road r, MunicipalTechnician mt) : Interval {
         duration >= 10.0;
-        duration <= 15.0;
         goal rm = new DoesRoadMaintainance(mt:mt);
         fact mt_activity = new mt.activity.Use(start:start, duration:duration, end:end, amount:1.0);
     }
@@ -45,7 +44,6 @@ class Maintainance : Agent {
 
     predicate BuildingMaintainanceDocuments(Building b, MunicipalTechnician mt) : Interval {
         duration >= 10.0;
-        duration <= 15.0;
         goal rm = new DoesBuildingMaintainance(mt:mt);
         fact mt_activity = new mt.activity.Use(start:start, duration:duration, end:end, amount:1.0);
     }
@@ -66,7 +64,6 @@ class Maintainance : Agent {
 
     predicate GreenSpacesMaintainanceDocuments(GreenSpace gs, MunicipalTechnician mt) : Interval {
         duration >= 10.0;
-        duration <= 15.0;
         goal rm = new DoesGreenSpaceMaintainance(mt:mt);
         fact mt_activity = new mt.activity.Use(start:start, duration:duration, end:end, amount:1.0);
     }

@@ -277,6 +277,23 @@ namespace use
         j_en["ending"] = std::move(ending);
 
         use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_en.dump()));
+
+        std::unordered_map<const ratio::core::atom *, semitone::rational> dey;
+        for (const auto &atm : atoms)
+            if (atm->get_type().get_name() == "BuildingMaintainanceDocuments")
+            {
+                auto end = slv.ratio::core::core::arith_value(atm->get("end"));
+                if (end <= 50)
+                    dey.emplace(atm, semitone::rational(2));
+            }
+            else if (atm->get_type().get_name() == "GreenSpacesMaintainanceDocuments")
+            {
+                auto end = slv.ratio::core::core::arith_value(atm->get("end"));
+                if (end <= 70)
+                    dey.emplace(atm, semitone::rational(2));
+            }
+
+        exec.dont_end_yet(dey);
     }
     void use_executor::end(const std::unordered_set<ratio::core::atom *> &atoms)
     {
