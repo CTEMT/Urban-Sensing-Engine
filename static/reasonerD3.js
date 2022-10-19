@@ -290,6 +290,7 @@ class ReasonerD3 extends Reasoner {
 
         for (const [i, tl] of timelines.entries())
             this.update_timeline(i, tl);
+        wrap_text(this.scale);
     }
 
     update_timeline(i, tl) {
@@ -519,7 +520,6 @@ class ReasonerD3 extends Reasoner {
                 );
                 break;
         }
-        wrap_text(this.scale);
     }
 
     update_time() {

@@ -28,7 +28,7 @@
     ?p_data <- (participatory_data (participatory_type road_failure))
     (solver (solver_ptr ?slv) (solver_type maintenance))
     =>
-    (read_files ?slv (create$ "rules/urban_intelligence_domain.rddl" "rules/urban_intelligence_02_03.rddl"))
+    (read_files ?slv (create$ "rules/urban_intelligence_domain.rddl" "rules/urban_intelligence_02_06.rddl"))
     (retract ?p_data)
 )
 
