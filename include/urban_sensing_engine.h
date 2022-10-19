@@ -3,6 +3,7 @@
 #include "json.h"
 #include "mqtt/async_client.h"
 #include "clips.h"
+#include "timer.h"
 #include <unordered_set>
 
 namespace use
@@ -53,8 +54,11 @@ namespace use
     ~urban_sensing_engine();
 
     void connect();
-    void load_rules();
+    void init();
     void disconnect();
+
+  private:
+    void tick();
 
     friend void send_message(Environment *env, UDFContext *udfc, UDFValue *out);
     friend void send_map_message(Environment *env, UDFContext *udfc, UDFValue *out);
@@ -69,6 +73,7 @@ namespace use
     mqtt::async_client mqtt_client;
     mqtt::connect_options options;
     mqtt_callback msg_callback;
+    ratio::time::timer use_timer;
     std::unordered_set<std::string> sensor_types;
     std::unordered_map<std::string, std::unique_ptr<sensor>> sensors;
     std::list<std::unique_ptr<use_executor>> executors;

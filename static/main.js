@@ -997,6 +997,15 @@ function setup_ws() {
             case 'graph':
                 solvers.get(c_msg.id).graph(c_msg);
                 break;
+            case 'tick':
+                solvers.get(c_msg.id).tick(c_msg);
+                break;
+            case 'start':
+                solvers.get(c_msg.id).start(c_msg);
+                break;
+            case 'end':
+                solvers.get(c_msg.id).end(c_msg);
+                break;
             default:
                 console.log(c_msg);
         }

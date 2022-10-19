@@ -310,7 +310,7 @@ namespace use
 
     sensor::sensor(const std::string &id, const std::string &type, Fact *fact) : id(id), type(type), fact(fact) {}
 
-    urban_sensing_engine::urban_sensing_engine(const std::string &root, const std::string &server_uri, const std::string &client_id) : root(root), mqtt_client(server_uri, client_id), msg_callback(*this), env(CreateEnvironment())
+    urban_sensing_engine::urban_sensing_engine(const std::string &root, const std::string &server_uri, const std::string &client_id) : root(root), mqtt_client(server_uri, client_id), msg_callback(*this), use_timer(1000, std::bind(&urban_sensing_engine::tick, this)), env(CreateEnvironment())
     {
         options.set_clean_session(true);
         options.set_keep_alive_interval(20);
@@ -324,7 +324,11 @@ namespace use
         AddUDF(env, "read_files", "v", 2, 2, "lm", read_files, "read_files", NULL);
         AddUDF(env, "delete_solver", "v", 2, 2, "ll", delete_solver, "delete_solver", NULL);
     }
-    urban_sensing_engine::~urban_sensing_engine() { DestroyEnvironment(env); }
+    urban_sensing_engine::~urban_sensing_engine()
+    {
+        use_timer.stop();
+        DestroyEnvironment(env);
+    }
 
     void urban_sensing_engine::connect()
     {
@@ -338,7 +342,7 @@ namespace use
             LOG_ERR(e.what());
         }
     }
-    void urban_sensing_engine::load_rules()
+    void urban_sensing_engine::init()
     {
         LOG("Loading policy rules..");
         Load(env, "rules/rules.clp");
@@ -349,6 +353,8 @@ namespace use
 #ifdef VERBOSE_LOG
         Eval(env, "(facts)", NULL);
 #endif
+
+        use_timer.start();
     }
     void urban_sensing_engine::disconnect()
     {
@@ -361,5 +367,11 @@ namespace use
         {
             LOG_ERR(e.what());
         }
+    }
+
+    void urban_sensing_engine::tick()
+    {
+        for (auto &exec : executors)
+            exec->tick();
     }
 } // namespace use

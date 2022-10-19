@@ -10,6 +10,8 @@ namespace use
 
   class use_executor : public ratio::core::core_listener, public ratio::solver::solver_listener, public ratio::executor::executor_listener
   {
+    friend class urban_sensing_engine;
+
   public:
     use_executor(urban_sensing_engine &use, ratio::executor::executor &exec);
 
@@ -40,6 +42,7 @@ namespace use
     void causal_link_added(const ratio::solver::flaw &f, const ratio::solver::resolver &r) override;
 
   private:
+    void tick();
     void tick(const semitone::rational &time) override;
     void starting(const std::unordered_set<ratio::core::atom *> &atoms) override;
     void start(const std::unordered_set<ratio::core::atom *> &atoms) override;
@@ -49,6 +52,7 @@ namespace use
   private:
     urban_sensing_engine &use;
     ratio::executor::executor &exec;
+    bool solved = false;
     std::unordered_set<const ratio::solver::flaw *> flaws;
     const ratio::solver::flaw *c_flaw = nullptr;
     std::unordered_set<const ratio::solver::resolver *> resolvers;
