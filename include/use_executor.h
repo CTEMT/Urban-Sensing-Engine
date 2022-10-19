@@ -49,6 +49,8 @@ namespace use
     void ending(const std::unordered_set<ratio::core::atom *> &atoms) override;
     void end(const std::unordered_set<ratio::core::atom *> &atoms) override;
 
+    std::string to_task(const ratio::core::atom &atm, const std::string &command);
+
   private:
     urban_sensing_engine &use;
     ratio::executor::executor &exec;

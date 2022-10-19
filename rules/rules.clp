@@ -8,6 +8,8 @@
 
 (deftemplate participatory_data (slot user_id) (slot participatory_type) (slot local_time) (multislot val))
 
+(deftemplate task (slot command) (slot task_type) (multislot pars) (multislot vals))
+
 (deftemplate average_temp
     (slot sensor_id)
     (slot v0 (default 0))
@@ -72,4 +74,84 @@
     (configuration (engine_ptr ?ptr))
     =>
     (send_map_message ?ptr warning ?lat ?lng (str-cat "La temperatura media del sensore '" ?s "', di " ?avg "°, ha superato la soglia di guardia di 37.5°"))
+)
+
+(defrule prepare_road_maintainance_documents
+    (configuration (engine_ptr ?ptr))
+    ?t <- (task (command start) (task_type RoadMaintainanceDocuments) (vals ?dur ?end ?mt ?r ?start ?tau))
+    =>
+    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", lo stato della strada " ?r " sembra essere peggiorato significativamente nell'ultimo periodo. Al fine di provvedere al suo mantenimento, sono state pianificate un'insieme di attività che porteranno alla riparazione del manto stradale. Come primo passo dovrebbe preparare i documenti per il bando di gara per l'assegnazione delle attività di manutenzione."))
+    (retract ?t)
+)
+
+(defrule start_road_tender
+    (configuration (engine_ptr ?ptr))
+    ?t <- (task (command start) (task_type RoadMaintainanceTender) (vals ?dur ?end ?mt ?r ?start ?tau))
+    =>
+    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", come pianificato, è da oggi in corso la gara d'appalto per la manutenzione della strada " ?r "."))
+    (retract ?t)
+)
+
+(defrule end_road_tender
+    (configuration (engine_ptr ?ptr))
+    ?t <- (task (command end) (task_type RoadMaintainanceTender) (vals ?dur ?end ?mt ?r ?start ?tau))
+    =>
+    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", la gara d'appalto per la manutenzione della strada " ?r " è terminata."))
+    (retract ?t)
+)
+
+(defrule start_road_maintainance
+    (configuration (engine_ptr ?ptr))
+    ?t <- (task (command start) (task_type RoadMaintainance) (vals ?dur ?end ?mt ?r ?start ?tau))
+    =>
+    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", i lavori per la manutenzione della strada " ?r " sono appena cominciati."))
+    (retract ?t)
+)
+
+(defrule end_road_maintainance
+    (configuration (engine_ptr ?ptr))
+    ?t <- (task (command end) (task_type RoadMaintainance) (vals ?dur ?end ?mt ?r ?start ?tau))
+    =>
+    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", i lavori per la manutenzione della strada " ?r " sono appena terminati."))
+    (retract ?t)
+)
+
+(defrule prepare_green_spaces_maintainance_documents
+    (configuration (engine_ptr ?ptr))
+    ?t <- (task (command start) (task_type GreenSpacesMaintainanceDocuments) (vals ?dur ?end ?gs ?mt ?start ?tau))
+    =>
+    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", lo stato dell'area verde " ?gs " sembra essere peggiorato significativamente nell'ultimo periodo. Al fine di provvedere al suo mantenimento, sono state pianificate un'insieme di attività che porteranno alla riparazione del manto stradale. Come primo passo dovrebbe preparare i documenti per il bando di gara per l'assegnazione delle attività di manutenzione."))
+    (retract ?t)
+)
+
+(defrule start_green_spaces_tender
+    (configuration (engine_ptr ?ptr))
+    ?t <- (task (command start) (task_type GreenSpacesMaintainanceTender) (vals ?dur ?end ?gs ?mt ?start ?tau))
+    =>
+    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", come pianificato, è da oggi in corso la gara d'appalto per la manutenzione dell'area verde " ?gs "."))
+    (retract ?t)
+)
+
+(defrule end_green_spaces_tender
+    (configuration (engine_ptr ?ptr))
+    ?t <- (task (command end) (task_type GreenSpacesMaintainanceTender) (vals ?dur ?end ?gs ?mt ?start ?tau))
+    =>
+    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", la gara d'appalto per la manutenzione dell'area verde " ?gs " è terminata."))
+    (retract ?t)
+)
+
+(defrule start_green_spaces_maintainance
+    (configuration (engine_ptr ?ptr))
+    ?t <- (task (command start) (task_type GreenSpacesMaintainance) (vals ?dur ?end ?gs ?mt ?start ?tau))
+    =>
+    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", i lavori per la riqualificazione dell'area verde " ?gs " sono appena cominciati."))
+    (retract ?t)
+)
+
+(defrule end_green_spaces_maintainance
+    (configuration (engine_ptr ?ptr))
+    ?t <- (task (command end) (task_type GreenSpacesMaintainance) (vals ?dur ?end ?gs ?mt ?start ?tau))
+    =>
+    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", i lavori per la riqualificazione dell'area verde " ?gs " sono appena terminati."))
+    (retract ?t)
 )

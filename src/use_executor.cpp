@@ -259,6 +259,13 @@ namespace use
         j_st["start"] = std::move(start);
 
         use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_st.dump()));
+
+        for (const auto &atm : atoms)
+            AssertString(use.env, to_task(*atm, "start").c_str());
+        Run(use.env, -1);
+#ifdef VERBOSE_LOG
+        Eval(use.env, "(facts)", NULL);
+#endif
     }
     void use_executor::ending(const std::unordered_set<ratio::core::atom *> &atoms)
     {
@@ -284,5 +291,72 @@ namespace use
         j_en["end"] = std::move(end);
 
         use.mqtt_client.publish(mqtt::make_message(use.root + SOLVER_TOPIC + "/" + std::to_string(reinterpret_cast<uintptr_t>(this)), j_en.dump()));
+
+        for (const auto &atm : atoms)
+            AssertString(use.env, to_task(*atm, "end").c_str());
+        Run(use.env, -1);
+#ifdef VERBOSE_LOG
+        Eval(use.env, "(facts)", NULL);
+#endif
+    }
+
+    std::string use_executor::to_task(const ratio::core::atom &atm, const std::string &command)
+    {
+        std::string task_str = "(task (task_type " + atm.get_type().get_name() + ") (command " + command + ")";
+        std::string pars_str = "(pars";
+        std::string vals_str = "(vals";
+
+        for (const auto &[var_name, var] : atm.get_vars())
+        {
+            if (&var->get_type() == &slv.get_bool_type())
+            {
+                switch (slv.get_sat_core()->value(static_cast<const ratio::core::bool_item &>(*var).get_value()))
+                {
+                case semitone::True:
+                    pars_str += " " + var_name;
+                    vals_str += " TRUE";
+                    break;
+                case semitone::False:
+                    pars_str += " " + var_name;
+                    vals_str += " FALSE";
+                    break;
+                }
+            }
+            else if (&var->get_type() == &slv.get_real_type())
+            {
+                pars_str += " " + var_name;
+                vals_str += " " + to_string(slv.get_lra_theory().value(static_cast<const ratio::core::arith_item &>(*var).get_value()));
+            }
+            else if (&var->get_type() == &slv.get_time_type())
+            {
+                pars_str += " " + var_name;
+                const auto [lb, ub] = slv.get_rdl_theory().bounds(static_cast<const ratio::core::arith_item &>(*var).get_value());
+                vals_str += " " + to_string(lb);
+            }
+            else if (&var->get_type() == &slv.get_string_type())
+            {
+                pars_str += " " + var_name;
+                vals_str += " " + static_cast<const ratio::core::string_item &>(*var).get_value();
+            }
+            else if (auto ev = dynamic_cast<const ratio::core::enum_item *>(&*var))
+            {
+                const auto vals = slv.get_ov_theory().value(ev->get_var());
+                if (vals.size() == 1)
+                {
+                    pars_str += " " + var_name;
+                    vals_str += " " + slv.guess_name(static_cast<ratio::core::item &>(**vals.begin()));
+                }
+            }
+            else
+            {
+                pars_str += " " + var_name;
+                vals_str += " " + slv.guess_name(*var);
+            }
+        }
+        pars_str += ")";
+        vals_str += ")";
+        task_str += " " + pars_str + " " + vals_str + ")";
+
+        return task_str;
     }
 } // namespace use
