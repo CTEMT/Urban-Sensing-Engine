@@ -14,6 +14,8 @@ include(CMakePackageConfigHelpers)
 find_package(Threads REQUIRED)
 find_package(Boost REQUIRED)
 find_package(PahoMqttCpp REQUIRED)
+find_package(mongocxx REQUIRED)
+find_package(bsoncxx REQUIRED)
 
 include(CTest)
 enable_testing()
@@ -54,9 +56,9 @@ file(GLOB URBAN_SENSING_ENGINE_SOURCES src/*.cpp)
 file(GLOB URBAN_SENSING_ENGINE_HEADERS include/*.h)
 
 add_executable(${PROJECT_NAME} ${URBAN_SENSING_ENGINE_SOURCES})
-target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/include $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/extern/crow $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> $<INSTALL_INTERFACE:> ${Boost_INCLUDE_DIRS} ${CLIPS_INCLUDE_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/include $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/extern/crow $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> $<INSTALL_INTERFACE:> ${Boost_INCLUDE_DIRS} ${CLIPS_INCLUDE_DIR} ${LIBMONGOCXX_INCLUDE_DIR} ${LIBBSONCXX_INCLUDE_DIR})
 target_link_directories(${PROJECT_NAME} PUBLIC ${CLIPS_LIB_DIR})
-target_link_libraries(${PROJECT_NAME} PRIVATE PlExA oRatioSolver ratioCore RiDDLe SeMiTONE json ${CMAKE_THREAD_LIBS_INIT} PahoMqttCpp::paho-mqttpp3-static clips)
+target_link_libraries(${PROJECT_NAME} PRIVATE PlExA oRatioSolver ratioCore RiDDLe SeMiTONE json ${CMAKE_THREAD_LIBS_INIT} PahoMqttCpp::paho-mqttpp3-static clips mongo::bsoncxx_shared mongo::mongocxx_shared)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ROOT="${USE_ROOT}" USE_MQTT_HOST="${USE_MQTT_HOST}" USE_MQTT_PORT="${USE_MQTT_PORT}" USE_DASHBOARD_HOST="${USE_DASHBOARD_HOST}" USE_DASHBOARD_PORT=${USE_DASHBOARD_PORT} USE_DASHBOARD_LAT=${USE_DASHBOARD_LAT} USE_DASHBOARD_LNG=${USE_DASHBOARD_LNG})
 

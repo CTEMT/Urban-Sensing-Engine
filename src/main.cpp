@@ -1,8 +1,10 @@
 #include "urban_sensing_engine.h"
 #include "dashboard.h"
+#include <mongocxx/instance.hpp>
 
 int main(int argc, char const *argv[])
 {
+    mongocxx::instance inst{}; // This should be done only once.
     std::string root = USE_ROOT;
     std::string mqtt_host = USE_MQTT_HOST;
     std::string mqtt_port = USE_MQTT_PORT;

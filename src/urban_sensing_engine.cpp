@@ -5,6 +5,8 @@
 #include <sstream>
 #include <unordered_set>
 #include <chrono>
+#include <mongocxx/client.hpp>
+#include <bsoncxx/json.hpp>
 
 namespace use
 {
@@ -340,6 +342,31 @@ namespace use
         catch (const mqtt::exception &e)
         {
             LOG_ERR(e.what());
+        }
+
+        mongocxx::client conn{mongocxx::uri{"mongodb+srv://iRich:4siXvyVEVYyxfJ5@cluster0.pazoy9g.mongodb.net/?retryWrites=true&w=majority"}};
+        auto db = conn["urban_sensing_engine"];
+        auto sensor_types = db["sensor_types"];
+        auto sensor_network = db["sensor_network"];
+        auto sensor_data = db["sensor_data"];
+        sensor_data.create_index(bsoncxx::from_json("{\"sensorId\": 1, \"dateTime\": 1}"));
+
+        if (sensor_types.estimated_document_count() > 0)
+        {
+            mongocxx::cursor cursor = sensor_types.find({});
+            for (const auto &st : cursor)
+            {
+                auto j_st = bsoncxx::to_json(st);
+                std::cout << j_st << '\n';
+            }
+        }
+        else
+        {
+            std::vector<bsoncxx::document::value> documents;
+            documents.push_back(bsoncxx::from_json("{\"name\": \"air_monitoring\", \"description\": \"A type of sensor for the air monitoring\"}"));
+            documents.push_back(bsoncxx::from_json("{\"name\": \"bus\", \"description\": \"A type of sensor for the monitoring the position of buses\"}"));
+            auto ids = sensor_types.insert_many(documents)->inserted_ids();
+            std::cout << ids[0].get_string().value << '\n';
         }
     }
     void urban_sensing_engine::init()
