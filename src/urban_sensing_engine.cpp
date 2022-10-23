@@ -383,6 +383,7 @@ namespace use
             LOG_ERR(e.what());
         }
 
+        /*
         mongocxx::client conn{mongocxx::uri{"mongodb+srv://iRich:4siXvyVEVYyxfJ5@cluster0.pazoy9g.mongodb.net/?retryWrites=true&w=majority"}};
         auto db = conn["urban_sensing_engine"];
         auto sensor_types = db["sensor_types"];
@@ -407,6 +408,7 @@ namespace use
             auto ids = sensor_types.insert_many(documents)->inserted_ids();
             std::cout << ids[0].get_string().value << '\n';
         }
+        */
     }
     void urban_sensing_engine::init()
     {

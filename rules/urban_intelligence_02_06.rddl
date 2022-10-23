@@ -27,4 +27,4 @@ goal rm1 = new agnt.RoadMaintainance(r:r1);
 rm1.start >= bm1.end;
 rm1.start >= gm1.end;
 
-origin >= 20.0;
+origin >= 10.0;

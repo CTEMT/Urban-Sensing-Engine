@@ -5,6 +5,7 @@ const monitoring_tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}
 }).addTo(monitoring_map);
 
 const bus_icon = L.icon({ iconUrl: 'static/figures/bus.png' });
+bus_icon.options.iconSize = [32, 32];
 const buses = new Map();
 
 const toast_container = document.getElementById('toast-container');
@@ -88,7 +89,7 @@ function show_message(message) {
 }
 
 function show_map_message(lat, lng, message) {
-    const popup = L.popup().setLatLng([lat, lng]).setContent(message).openOn(monitoring_map);
+    const popup = L.popup({ autoClose: false }).setLatLng([lat, lng]).setContent(message).openOn(monitoring_map);
 }
 
 function show_bus_message(bus, lat, lng, message) {
@@ -99,7 +100,7 @@ function show_bus_message(bus, lat, lng, message) {
     } else {
         const bus_marker = L.marker([lat, lng], { icon: bus_icon });
         bus_marker.bindTooltip(message);
-        bus_marker.addTo(map);
+        bus_marker.addTo(monitoring_map);
         buses.set(bus, bus_marker);
     }
 }

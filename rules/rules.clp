@@ -39,7 +39,7 @@
     ?val <- (sensor_value (sensor_id ?id) (val ?lat ?lng))
     ?bus <- (sensor (id ?id) (sensor_type bus))
     =>
-    (send_map_message ?ptr ?id ?lat ?lng (str-cat "Nr. vettura: " ?id))
+    (send_bus_message ?ptr ?id ?lat ?lng (str-cat "Nr. vettura: " ?id))
     (modify ?bus (location ?lat ?lng))
     (retract ?val)
 )
