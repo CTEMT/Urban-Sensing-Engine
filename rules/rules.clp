@@ -35,19 +35,20 @@
 )
 
 (defrule notify_bus_position
+    (configuration (engine_ptr ?ptr))
     ?val <- (sensor_value (sensor_id ?id) (val ?lat ?lng))
     ?bus <- (sensor (id ?id) (sensor_type bus))
     =>
-    (println (str-cat "L'autobus " ?id " si trova alle coordinate [" ?lat ", " ?lng "]"))
+    (send_map_message ?ptr ?id ?lat ?lng (str-cat "Nr. vettura: " ?id))
     (modify ?bus (location ?lat ?lng))
     (retract ?val)
 )
 
 (defrule air_quality_warning
+    (configuration (engine_ptr ?ptr))
     ?val <- (sensor_value (sensor_id ?s) (val ?pm10 ?pm2_5))
     (sensor (id ?s) (sensor_type air_monitoring) (location ?lat ?lng))
     (test (or (> ?pm10 40) (> ?pm2_5 25)))
-    (configuration (engine_ptr ?ptr))
     =>
     (send_map_message ?ptr warning ?lat ?lng (str-cat "Attenzione! La qualità dell'aria percepita dal sensore " ?s " ha superato i limiti di soglia"))
     (retract ?val)

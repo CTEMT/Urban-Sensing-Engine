@@ -74,6 +74,44 @@ namespace use
         }
     }
 
+    void send_bus_message([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
+    {
+        UDFValue engine_ptr;
+        if (!UDFFirstArgument(udfc, NUMBER_BITS, &engine_ptr))
+            return;
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(engine_ptr.integerValue->contents);
+
+        UDFValue bus;
+        if (!UDFNextArgument(udfc, SYMBOL_BIT, &bus))
+            return;
+
+        UDFValue lat;
+        if (!UDFNextArgument(udfc, NUMBER_BITS, &lat))
+            return;
+
+        UDFValue lng;
+        if (!UDFNextArgument(udfc, NUMBER_BITS, &lng))
+            return;
+
+        UDFValue content;
+        if (!UDFNextArgument(udfc, STRING_BIT, &content))
+            return;
+
+        if (e.mqtt_client.is_connected())
+        {
+            json::json msg;
+            msg["type"] = "bus_message";
+            msg["bus"] = bus.lexemeValue->contents;
+            json::object loc;
+            loc["lat"] = lat.floatValue->contents;
+            loc["lng"] = lng.floatValue->contents;
+            msg["location"] = std::move(loc);
+            msg["content"] = content.lexemeValue->contents;
+
+            e.mqtt_client.publish(mqtt::make_message(e.root + MESSAGE_TOPIC, msg.dump()));
+        }
+    }
+
     void new_solver(Environment *env, UDFContext *udfc, UDFValue *out)
     {
         LOG_DEBUG("Creating new solver..");
@@ -321,6 +359,7 @@ namespace use
 
         AddUDF(env, "send_message", "v", 3, 3, "lys", send_message, "send_message", NULL);
         AddUDF(env, "send_map_message", "v", 5, 5, "lydds", send_map_message, "send_map_message", NULL);
+        AddUDF(env, "send_bus_message", "v", 5, 5, "lydds", send_bus_message, "send_bus_message", NULL);
         AddUDF(env, "new_solver", "l", 1, 1, "l", new_solver, "new_solver", NULL);
         AddUDF(env, "read_script", "v", 2, 2, "ls", read_script, "read_script", NULL);
         AddUDF(env, "read_files", "v", 2, 2, "lm", read_files, "read_files", NULL);

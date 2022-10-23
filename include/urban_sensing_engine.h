@@ -62,6 +62,7 @@ namespace use
 
     friend void send_message(Environment *env, UDFContext *udfc, UDFValue *out);
     friend void send_map_message(Environment *env, UDFContext *udfc, UDFValue *out);
+    friend void send_bus_message(Environment *env, UDFContext *udfc, UDFValue *out);
 
     friend void new_solver(Environment *env, UDFContext *udfc, UDFValue *out);
     friend void read_script(Environment *env, UDFContext *udfc, UDFValue *out);

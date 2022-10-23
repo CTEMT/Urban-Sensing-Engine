@@ -4,6 +4,9 @@ const monitoring_tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(monitoring_map);
 
+const bus_icon = L.icon({ iconUrl: 'static/figures/bus.png' });
+const buses = new Map();
+
 const toast_container = document.getElementById('toast-container');
 
 const solvers = new Map();
@@ -86,6 +89,19 @@ function show_message(message) {
 
 function show_map_message(lat, lng, message) {
     const popup = L.popup().setLatLng([lat, lng]).setContent(message).openOn(monitoring_map);
+}
+
+function show_bus_message(bus, lat, lng, message) {
+    if (buses.has(bus)) {
+        const bus_marker = buses.get(bus);
+        bus_marker.setLatLng([lat, lng]);
+        bus_marker.bindTooltip(message);
+    } else {
+        const bus_marker = L.marker([lat, lng], { icon: bus_icon });
+        bus_marker.bindTooltip(message);
+        bus_marker.addTo(map);
+        buses.set(bus, bus_marker);
+    }
 }
 
 function set_solvers(current_solvers) {
@@ -987,6 +1003,9 @@ function setup_ws() {
                 break;
             case 'map_message':
                 show_map_message(c_msg.location.lat, c_msg.location.lng, c_msg.content)
+                break;
+            case 'bus_message':
+                show_bus_message(c_msg.bus, c_msg.location.lat, c_msg.location.lng, c_msg.content)
                 break;
             case 'solvers':
                 set_solvers(c_msg.solvers);
