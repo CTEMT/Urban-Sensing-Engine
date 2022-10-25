@@ -67,6 +67,7 @@ int main(int argc, char const *argv[])
     json::json s0_temp;
     json::json s3_air_quality;
     json::json bus_1_bus;
+    json::json bus_2_bus;
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
     bus_1_bus["lat"] = 37.508;
@@ -75,6 +76,13 @@ int main(int argc, char const *argv[])
     std::cout << bus_1_bus.dump() << "\n"
               << std::endl;
     mqtt_client.publish(mqtt::make_message(root + "/sensor/bus_1", bus_1_bus.dump()));
+
+    bus_2_bus["lat"] = 37.5145;
+    bus_2_bus["lng"] = 15.1016;
+    std::cout << "Updating position for bus bus_2:\n";
+    std::cout << bus_2_bus.dump() << "\n"
+              << std::endl;
+    mqtt_client.publish(mqtt::make_message(root + "/sensor/bus_2", bus_2_bus.dump()));
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
     s3_air_quality["pm10"] = 6.2;
@@ -92,6 +100,13 @@ int main(int argc, char const *argv[])
               << std::endl;
     mqtt_client.publish(mqtt::make_message(root + "/sensor/bus_1", bus_1_bus.dump()));
 
+    bus_2_bus["lat"] = 37.5159;
+    bus_2_bus["lng"] = 15.0972;
+    std::cout << "Updating position for bus bus_2:\n";
+    std::cout << bus_2_bus.dump() << "\n"
+              << std::endl;
+    mqtt_client.publish(mqtt::make_message(root + "/sensor/bus_2", bus_2_bus.dump()));
+
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     s0_temp["temperature"] = 39.5;
     std::cout << "Updating temperature for sensor s0:\n";
@@ -106,6 +121,13 @@ int main(int argc, char const *argv[])
     std::cout << bus_1_bus.dump() << "\n"
               << std::endl;
     mqtt_client.publish(mqtt::make_message(root + "/sensor/bus_1", bus_1_bus.dump()));
+
+    bus_2_bus["lat"] = 37.5165;
+    bus_2_bus["lng"] = 15.0951;
+    std::cout << "Updating position for bus bus_2:\n";
+    std::cout << bus_2_bus.dump() << "\n"
+              << std::endl;
+    mqtt_client.publish(mqtt::make_message(root + "/sensor/bus_2", bus_2_bus.dump()));
 
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
     s3_air_quality["pm10"] = 26.2;
