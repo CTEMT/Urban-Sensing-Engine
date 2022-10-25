@@ -4,6 +4,8 @@ const monitoring_tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(monitoring_map);
 
+monitoring_map.on('click', (e) => L.popup().setLatLng(e.latlng).setContent("You clicked the map at " + e.latlng.toString()).openOn(monitoring_map));
+
 const buses = new Map();
 
 const toast_container = document.getElementById('toast-container');

@@ -27,9 +27,11 @@
 )
 
 (defrule maintenance_request
+    (configuration (engine_ptr ?ptr))
     ?p_data <- (participatory_data (participatory_type road_failure))
     (solver (solver_ptr ?slv) (solver_type maintenance))
     =>
+    (send_map_message ?ptr warning 37.503768 15.095338 (str-cat "Attenzione! È stato segnalato un significativo deterioramento del manto stradale"))
     (read_files ?slv (create$ "rules/urban_intelligence_domain.rddl" "rules/urban_intelligence_02_06.rddl"))
     (retract ?p_data)
 )

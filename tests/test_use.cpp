@@ -166,6 +166,27 @@ int main(int argc, char const *argv[])
               << std::endl;
     mqtt_client.publish(mqtt::make_message(root + "/sensor/s0", s0_temp.dump()));
 
+    bus_1_bus["lat"] = 37.5075;
+    bus_1_bus["lng"] = 15.088;
+    std::cout << "Updating position for bus bus_1:\n";
+    std::cout << bus_1_bus.dump() << "\n"
+              << std::endl;
+    mqtt_client.publish(mqtt::make_message(root + "/sensor/bus_1", bus_1_bus.dump()));
+
+    bus_2_bus["lat"] = 37.5176;
+    bus_2_bus["lng"] = 15.0937;
+    std::cout << "Updating position for bus bus_2:\n";
+    std::cout << bus_2_bus.dump() << "\n"
+              << std::endl;
+    mqtt_client.publish(mqtt::make_message(root + "/sensor/bus_2", bus_2_bus.dump()));
+
+    bus_3_bus["lat"] = 37.5144;
+    bus_3_bus["lng"] = 15.0748;
+    std::cout << "Updating position for bus bus_3:\n";
+    std::cout << bus_3_bus.dump() << "\n"
+              << std::endl;
+    mqtt_client.publish(mqtt::make_message(root + "/sensor/bus_3", bus_3_bus.dump()));
+
     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     s0_temp["temperature"] = 39.3;
     std::cout << "Updating temperature for sensor s0:\n";
