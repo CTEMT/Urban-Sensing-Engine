@@ -95,10 +95,11 @@ function show_map_message(lat, lng, message) {
 function show_bus_message(bus, lat, lng, message) {
     if (buses.has(bus)) {
         const bus_marker = buses.get(bus);
-        bus_marker.setLatLng([lat, lng]);
+        bus_marker.setLine([[lat, lng]]);
         bus_marker.bindTooltip(message);
+        bus_marker.start();
     } else {
-        const bus_marker = L.marker([lat, lng], { icon: bus_icon });
+        const bus_marker = L.animatedMarker([[lat, lng]], { icon: bus_icon, autoStart: false });
         bus_marker.bindTooltip(message);
         bus_marker.addTo(monitoring_map);
         buses.set(bus, bus_marker);
