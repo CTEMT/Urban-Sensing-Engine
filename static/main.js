@@ -22,28 +22,25 @@ function init_map(lat, lng) {
 var degraded_road_surface = [
     { lat: 37.504054, lng: 15.095713, count: 2 },
     { lat: 37.503949, lng: 15.095316, count: 3 },
-    { lat: 37.504821, lng: 15.081968, count: 1 },
+    { lat: 37.504821, lng: 15.081968, count: 3 },
     { lat: 37.507453, lng: 15.087594, count: 2 },
     { lat: 37.507495, lng: 15.088255, count: 1 },
-    { lat: 37.507579, lng: 15.088758, count: 2 }];
+    { lat: 37.507579, lng: 15.088758, count: 2 },
+    { lat: 37.507650, lng: 15.089625, count: 1 }];
 
 var architecutral_barriers = [
-    { lat: 37.5078772, lng: 15.0970304, count: 3 },
-    { lat: 37.5070772, lng: 15.0770304, count: 2 },
-    { lat: 37.5060772, lng: 15.0820324, count: 2 },
-    { lat: 37.5050772, lng: 15.0735324, count: 2 },
-    { lat: 37.5050772, lng: 15.0925304, count: 2 },
-    { lat: 37.5100772, lng: 15.0835334, count: 2 },
-    { lat: 37.5200772, lng: 15.0825334, count: 2 }];
+    { lat: 37.509425, lng: 15.085690, count: 2 },
+    { lat: 37.509257, lng: 15.085796, count: 3 },
+    { lat: 37.509048, lng: 15.085928, count: 2 },
+    { lat: 37.503908, lng: 15.088758, count: 3 },
+    { lat: 37.502279, lng: 15.083475, count: 2 },
+    { lat: 37.503683, lng: 15.089063, count: 2 }];
 
 var damaged_street_forniture = [
-    { lat: 37.5078772, lng: 15.0970304, count: 3 },
-    { lat: 37.5070772, lng: 15.0770304, count: 2 },
-    { lat: 37.5060772, lng: 15.0820324, count: 2 },
-    { lat: 37.5050772, lng: 15.0735324, count: 2 },
-    { lat: 37.5050772, lng: 15.0925304, count: 2 },
-    { lat: 37.5100772, lng: 15.0835334, count: 2 },
-    { lat: 37.5200772, lng: 15.0825334, count: 2 }];
+    { lat: 37.511670, lng: 15.083204, count: 2 },
+    { lat: 37.510957, lng: 15.082781, count: 2 },
+    { lat: 37.507883, lng: 15.091744, count: 2 },
+    { lat: 37.507600, lng: 15.090551, count: 2 }];
 
 var participatory_cfg = {
     'radius': 0.001,
