@@ -14,7 +14,7 @@ let ws;
 setup_ws();
 
 function init_map(lat, lng) {
-    monitoring_map.setView([lat, lng], 16);
+    monitoring_map.setView([lat, lng], 15);
 }
 
 var participatory_data_1 = [
