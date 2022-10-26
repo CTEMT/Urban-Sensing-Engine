@@ -16,7 +16,7 @@ let ws;
 setup_ws();
 
 function init_map(lat, lng) {
-    monitoring_map.setView([lat, lng], 15);
+    monitoring_map.setView([lat, lng], 16);
 }
 
 var degraded_road_surface = [
@@ -42,6 +42,63 @@ var damaged_street_forniture = [
     { lat: 37.507883, lng: 15.091744, count: 2 },
     { lat: 37.507600, lng: 15.090551, count: 2 }];
 
+var identity_and_memory_places = [
+    { lat: 37.507407, lng: 15.085563, count: 2 },
+    { lat: 37.504544, lng: 15.081036, count: 2 },
+    { lat: 37.504328, lng: 15.080604, count: 2 },
+    { lat: 37.502944, lng: 15.082703, count: 3 },
+    { lat: 37.502865, lng: 15.083737, count: 3 },
+    { lat: 37.504321, lng: 15.085058, count: 2 },
+    { lat: 37.503996, lng: 15.084837, count: 2 },
+    { lat: 37.503554, lng: 15.084768, count: 3 },
+    { lat: 37.503768, lng: 15.087284, count: 3 },
+    { lat: 37.504358, lng: 15.090551, count: 3 },
+    { lat: 37.502218, lng: 15.086984, count: 3 },
+    { lat: 37.502431, lng: 15.087046, count: 2 },
+    { lat: 37.502406, lng: 15.087200, count: 3 },
+    { lat: 37.501689, lng: 15.087595, count: 3 },
+    { lat: 37.499274, lng: 15.084127, count: 3 },
+    { lat: 37.498913, lng: 15.084907, count: 3 },
+    { lat: 37.500915, lng: 15.093043, count: 2 },
+    { lat: 37.501022, lng: 15.093701, count: 2 }];
+
+var cultural_places = [
+    { lat: 37.504215, lng: 15.090217, count: 2 },
+    { lat: 37.504229, lng: 15.090011, count: 2 },
+    { lat: 37.504122, lng: 15.090138, count: 3 },
+    { lat: 37.503564, lng: 15.086726, count: 2 },
+    { lat: 37.502079, lng: 15.087664, count: 2 },
+    { lat: 37.503340, lng: 15.086606, count: 2 },
+    { lat: 37.503571, lng: 15.079660, count: 2 },
+    { lat: 37.503836, lng: 15.080036, count: 1 },
+    { lat: 37.503736, lng: 15.079160, count: 2 },
+    { lat: 37.503637, lng: 15.092923, count: 2 },
+    { lat: 37.502943, lng: 15.090241, count: 3 },
+    { lat: 37.502803, lng: 15.090064, count: 1 },
+    { lat: 37.503773, lng: 15.087568, count: 3 },
+    { lat: 37.502585, lng: 15.084373, count: 2 }];
+
+var places_of_focialization = [
+    { lat: 37.510373, lng: 15.083056, count: 2 },
+    { lat: 37.510305, lng: 15.083437, count: 1 },
+    { lat: 37.510190, lng: 15.082992, count: 3 },
+    { lat: 37.509843, lng: 15.082937, count: 2 },
+    { lat: 37.507360, lng: 15.085950, count: 1 },
+    { lat: 37.507404, lng: 15.086731, count: 3 },
+    { lat: 37.505917, lng: 15.086793, count: 3 },
+    { lat: 37.504973, lng: 15.086856, count: 2 },
+    { lat: 37.504877, lng: 15.086668, count: 1 },
+    { lat: 37.504353, lng: 15.086820, count: 2 },
+    { lat: 37.503697, lng: 15.086983, count: 2 },
+    { lat: 37.503661, lng: 15.087269, count: 3 },
+    { lat: 37.503487, lng: 15.087059, count: 3 },
+    { lat: 37.502595, lng: 15.087596, count: 2 },
+    { lat: 37.502659, lng: 15.087891, count: 2 },
+    { lat: 37.501605, lng: 15.088173, count: 2 },
+    { lat: 37.501241, lng: 15.087901, count: 2 },
+    { lat: 37.504229, lng: 15.090334, count: 3 },
+    { lat: 37.504460, lng: 15.090752, count: 2 }];
+
 var participatory_cfg = {
     'radius': 0.001,
     'maxOpacity': .7,
@@ -58,16 +115,25 @@ const participatory_data_change = (event) => {
     const spa_1 = document.getElementById('show_degraded_road_surface');
     const spa_2 = document.getElementById('show_architecutral_barriers');
     const spa_3 = document.getElementById('show_damaged_street_forniture');
+    const spa_4 = document.getElementById('show_identity_and_memory_places');
+    const spa_5 = document.getElementById('show_cultural_places');
+    const spa_6 = document.getElementById('show_places_of_focialization');
     const c_data = [];
     if (spa_1.checked) c_data.push(...degraded_road_surface);
     if (spa_2.checked) c_data.push(...architecutral_barriers);
     if (spa_3.checked) c_data.push(...damaged_street_forniture);
+    if (spa_4.checked) c_data.push(...identity_and_memory_places);
+    if (spa_5.checked) c_data.push(...cultural_places);
+    if (spa_6.checked) c_data.push(...places_of_focialization);
     participatory_layer.setData({ max: 3, data: c_data });
 };
 
 document.getElementById('show_degraded_road_surface').addEventListener('change', participatory_data_change);
 document.getElementById('show_architecutral_barriers').addEventListener('change', participatory_data_change);
 document.getElementById('show_damaged_street_forniture').addEventListener('change', participatory_data_change);
+document.getElementById('show_identity_and_memory_places').addEventListener('change', participatory_data_change);
+document.getElementById('show_cultural_places').addEventListener('change', participatory_data_change);
+document.getElementById('show_places_of_focialization').addEventListener('change', participatory_data_change);
 
 document.getElementById('CO2Production').addEventListener('change', (event) => {
     if (event.currentTarget.checked)
