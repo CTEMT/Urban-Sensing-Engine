@@ -19,7 +19,7 @@ function init_map(lat, lng) {
     monitoring_map.setView([lat, lng], 16);
 }
 
-var degraded_road_surface = [
+const degraded_road_surface = [
     { lat: 37.504054, lng: 15.095713, count: 2 },
     { lat: 37.503949, lng: 15.095316, count: 3 },
     { lat: 37.504821, lng: 15.081968, count: 3 },
@@ -28,7 +28,7 @@ var degraded_road_surface = [
     { lat: 37.507579, lng: 15.088758, count: 2 },
     { lat: 37.507650, lng: 15.089625, count: 1 }];
 
-var architecutral_barriers = [
+const architecutral_barriers = [
     { lat: 37.509425, lng: 15.085690, count: 2 },
     { lat: 37.509257, lng: 15.085796, count: 3 },
     { lat: 37.509048, lng: 15.085928, count: 2 },
@@ -36,13 +36,13 @@ var architecutral_barriers = [
     { lat: 37.502279, lng: 15.083475, count: 2 },
     { lat: 37.503683, lng: 15.089063, count: 2 }];
 
-var damaged_street_forniture = [
+const damaged_street_forniture = [
     { lat: 37.511670, lng: 15.083204, count: 2 },
     { lat: 37.510957, lng: 15.082781, count: 2 },
     { lat: 37.507883, lng: 15.091744, count: 2 },
     { lat: 37.507600, lng: 15.090551, count: 2 }];
 
-var identity_and_memory_places = [
+const identity_and_memory_places = [
     { lat: 37.507407, lng: 15.085563, count: 2 },
     { lat: 37.504544, lng: 15.081036, count: 2 },
     { lat: 37.504328, lng: 15.080604, count: 2 },
@@ -62,7 +62,7 @@ var identity_and_memory_places = [
     { lat: 37.500915, lng: 15.093043, count: 2 },
     { lat: 37.501022, lng: 15.093701, count: 2 }];
 
-var cultural_places = [
+const cultural_places = [
     { lat: 37.504215, lng: 15.090217, count: 2 },
     { lat: 37.504229, lng: 15.090011, count: 2 },
     { lat: 37.504122, lng: 15.090138, count: 3 },
@@ -78,7 +78,7 @@ var cultural_places = [
     { lat: 37.503773, lng: 15.087568, count: 3 },
     { lat: 37.502585, lng: 15.084373, count: 2 }];
 
-var places_of_focialization = [
+const places_of_focialization = [
     { lat: 37.510373, lng: 15.083056, count: 2 },
     { lat: 37.510305, lng: 15.083437, count: 1 },
     { lat: 37.510190, lng: 15.082992, count: 3 },
@@ -99,7 +99,67 @@ var places_of_focialization = [
     { lat: 37.504229, lng: 15.090334, count: 3 },
     { lat: 37.504460, lng: 15.090752, count: 2 }];
 
-var participatory_cfg = {
+const identity_core = [
+    [37.50756, 15.085387],
+    [37.506555, 15.085671],
+    [37.506444, 15.084873],
+    [37.503279, 15.084807],
+    [37.503043, 15.082521],
+    [37.502248, 15.082534],
+    [37.502519, 15.084768],
+    [37.50182, 15.084973],
+    [37.50149, 15.083512],
+    [37.499736, 15.083913],
+    [37.498714, 15.083742],
+    [37.498284, 15.084231],
+    [37.498413, 15.085146],
+    [37.499239, 15.085194],
+    [37.499618, 15.084748],
+    [37.500868, 15.084781],
+    [37.50113, 15.085179],
+    [37.501394, 15.085059],
+    [37.501512, 15.085458],
+    [37.501819, 15.086439],
+    [37.501591, 15.086585],
+    [37.50188, 15.087069],
+    [37.502236, 15.086976],
+    [37.50235, 15.087504],
+    [37.503407, 15.087236],
+    [37.503457, 15.087532],
+    [37.503902, 15.087426],
+    [37.50383, 15.086812],
+    [37.503394, 15.086931]
+];
+
+const cultural_core = [
+    [37.503037, 15.080876],
+    [37.502097, 15.08104],
+    [37.502733, 15.087351],
+    [37.503408, 15.087187],
+    [37.503388, 15.08706],
+    [37.503749, 15.086956],
+    [37.503799, 15.087353],
+    [37.503426, 15.087457],
+    [37.503389, 15.08732],
+    [37.502798, 15.08747],
+    [37.503213, 15.09086],
+    [37.504361, 15.0907]
+];
+
+const socialization_core = [
+    [37.50979, 15.082891],
+    [37.50911, 15.082763],
+    [37.5079, 15.083075],
+    [37.50736, 15.084144],
+    [37.5076, 15.086235],
+    [37.50171, 15.087721],
+    [37.50114, 15.087672],
+    [37.50096, 15.088088],
+    [37.50139, 15.08842],
+    [37.50169, 15.088327]
+];
+
+const participatory_cfg = {
     'radius': 0.001,
     'maxOpacity': .7,
     'scaleRadius': true,
@@ -108,10 +168,10 @@ var participatory_cfg = {
     lngField: 'lng',
     valueField: 'count'
 };
-const participatory_layer = new HeatmapOverlay(participatory_cfg);
-participatory_layer.addTo(monitoring_map);
+const heatmap_layer = new HeatmapOverlay(participatory_cfg);
+heatmap_layer.addTo(monitoring_map);
 
-const participatory_data_change = (event) => {
+const heatmap_data_change = (event) => {
     const spa_1 = document.getElementById('show_degraded_road_surface');
     const spa_2 = document.getElementById('show_architecutral_barriers');
     const spa_3 = document.getElementById('show_damaged_street_forniture');
@@ -125,15 +185,40 @@ const participatory_data_change = (event) => {
     if (spa_4.checked) c_data.push(...identity_and_memory_places);
     if (spa_5.checked) c_data.push(...cultural_places);
     if (spa_6.checked) c_data.push(...places_of_focialization);
-    participatory_layer.setData({ max: 3, data: c_data });
+    heatmap_layer.setData({ max: 3, data: c_data });
 };
 
-document.getElementById('show_degraded_road_surface').addEventListener('change', participatory_data_change);
-document.getElementById('show_architecutral_barriers').addEventListener('change', participatory_data_change);
-document.getElementById('show_damaged_street_forniture').addEventListener('change', participatory_data_change);
-document.getElementById('show_identity_and_memory_places').addEventListener('change', participatory_data_change);
-document.getElementById('show_cultural_places').addEventListener('change', participatory_data_change);
-document.getElementById('show_places_of_focialization').addEventListener('change', participatory_data_change);
+var identity_core_polyline = L.polyline(identity_core, { color: 'red' });
+var cultural_core_polyline = L.polyline(cultural_core, { color: 'green' });
+var socialization_core_polyline = L.polyline(socialization_core, { color: 'blue' });
+
+document.getElementById('show_degraded_road_surface').addEventListener('change', heatmap_data_change);
+document.getElementById('show_architecutral_barriers').addEventListener('change', heatmap_data_change);
+document.getElementById('show_damaged_street_forniture').addEventListener('change', heatmap_data_change);
+document.getElementById('show_identity_and_memory_places').addEventListener('change', heatmap_data_change);
+document.getElementById('show_cultural_places').addEventListener('change', heatmap_data_change);
+document.getElementById('show_places_of_focialization').addEventListener('change', heatmap_data_change);
+
+document.getElementById('show_identity_core').addEventListener('change', (event) => {
+    if (event.currentTarget.checked)
+        monitoring_map.addLayer(identity_core_polyline);
+    else
+        monitoring_map.removeLayer(identity_core_polyline);
+});
+
+document.getElementById('show_cultural_core').addEventListener('change', (event) => {
+    if (event.currentTarget.checked)
+        monitoring_map.addLayer(cultural_core_polyline);
+    else
+        monitoring_map.removeLayer(cultural_core_polyline);
+});
+
+document.getElementById('show_socialization_core').addEventListener('change', (event) => {
+    if (event.currentTarget.checked)
+        monitoring_map.addLayer(socialization_core_polyline);
+    else
+        monitoring_map.removeLayer(socialization_core_polyline);
+});
 
 document.getElementById('CO2Production').addEventListener('change', (event) => {
     if (event.currentTarget.checked)
