@@ -188,9 +188,9 @@ const heatmap_data_change = (event) => {
     heatmap_layer.setData({ max: 3, data: c_data });
 };
 
-var identity_core_polyline = L.polyline(identity_core, { color: 'red' });
-var cultural_core_polyline = L.polyline(cultural_core, { color: 'green' });
-var socialization_core_polyline = L.polyline(socialization_core, { color: 'blue' });
+var identity_core_polyline = L.polyline(identity_core, { color: 'red', weight: 4 });
+var cultural_core_polyline = L.polyline(cultural_core, { color: 'green', weight: 4 });
+var socialization_core_polyline = L.polyline(socialization_core, { color: 'blue', weight: 4 });
 
 document.getElementById('show_degraded_road_surface').addEventListener('change', heatmap_data_change);
 document.getElementById('show_architecutral_barriers').addEventListener('change', heatmap_data_change);
@@ -257,7 +257,7 @@ function show_bus_message(bus, lat, lng, message) {
         bus_marker.start();
     } else {
         const bus_icon = L.icon({ iconUrl: 'static/figures/bus.png' });
-        bus_icon.options.iconSize = [32, 32];
+        bus_icon.options.iconSize = [16, 16];
         const bus_marker = L.animatedMarker([[lat, lng]], { icon: bus_icon, autoStart: false });
         bus_marker.bindTooltip(message);
         bus_marker.addTo(monitoring_map);
