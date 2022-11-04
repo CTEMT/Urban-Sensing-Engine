@@ -4,6 +4,7 @@
 #include "mqtt/async_client.h"
 #include "clips.h"
 #include "timer.h"
+#include "mongo_client.h"
 #include <unordered_set>
 
 namespace use
@@ -50,7 +51,7 @@ namespace use
     friend class use_executor;
 
   public:
-    urban_sensing_engine(const std::string &root, const std::string &server_uri = "tcp://localhost:1883", const std::string &client_id = "urban_sensing_engine");
+    urban_sensing_engine(const std::string &root, const std::string &server_uri = "tcp://localhost:1883", const std::string &db_uri = "mongodb://localhost:27017", const std::string &client_id = "urban_sensing_engine");
     ~urban_sensing_engine();
 
     void connect();
@@ -72,6 +73,7 @@ namespace use
   private:
     const std::string root;
     mqtt::async_client mqtt_client;
+    mongo_client db_client;
     mqtt::connect_options options;
     mqtt_callback msg_callback;
     ratio::time::timer use_timer;

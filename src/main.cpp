@@ -10,6 +10,8 @@ int main(int argc, char const *argv[])
     std::string mqtt_port = USE_MQTT_PORT;
     std::string dashboard_host = USE_DASHBOARD_HOST;
     unsigned short dashboard_port = USE_DASHBOARD_PORT;
+    std::string mongodb_host = USE_MONGODB_HOST;
+    std::string mongodb_port = USE_MONGODB_PORT;
 
     for (int i = 1; i < argc - 1; i++)
         if (strcmp(argv[i], "-mqtt_host") == 0)
@@ -20,10 +22,14 @@ int main(int argc, char const *argv[])
             dashboard_host = std::string(argv[++i]);
         else if (strcmp(argv[i], "-dashboard_port") == 0)
             dashboard_port = std::stoi(argv[++i]);
+        else if (strcmp(argv[i], "-mongodb_host") == 0)
+            mongodb_host = std::string(argv[++i]);
+        else if (strcmp(argv[i], "-mongodb_port") == 0)
+            mongodb_port = std::stoi(argv[++i]);
         else if (strcmp(argv[i], "-root") == 0)
             dashboard_host = std::string(argv[++i]);
 
-    use::urban_sensing_engine use(root, mqtt_host + ":" + mqtt_port);
+    use::urban_sensing_engine use(root, mqtt_host + ":" + mqtt_port, "mongodb://" + mongodb_host + ":" + mongodb_port);
     use.connect();
     use.init();
 

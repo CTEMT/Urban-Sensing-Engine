@@ -27,6 +27,8 @@ set(USE_MQTT_HOST "tcp://127.0.0.1" CACHE STRING "The Urban Sensing & Planning E
 set(USE_MQTT_PORT "1883" CACHE STRING "The Urban Sensing & Planning Engine MQTT Port")
 set(USE_DASHBOARD_HOST "127.0.0.1" CACHE STRING "The Urban Sensing & Planning Engine Dashboard Host")
 set(USE_DASHBOARD_PORT "8080" CACHE STRING "The Urban Sensing & Planning Engine Dashboard Port")
+set(USE_MONGODB_HOST "localhost" CACHE STRING "The Urban Sensing & Planning Engine MongoDB Host")
+set(USE_MONGODB_PORT "27017" CACHE STRING "The Urban Sensing & Planning Engine MongoDB Port")
 set(LOCATION Catania CACHE STRING "Dashboard location")
 set_property(CACHE LOCATION PROPERTY STRINGS Matera Catania)
 
@@ -60,7 +62,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURR
 target_link_directories(${PROJECT_NAME} PUBLIC ${CLIPS_LIB_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE PlExA oRatioSolver ratioCore RiDDLe SeMiTONE json ${CMAKE_THREAD_LIBS_INIT} PahoMqttCpp::paho-mqttpp3-static clips mongo::bsoncxx_shared mongo::mongocxx_shared)
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ROOT="${USE_ROOT}" USE_MQTT_HOST="${USE_MQTT_HOST}" USE_MQTT_PORT="${USE_MQTT_PORT}" USE_DASHBOARD_HOST="${USE_DASHBOARD_HOST}" USE_DASHBOARD_PORT=${USE_DASHBOARD_PORT} USE_DASHBOARD_LAT=${USE_DASHBOARD_LAT} USE_DASHBOARD_LNG=${USE_DASHBOARD_LNG})
+target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ROOT="${USE_ROOT}" USE_MQTT_HOST="${USE_MQTT_HOST}" USE_MQTT_PORT="${USE_MQTT_PORT}" USE_DASHBOARD_HOST="${USE_DASHBOARD_HOST}" USE_DASHBOARD_PORT=${USE_DASHBOARD_PORT} USE_DASHBOARD_LAT=${USE_DASHBOARD_LAT} USE_DASHBOARD_LNG=${USE_DASHBOARD_LNG} USE_MONGODB_HOST="${USE_MONGODB_HOST}" USE_MONGODB_PORT="${USE_MONGODB_PORT}")
 
 if(BUILD_TESTING)
     add_subdirectory(tests)
