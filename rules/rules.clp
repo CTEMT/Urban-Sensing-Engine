@@ -31,7 +31,7 @@
     ?p_data <- (participatory_data (participatory_type road_failure))
     (solver (solver_ptr ?slv) (solver_type maintenance))
     =>
-    (send_map_message ?ptr warning 37.503768 15.095338 (str-cat "Attenzione! È stato segnalato un significativo deterioramento del manto stradale"))
+    (send_map_message ?ptr warning 37.503768 15.095338 (str-cat "Attention! A significant deterioration of the road surface was reported. A maintenance plan, consistent with the other planned activities, has been created."))
     (read_files ?slv (create$ "rules/urban_intelligence_domain.rddl" "rules/urban_intelligence_02_06.rddl"))
     (retract ?p_data)
 )
@@ -52,7 +52,7 @@
     (sensor (id ?s) (sensor_type air_monitoring) (location ?lat ?lng))
     (test (or (> ?pm10 40) (> ?pm2_5 25)))
     =>
-    (send_map_message ?ptr warning ?lat ?lng (str-cat "Attenzione! La qualità dell'aria percepita dal sensore " ?s " ha superato i limiti di soglia"))
+    (send_map_message ?ptr warning ?lat ?lng (str-cat "Attention! The quality of the air perceived by the " ?s " sensor has exceeded the threshold limits."))
     (retract ?val)
 )
 
@@ -76,14 +76,14 @@
     (test (>= ?avg 37.5))
     (configuration (engine_ptr ?ptr))
     =>
-    (send_map_message ?ptr warning ?lat ?lng (str-cat "La temperatura media del sensore '" ?s "', di " ?avg "°, ha superato la soglia di guardia di 37.5°"))
+    (send_map_message ?ptr warning ?lat ?lng (str-cat "The average temperature perceived by the '" ?s "'sensor, corresponding to " ?avg "°, has exceeded the 37.5° guard threshold."))
 )
 
 (defrule prepare_road_maintainance_documents
     (configuration (engine_ptr ?ptr))
     ?t <- (task (command start) (task_type RoadMaintainanceDocuments) (vals ?dur ?end ?mt ?r ?start ?tau))
     =>
-    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", lo stato della strada " ?r " sembra essere peggiorato significativamente nell'ultimo periodo. Al fine di provvedere al suo mantenimento, sono state pianificate un'insieme di attività che porteranno alla riparazione del manto stradale. Come primo passo dovrebbe preparare i documenti per il bando di gara per l'assegnazione delle attività di manutenzione."))
+    (send_message ?ptr warning (str-cat "Dear " ?mt ", the state of the " ?r " road it seems to have worsened significantly in the last period. In order to provide for its maintenance, a set of activities have been planned that will lead to the repair of the road surface. As a first step he should prepare the tender documents for the allocation of maintenance activities."))
     (retract ?t)
 )
 
@@ -91,7 +91,7 @@
     (configuration (engine_ptr ?ptr))
     ?t <- (task (command start) (task_type RoadMaintainanceTender) (vals ?dur ?end ?mt ?r ?start ?tau))
     =>
-    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", come pianificato, è da oggi in corso la gara d'appalto per la manutenzione della strada " ?r "."))
+    (send_message ?ptr warning (str-cat "Dear " ?mt ", as planned, the tender for " ?r " road maintenance is now underway."))
     (retract ?t)
 )
 
@@ -99,7 +99,7 @@
     (configuration (engine_ptr ?ptr))
     ?t <- (task (command end) (task_type RoadMaintainanceTender) (vals ?dur ?end ?mt ?r ?start ?tau))
     =>
-    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", la gara d'appalto per la manutenzione della strada " ?r " è terminata."))
+    (send_message ?ptr warning (str-cat "Dear " ?mt ", the tender for the maintenance of the " ?r " road has ended."))
     (retract ?t)
 )
 
@@ -107,7 +107,7 @@
     (configuration (engine_ptr ?ptr))
     ?t <- (task (command start) (task_type RoadMaintainance) (vals ?dur ?end ?mt ?r ?start ?tau))
     =>
-    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", i lavori per la manutenzione della strada " ?r " sono appena cominciati."))
+    (send_message ?ptr warning (str-cat "Dear " ?mt ", the works for the maintenance of the road " ?r " have just begun."))
     (retract ?t)
 )
 
@@ -115,7 +115,7 @@
     (configuration (engine_ptr ?ptr))
     ?t <- (task (command end) (task_type RoadMaintainance) (vals ?dur ?end ?mt ?r ?start ?tau))
     =>
-    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", i lavori per la manutenzione della strada " ?r " sono appena terminati."))
+    (send_message ?ptr warning (str-cat "Dear " ?mt ", the works for the maintenance of the road " ?r " have just finished."))
     (retract ?t)
 )
 
@@ -123,7 +123,7 @@
     (configuration (engine_ptr ?ptr))
     ?t <- (task (command start) (task_type GreenSpacesMaintainanceDocuments) (vals ?dur ?end ?gs ?mt ?start ?tau))
     =>
-    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", lo stato dell'area verde " ?gs " sembra essere peggiorato significativamente nell'ultimo periodo. Al fine di provvedere al suo mantenimento, sono state pianificate un'insieme di attività che porteranno alla riparazione del manto stradale. Come primo passo dovrebbe preparare i documenti per il bando di gara per l'assegnazione delle attività di manutenzione."))
+    (send_message ?ptr warning (str-cat "Dear " ?mt ", the state of the green area " ?gs " seems to have worsened significantly in the last period. In order to provide for its maintenance, a set of activities have been planned that will lead to the repair of the road surface. As a first step he should prepare the tender documents for the allocation of maintenance activities."))
     (retract ?t)
 )
 
@@ -131,7 +131,7 @@
     (configuration (engine_ptr ?ptr))
     ?t <- (task (command start) (task_type GreenSpacesMaintainanceTender) (vals ?dur ?end ?gs ?mt ?start ?tau))
     =>
-    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", come pianificato, è da oggi in corso la gara d'appalto per la manutenzione dell'area verde " ?gs "."))
+    (send_message ?ptr warning (str-cat "Dear " ?mt ", as planned, the tender for the maintenance of the " ?gs " green area is currently underway."))
     (retract ?t)
 )
 
@@ -139,7 +139,7 @@
     (configuration (engine_ptr ?ptr))
     ?t <- (task (command end) (task_type GreenSpacesMaintainanceTender) (vals ?dur ?end ?gs ?mt ?start ?tau))
     =>
-    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", la gara d'appalto per la manutenzione dell'area verde " ?gs " è terminata."))
+    (send_message ?ptr warning (str-cat "Dear " ?mt ", the tender for the maintenance of the " ?gs " green area has ended."))
     (retract ?t)
 )
 
@@ -147,7 +147,7 @@
     (configuration (engine_ptr ?ptr))
     ?t <- (task (command start) (task_type GreenSpacesMaintainance) (vals ?dur ?end ?gs ?mt ?start ?tau))
     =>
-    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", i lavori per la riqualificazione dell'area verde " ?gs " sono appena cominciati."))
+    (send_message ?ptr warning (str-cat "Dear " ?mt ", the works for the redevelopment of the green area " ?gs " have just begun."))
     (retract ?t)
 )
 
@@ -155,6 +155,6 @@
     (configuration (engine_ptr ?ptr))
     ?t <- (task (command end) (task_type GreenSpacesMaintainance) (vals ?dur ?end ?gs ?mt ?start ?tau))
     =>
-    (send_message ?ptr warning (str-cat "Spettabile " ?mt ", i lavori per la riqualificazione dell'area verde " ?gs " sono appena terminati."))
+    (send_message ?ptr warning (str-cat "Dear " ?mt ", the works for the redevelopment of the " ?gs " green area have just finished."))
     (retract ?t)
 )

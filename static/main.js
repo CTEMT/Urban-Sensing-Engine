@@ -220,16 +220,6 @@ document.getElementById('show_socialization_core').addEventListener('change', (e
         monitoring_map.removeLayer(socialization_core_polyline);
 });
 
-document.getElementById('CO2Production').addEventListener('change', (event) => {
-    if (event.currentTarget.checked)
-        document.getElementById('buildings_img').src = 'static/figures/BS_co2.jpg';
-});
-
-document.getElementById('EnergyConsumption').addEventListener('change', (event) => {
-    if (event.currentTarget.checked)
-        document.getElementById('buildings_img').src = 'static/figures/BS_primary_energy.jpg';
-});
-
 function show_message(message) {
     const html = `<div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
                       <div class="toast-header">
@@ -283,7 +273,7 @@ function set_solvers(current_solvers) {
 
             const timelines_content_html = `
             <div class="tab-pane fade h-100 show active" id="slv-${slv}-timelines" role="tabpanel" aria-labelledby="timelines-${slv}-tab">
-                <div class="h-100" id="timelines-${slv}"></div>
+                <div class="card h-100" id="timelines-${slv}"></div>
             </div>`.trim();
             const timelines_content_template = document.createElement('template');
             timelines_content_template.innerHTML = timelines_content_html;
@@ -301,7 +291,7 @@ function set_solvers(current_solvers) {
 
             const graph_content_html = `
             <div class="tab-pane fade h-100" id="slv-${slv}-graph" role="tabpanel" aria-labelledby="graph-${slv}-tab">
-                <div class="h-100" id="graph-${slv}"></div>
+                <div class="card h-100" id="graph-${slv}"></div>
             </div>`.trim();
             const graph_content_template = document.createElement('template');
             graph_content_template.innerHTML = graph_content_html;
@@ -327,7 +317,7 @@ const flow_type_options = {
         stackType: '100%'
     },
     title: {
-        text: 'Distribuzione del tipo di flusso sui POI'
+        text: 'Distribution of the flow type on the POIs'
     },
     plotOptions: {
         bar: {
@@ -409,7 +399,7 @@ const flow_type_month_options = {
         stackType: '100%'
     },
     title: {
-        text: 'Distribuzione del  flusso per tipo di veicolo e mese'
+        text: 'Flow distribution by vehicle type and month'
     },
     plotOptions: {
         bar: {
@@ -745,7 +735,7 @@ const flow_month_options = {
         type: 'heatmap'
     },
     title: {
-        text: 'Distribuzione del traffico per POI e mese'
+        text: 'Traffic distribution by POI and month'
     },
     colors: ["#008FFB"],
     series: [{
@@ -997,7 +987,7 @@ const flow_day_options = {
         type: 'heatmap'
     },
     title: {
-        text: 'Distribuzione del traffico per POI e giorno della settimana'
+        text: 'Traffic distribution by POI and day of the week'
     },
     colors: ["#008FFB"],
     series: [{

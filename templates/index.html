@@ -29,22 +29,17 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="pills-map-tab" data-bs-toggle="pill"
                             data-bs-target="#pills-map" role="tab" aria-controls="pills-map" aria-selected="true"><i
-                                class="bi bi-pin-map"></i> Monitoraggio</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pills-buildings-tab" data-bs-toggle="pill"
-                            data-bs-target="#pills-buildings" role="tab" aria-controls="pills-buildings"
-                            aria-selected="false"><i class="bi bi-building"></i> Analisi degli edifici</button>
+                                class="bi bi-pin-map"></i> Monitoring</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="pills-statistics-tab" data-bs-toggle="pill"
                             data-bs-target="#pills-statistics" role="tab" aria-controls="pills-statistics"
-                            aria-selected="false"><i class="bi bi-bar-chart-line"></i> Statistiche</button>
+                            aria-selected="false"><i class="bi bi-bar-chart-line"></i> Statistics</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="pills-planning-tab" data-bs-toggle="pill"
                             data-bs-target="#pills-planning" role="tab" aria-controls="pills-planning"
-                            aria-selected="false"><i class="bi bi-bar-chart-steps"></i> Pianificazione</button>
+                            aria-selected="false"><i class="bi bi-bar-chart-steps"></i> Planning</button>
                     </li>
                 </ul>
             </div>
@@ -65,46 +60,31 @@
                 <input class="form-check-input" type="checkbox" value="" id="show_damaged_street_forniture">
                 <label class="form-check-label" for="show_damaged_street_forniture">Damaged street forniture</label>
             </div>
-            <div class="form-check form-check-inline m-2">
+            <div class="form-check form-check-inline m-2" hidden>
                 <input class="form-check-input" type="checkbox" value="" id="show_identity_and_memory_places">
                 <label class="form-check-label" for="show_identity_and_memory_places">Identity and memory places</label>
             </div>
-            <div class="form-check form-check-inline m-2">
+            <div class="form-check form-check-inline m-2" hidden>
                 <input class="form-check-input" type="checkbox" value="" id="show_cultural_places">
                 <label class="form-check-label" for="show_cultural_places">Cultural places</label>
             </div>
-            <div class="form-check form-check-inline m-2">
+            <div class="form-check form-check-inline m-2" hidden>
                 <input class="form-check-input" type="checkbox" value="" id="show_places_of_focialization">
                 <label class="form-check-label" for="show_places_of_focialization">Places of socialization</label>
             </div>
-            <div class="form-check form-check-inline m-2">
+            <div class="form-check form-check-inline m-2" hidden>
                 <input class="form-check-input" type="checkbox" value="" id="show_identity_core">
                 <label class="form-check-label" for="show_identity_core">Identity core</label>
             </div>
-            <div class="form-check form-check-inline m-2">
+            <div class="form-check form-check-inline m-2" hidden>
                 <input class="form-check-input" type="checkbox" value="" id="show_cultural_core">
                 <label class="form-check-label" for="show_cultural_core">Cultural core</label>
             </div>
-            <div class="form-check form-check-inline m-2">
+            <div class="form-check form-check-inline m-2" hidden>
                 <input class="form-check-input" type="checkbox" value="" id="show_socialization_core">
                 <label class="form-check-label" for="show_socialization_core">Socialization core</label>
             </div>
             <div id="map" class="card"></div>
-        </div>
-        <div class="tab-pane fade m-2" id="pills-buildings" role="tabpanel" aria-labelledby="pills-buildings-tab">
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="buildingsAnalysis" id="CO2Production"
-                    value="CO2Production" checked>
-                <label class="form-check-label" for="CO2Production">Produzione di CO2</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="buildingsAnalysis" id="EnergyConsumption"
-                    value="EnergyConsumption">
-                <label class="form-check-label" for="EnergyConsumption">Consumo di energia</label>
-            </div>
-            <div id="buildings">
-                <img id="buildings_img" src="static/figures/BS_co2.jpg" alt="CO2 production">
-            </div>
         </div>
         <div class="tab-pane fade m-2" id="pills-statistics" role="tabpanel" aria-labelledby="pills-statistics-tab">
             <div class="container">
