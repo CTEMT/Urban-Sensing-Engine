@@ -50,6 +50,13 @@ if(SOLVING_MONITORING)
     target_compile_definitions(${PROJECT_NAME} PRIVATE SOLVING_MONITORING)
 endif()
 
+option(DROP_DATABASE "Drops the whole database" OFF)
+
+message(STATUS "Drop database:          ${DROP_DATABASE}")
+if(DROP_DATABASE)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE DROP_DATABASE)
+endif()
+
 set(COMPUTE_NAMES ON CACHE BOOL "Computes the objects' names" FORCE)
 
 add_subdirectory(extern/plexa)
