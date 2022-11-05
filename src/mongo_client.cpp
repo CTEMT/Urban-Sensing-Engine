@@ -31,9 +31,7 @@ namespace use
             LOG("Retrieving all sensor types..");
             for (auto doc : sensor_types.find({}))
             {
-                std::stringstream ss;
-                ss << bsoncxx::to_json(doc);
-                auto j_st = json::load(ss);
+                auto j_st = json::load(bsoncxx::to_json(doc));
                 LOG_DEBUG("Found existing sensor type: " + j_st.dump());
 
                 json::string_val &j_id = j_st["_id"]["$oid"];

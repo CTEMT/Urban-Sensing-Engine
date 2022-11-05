@@ -44,18 +44,7 @@ elseif(LOCATION STREQUAL Catania)
 endif()
 
 option(SOLVING_MONITORING "Notify the GUI of any changes during the resolution process" OFF)
-
-message(STATUS "Solving monitoring:     ${SOLVING_MONITORING}")
-if(SOLVING_MONITORING)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE SOLVING_MONITORING)
-endif()
-
 option(DROP_DATABASE "Drops the whole database" OFF)
-
-message(STATUS "Drop database:          ${DROP_DATABASE}")
-if(DROP_DATABASE)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE DROP_DATABASE)
-endif()
 
 set(COMPUTE_NAMES ON CACHE BOOL "Computes the objects' names" FORCE)
 
@@ -70,6 +59,16 @@ target_link_directories(${PROJECT_NAME} PUBLIC ${CLIPS_LIB_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE PlExA oRatioSolver ratioCore RiDDLe SeMiTONE json ${CMAKE_THREAD_LIBS_INIT} PahoMqttCpp::paho-mqttpp3-static clips mongo::bsoncxx_shared mongo::mongocxx_shared)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ROOT="${USE_ROOT}" USE_MQTT_HOST="${USE_MQTT_HOST}" USE_MQTT_PORT="${USE_MQTT_PORT}" USE_DASHBOARD_HOST="${USE_DASHBOARD_HOST}" USE_DASHBOARD_PORT=${USE_DASHBOARD_PORT} USE_DASHBOARD_LAT=${USE_DASHBOARD_LAT} USE_DASHBOARD_LNG=${USE_DASHBOARD_LNG} USE_MONGODB_HOST="${USE_MONGODB_HOST}" USE_MONGODB_PORT="${USE_MONGODB_PORT}")
+
+message(STATUS "Solving monitoring:     ${SOLVING_MONITORING}")
+if(SOLVING_MONITORING)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE SOLVING_MONITORING)
+endif()
+
+message(STATUS "Drop database:          ${DROP_DATABASE}")
+if(DROP_DATABASE)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE DROP_DATABASE)
+endif()
 
 if(BUILD_TESTING)
     add_subdirectory(tests)

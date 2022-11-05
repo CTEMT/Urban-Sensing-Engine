@@ -27,9 +27,7 @@ namespace dashboard
 
         if (msg->get_topic() == engine.root + SOLVERS_TOPIC)
         {
-            std::stringstream ss;
-            ss << msg->get_payload();
-            auto j_solvers = json::load(ss);
+            auto j_solvers = json::load(msg->get_payload());
             json::array &c_solvers = j_solvers["solvers"];
             std::unordered_set<uintptr_t> solvers_set;
             for (const auto &j_slv : c_solvers)
@@ -75,18 +73,14 @@ namespace dashboard
         for (auto &[slv_id, slv] : engine.solvers)
             if (msg->get_topic() == engine.root + SOLVER_TOPIC + '/' + std::to_string(slv_id))
             {
-                std::stringstream ss;
-                ss << msg->get_payload();
-                auto j_state = json::load(ss);
+                auto j_state = json::load(msg->get_payload());
                 j_state["id"] = slv_id;
 
                 engine.broadcast(j_state.dump());
             }
             else if (msg->get_topic() == engine.root + SOLVER_TOPIC + '/' + std::to_string(slv_id) + "/state")
             {
-                std::stringstream ss;
-                ss << msg->get_payload();
-                auto j_state = json::load(ss);
+                auto j_state = json::load(msg->get_payload());
                 j_state["id"] = slv_id;
 
                 slv.state = std::move(j_state);
@@ -94,9 +88,7 @@ namespace dashboard
             }
             else if (msg->get_topic() == engine.root + SOLVER_TOPIC + '/' + std::to_string(slv_id) + "/graph")
             {
-                std::stringstream ss;
-                ss << msg->get_payload();
-                auto j_graph = json::load(ss);
+                auto j_graph = json::load(msg->get_payload());
                 j_graph["id"] = slv_id;
 
                 slv.graph = std::move(j_graph);

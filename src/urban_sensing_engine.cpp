@@ -237,9 +237,7 @@ namespace use
         { // The sensor network has been updated..
             LOG_DEBUG("The sensor network has been updated..");
 
-            std::stringstream ss;
-            ss << msg->get_payload();
-            auto j_sensors = json::load(ss);
+            auto j_sensors = json::load(msg->get_payload());
             json::array &sensors = j_sensors;
             std::unordered_set<std::string> sensors_set;
             for (size_t i = 0; i < sensors.size(); ++i)
@@ -292,9 +290,7 @@ namespace use
             std::string sensor_id = msg->get_topic();
             sensor_id.erase(0, (engine.root + SENSOR_TOPIC + '/').length());
             LOG_DEBUG("Sensor " + sensor_id + " has been updated..");
-            std::stringstream ss;
-            ss << msg->get_payload();
-            auto j_value = json::load(ss);
+            auto j_value = json::load(msg->get_payload());
             json::object &j_val = j_value;
 
             auto time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -317,9 +313,7 @@ namespace use
             std::string user_id = msg->get_topic();
             user_id.erase(0, (engine.root + PARTICIPATORY_TOPIC + '/').length());
 
-            std::stringstream ss;
-            ss << msg->get_payload();
-            auto j_participatory = json::load(ss);
+            auto j_participatory = json::load(msg->get_payload());
 
             json::string_val &j_type = j_participatory["type"];
             std::string participatory_type = j_type;
