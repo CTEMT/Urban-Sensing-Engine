@@ -8,41 +8,27 @@ namespace use
     mongo_client::mongo_client(const std::string &db_uri, const std::string &root) : conn{mongocxx::uri{db_uri}}, db(conn[root]), sensor_types(db["sensor_types"]), sensor_network(db["sensor_network"]), sensor_data(db["sensor_data"])
     {
 #ifdef DROP_DATABASE
+        LOG("Dropping database..");
         db.drop();
 #endif
 
         if (!db.has_collection("sensor_types"))
-        {
-            LOG("Creating sensor_types collection..");
-            std::vector<bsoncxx::document::value> documents;
-            sensor_type bus = {"", "bus", "A type of sensor for the monitoring the position of buses"};
-            sensor_type air_monitoring = {"", "air_monitoring", "A type of sensor for the air monitoring"};
-            sensor_type temperature = {"", "temperature", "A type of sensor for the monitoring the temperature"};
-            documents.push_back(bsoncxx::from_json(to_json(bus).dump()));
-            documents.push_back(bsoncxx::from_json(to_json(air_monitoring).dump()));
-            documents.push_back(bsoncxx::from_json(to_json(temperature).dump()));
-            auto ids = sensor_types.insert_many(documents)->inserted_ids();
-            sensor_types_ids.emplace(ids.at(0).get_string().value.to_string(), bus);
-            sensor_types_ids.emplace(ids.at(1).get_string().value.to_string(), air_monitoring);
-            sensor_types_ids.emplace(ids.at(2).get_string().value.to_string(), temperature);
-        }
-        else
-        {
-            LOG("Retrieving all sensor types..");
-            for (auto doc : sensor_types.find({}))
-            {
-                auto j_st = json::load(bsoncxx::to_json(doc));
-                LOG_DEBUG("Found existing sensor type: " + j_st.dump());
+            init_sensor_types();
 
-                json::string_val &j_id = j_st["_id"]["$oid"];
-                std::string id = j_id;
-                json::string_val &j_name = j_st["name"];
-                std::string name = j_name;
-                json::string_val &j_description = j_st["description"];
-                std::string description = j_description;
-                sensor_type st = {id, name, description};
-                sensor_types_ids.emplace(id, st);
-            }
+        LOG("Retrieving all sensor types..");
+        for (auto doc : sensor_types.find({}))
+        {
+            auto j_st = json::load(bsoncxx::to_json(doc));
+            LOG_DEBUG("Found existing sensor type: " + j_st.dump());
+
+            json::string_val &j_id = j_st["_id"]["$oid"];
+            std::string id = j_id;
+            json::string_val &j_name = j_st["name"];
+            std::string name = j_name;
+            json::string_val &j_description = j_st["description"];
+            std::string description = j_description;
+            sensor_type st = {id, name, description};
+            sensor_types_ids.emplace(id, st);
         }
 
         if (!db.has_collection("sensor_data"))
@@ -60,5 +46,18 @@ namespace use
         j_st["name"] = st.name;
         j_st["description"] = st.description;
         return j_st;
+    }
+
+    void mongo_client::init_sensor_types()
+    {
+        LOG("Creating sensor_types collection..");
+        std::vector<bsoncxx::document::value> documents;
+        sensor_type bus = {"", "bus", "A type of sensor for the monitoring the position of buses"};
+        sensor_type air_monitoring = {"", "air_monitoring", "A type of sensor for the air monitoring"};
+        sensor_type temperature = {"", "temperature", "A type of sensor for the monitoring the temperature"};
+        documents.push_back(bsoncxx::from_json(to_json(bus).dump()));
+        documents.push_back(bsoncxx::from_json(to_json(air_monitoring).dump()));
+        documents.push_back(bsoncxx::from_json(to_json(temperature).dump()));
+        auto ids = sensor_types.insert_many(documents)->inserted_ids();
     }
 } // namespace use

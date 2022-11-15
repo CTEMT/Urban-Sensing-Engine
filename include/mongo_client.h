@@ -18,6 +18,8 @@ namespace use
   private:
     static json::json to_json(const sensor_type &st) noexcept;
 
+    void init_sensor_types();
+
   private:
     mongocxx::client conn;
     mongocxx::v_noabi::database db;

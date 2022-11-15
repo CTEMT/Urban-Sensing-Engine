@@ -32,17 +32,6 @@ set(USE_MONGODB_PORT "27017" CACHE STRING "The Urban Sensing & Planning Engine M
 set(LOCATION Catania CACHE STRING "Dashboard location")
 set_property(CACHE LOCATION PROPERTY STRINGS Matera Catania)
 
-message(STATUS "Location:               ${LOCATION}")
-if(LOCATION STREQUAL Matera)
-    set(USE_ROOT "CTE-MT" CACHE STRING "The Urban Sensing & Planning Engine root")
-    set(USE_DASHBOARD_LAT "40.666379" CACHE STRING "The Urban Sensing & Planning Engine Map Latitude")
-    set(USE_DASHBOARD_LNG "16.604320" CACHE STRING "The Urban Sensing & Planning Engine Map Longitude")
-elseif(LOCATION STREQUAL Catania)
-    set(USE_ROOT "UISH" CACHE STRING "The Urban Sensing & Planning Engine root")
-    set(USE_DASHBOARD_LAT "37.507053" CACHE STRING "The Urban Sensing & Planning Engine Map Latitude")
-    set(USE_DASHBOARD_LNG "15.086007" CACHE STRING "The Urban Sensing & Planning Engine Map Longitude")
-endif()
-
 option(SOLVING_MONITORING "Notify the GUI of any changes during the resolution process" OFF)
 option(DROP_DATABASE "Drops the whole database" OFF)
 
@@ -58,7 +47,30 @@ target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURR
 target_link_directories(${PROJECT_NAME} PUBLIC ${CLIPS_LIB_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE PlExA oRatioSolver ratioCore RiDDLe SeMiTONE json ${CMAKE_THREAD_LIBS_INIT} PahoMqttCpp::paho-mqttpp3-static clips mongo::bsoncxx_shared mongo::mongocxx_shared)
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE USE_ROOT="${USE_ROOT}" USE_MQTT_HOST="${USE_MQTT_HOST}" USE_MQTT_PORT="${USE_MQTT_PORT}" USE_DASHBOARD_HOST="${USE_DASHBOARD_HOST}" USE_DASHBOARD_PORT=${USE_DASHBOARD_PORT} USE_DASHBOARD_LAT=${USE_DASHBOARD_LAT} USE_DASHBOARD_LNG=${USE_DASHBOARD_LNG} USE_MONGODB_HOST="${USE_MONGODB_HOST}" USE_MONGODB_PORT="${USE_MONGODB_PORT}")
+message(STATUS "Location:               ${LOCATION}")
+if(LOCATION STREQUAL Matera)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE
+        USE_ROOT="CTE-MT"
+        USE_DASHBOARD_LAT="40.666379"
+        USE_DASHBOARD_LNG="16.604320"
+        USE_MQTT_HOST="${USE_MQTT_HOST}"
+        USE_MQTT_PORT="${USE_MQTT_PORT}"
+        USE_DASHBOARD_HOST="${USE_DASHBOARD_HOST}"
+        USE_DASHBOARD_PORT=${USE_DASHBOARD_PORT}
+        USE_MONGODB_HOST="${USE_MONGODB_HOST}"
+        USE_MONGODB_PORT="${USE_MONGODB_PORT}")
+elseif(LOCATION STREQUAL Catania)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE
+        USE_ROOT="UISH"
+        USE_DASHBOARD_LAT="37.507053"
+        USE_DASHBOARD_LNG="15.086007"
+        USE_MQTT_HOST="${USE_MQTT_HOST}"
+        USE_MQTT_PORT="${USE_MQTT_PORT}"
+        USE_DASHBOARD_HOST="${USE_DASHBOARD_HOST}"
+        USE_DASHBOARD_PORT=${USE_DASHBOARD_PORT}
+        USE_MONGODB_HOST="${USE_MONGODB_HOST}"
+        USE_MONGODB_PORT="${USE_MONGODB_PORT}")
+endif()
 
 message(STATUS "Solving monitoring:     ${SOLVING_MONITORING}")
 if(SOLVING_MONITORING)
