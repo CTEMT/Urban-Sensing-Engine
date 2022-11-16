@@ -1,6 +1,5 @@
 #pragma once
 
-#include "json.h"
 #include <mongocxx/client.hpp>
 
 namespace use
@@ -15,10 +14,9 @@ namespace use
   public:
     mongo_client(const std::string &db_uri = "mongodb://localhost:27017", const std::string &root = "urban_sensing_engine");
 
-  private:
-    static json::json to_json(const sensor_type &st) noexcept;
-
-    void init_sensor_types();
+    void create_sensor_type(const std::string &name, const std::string &description);
+    void update_sensor_type(const std::string &id, const std::string &name, const std::string &description);
+    void delete_sensor_type(const std::string &id);
 
   private:
     mongocxx::client conn;

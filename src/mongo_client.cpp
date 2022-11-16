@@ -1,6 +1,7 @@
 #include "mongo_client.h"
 #include "logging.h"
 #include <bsoncxx/json.hpp>
+#include <bsoncxx/builder/stream/document.hpp>
 #include <sstream>
 
 namespace use
@@ -10,24 +11,18 @@ namespace use
 #ifdef DROP_DATABASE
         LOG("Dropping database..");
         db.drop();
-#endif
 
-        if (!db.has_collection("sensor_types"))
-            init_sensor_types();
+        LOG("Creating sensor_types collection..");
+        create_sensor_type("bus", "A type of sensor for the monitoring the position of buses");
+        create_sensor_type("air_monitoring", "A type of sensor for the air monitoring");
+        create_sensor_type("temperature", "A type of sensor for the monitoring the temperature");
+#endif
 
         LOG("Retrieving all sensor types..");
         for (auto doc : sensor_types.find({}))
         {
-            auto j_st = json::load(bsoncxx::to_json(doc));
-            LOG_DEBUG("Found existing sensor type: " + j_st.dump());
-
-            json::string_val &j_id = j_st["_id"]["$oid"];
-            std::string id = j_id;
-            json::string_val &j_name = j_st["name"];
-            std::string name = j_name;
-            json::string_val &j_description = j_st["description"];
-            std::string description = j_description;
-            sensor_type st = {id, name, description};
+            std::string id = doc["_id"].get_oid().value.to_string();
+            sensor_type st = {id, doc["name"].get_string().value.to_string(), doc["description"].get_string().value.to_string()};
             sensor_types_ids.emplace(id, st);
         }
 
@@ -38,26 +33,40 @@ namespace use
         }
     }
 
-    json::json mongo_client::to_json(const sensor_type &st) noexcept
+    void mongo_client::create_sensor_type(const std::string &name, const std::string &description)
     {
-        json::json j_st;
-        if (!st.id.empty())
-            j_st["_id"] = st.id;
-        j_st["name"] = st.name;
-        j_st["description"] = st.description;
-        return j_st;
+        LOG("Creating new sensor type..");
+        auto result = sensor_types.insert_one(bsoncxx::builder::stream::document{} << "name" << name << "description" << description << bsoncxx::builder::stream::finalize);
+        if (result)
+        {
+            auto id = result.value().inserted_id();
+            sensor_type st = {id.get_string().value.to_string(), name, description};
+            sensor_types_ids.emplace(st.id, st);
+            LOG("Sensor type created..");
+        }
     }
 
-    void mongo_client::init_sensor_types()
+    void mongo_client::update_sensor_type(const std::string &id, const std::string &name, const std::string &description)
     {
-        LOG("Creating sensor_types collection..");
-        std::vector<bsoncxx::document::value> documents;
-        sensor_type bus = {"", "bus", "A type of sensor for the monitoring the position of buses"};
-        sensor_type air_monitoring = {"", "air_monitoring", "A type of sensor for the air monitoring"};
-        sensor_type temperature = {"", "temperature", "A type of sensor for the monitoring the temperature"};
-        documents.push_back(bsoncxx::from_json(to_json(bus).dump()));
-        documents.push_back(bsoncxx::from_json(to_json(air_monitoring).dump()));
-        documents.push_back(bsoncxx::from_json(to_json(temperature).dump()));
-        auto ids = sensor_types.insert_many(documents)->inserted_ids();
+        LOG("Updating sensor type..");
+        auto result = sensor_types.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid{bsoncxx::stdx::string_view{id}} << bsoncxx::builder::stream::finalize,
+                                              bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "name" << name << "description" << description << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize);
+        if (result)
+        {
+            sensor_types_ids[id].name = name;
+            sensor_types_ids[id].description = description;
+            LOG("Sensor type updated..");
+        }
+    }
+
+    void mongo_client::delete_sensor_type(const std::string &id)
+    {
+        LOG("Deleting sensor type..");
+        auto result = sensor_types.delete_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid{bsoncxx::stdx::string_view{id}} << bsoncxx::builder::stream::finalize);
+        if (result)
+        {
+            sensor_types_ids.erase(id);
+            LOG("Sensor type deleted..");
+        }
     }
 } // namespace use
