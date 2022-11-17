@@ -5,6 +5,8 @@
 #include <sstream>
 #include <unordered_set>
 #include <chrono>
+#include <bsoncxx/json.hpp>
+#include <bsoncxx/builder/stream/document.hpp>
 
 namespace use
 {
@@ -235,7 +237,7 @@ namespace use
         LOG_DEBUG("Message arrived on topic " + msg->get_topic() + "..");
         if (msg->get_topic() == engine.root + SENSORS_TOPIC)
         { // The sensor network has been updated..
-            LOG_DEBUG("The sensor network has been updated..");
+            update_sensor_network(msg->get_payload());
 
             auto j_sensors = json::load(msg->get_payload());
             json::array &sensors = j_sensors;
@@ -340,9 +342,103 @@ namespace use
 #endif
     }
 
-    sensor::sensor(const std::string &id, const std::string &type, Fact *fact) : id(id), type(type), fact(fact) {}
+    void mqtt_callback::update_sensor_network(json::json msg)
+    {
+        LOG_DEBUG("The sensor network has been updated..");
+        json::string_val &j_msg_type = msg["type"];
+        std::string msg_type = j_msg_type;
 
-    urban_sensing_engine::urban_sensing_engine(const std::string &root, const std::string &server_uri, const std::string &db_uri, const std::string &client_id) : root(root), mqtt_client(server_uri, client_id), db_client(db_uri, root), msg_callback(*this), use_timer(1000, std::bind(&urban_sensing_engine::tick, this)), env(CreateEnvironment())
+        if (msg_type == "new_sensor_type")
+        { // we have a new sensor type..
+            LOG("Creating new sensor type..");
+            json::string_val &j_st_name = msg["name"];
+            std::string st_name = j_st_name;
+            json::string_val &j_st_description = msg["description"];
+            std::string st_description = j_st_description;
+            auto result = engine.sensor_types_collection.insert_one(bsoncxx::builder::stream::document{} << "name" << st_name << "description" << st_description << bsoncxx::builder::stream::finalize);
+            if (result)
+            {
+                auto id = result.value().inserted_id().get_string().value.to_string();
+                auto f = AssertString(engine.env, ("(sensor_type (id " + id + "name " + st_name + "description " + st_description + "))").c_str());
+                engine.sensor_types[id] = std::make_unique<sensor_type>(id, st_name, st_description, f);
+            }
+        }
+        else if (msg_type == "update_sensor_type")
+        {
+            LOG("Updating existing sensor type..");
+            json::object &j_st = msg;
+            json::string_val &j_st_id = msg["id"];
+            std::string st_id = j_st_id;
+            if (j_st.has("name"))
+            {
+                json::string_val &j_st_name = msg["name"];
+                std::string st_name = j_st_name;
+                auto result = engine.sensor_types_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid{bsoncxx::stdx::string_view{st_id}} << bsoncxx::builder::stream::finalize,
+                                                                        bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "name" << st_name << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize);
+                if (result)
+                    engine.sensor_types.at(st_id)->set_name(st_name);
+            }
+            if (j_st.has("description"))
+            {
+                json::string_val &j_st_description = msg["description"];
+                std::string st_description = j_st_description;
+                auto result = engine.sensor_types_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid{bsoncxx::stdx::string_view{st_id}} << bsoncxx::builder::stream::finalize,
+                                                                        bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "description" << st_description << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize);
+                if (result)
+                    engine.sensor_types.at(st_id)->set_description(st_description);
+            }
+        }
+        else if (msg_type == "delete_sensor_type")
+        {
+            LOG("Deleting existing sensor type..");
+            json::string_val &j_st_id = msg["id"];
+            std::string st_id = j_st_id;
+            auto result = engine.sensor_types_collection.delete_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid{bsoncxx::stdx::string_view{st_id}} << bsoncxx::builder::stream::finalize);
+            if (result)
+                engine.sensor_types.erase(st_id);
+        }
+        else if (msg_type == "new_sensor")
+        { // we have a new sensor..
+            LOG("Creating new sensor..");
+            json::object &j_s = msg;
+            json::string_val &j_s_type_id = msg["type_id"];
+            std::string s_type_id = j_s_type_id;
+
+            std::unique_ptr<location> l;
+            auto s_doc = bsoncxx::builder::stream::document{} << "type_id" << bsoncxx::oid{bsoncxx::stdx::string_view{s_type_id}};
+            if (j_s.has("location"))
+            {
+                json::number_val &j_lat = j_s["location"]["lat"];
+                double lat = j_lat;
+                json::number_val &j_lng = j_s["location"]["lng"];
+                double lng = j_lng;
+
+                l = std::make_unique<location>(lat, lng);
+                s_doc << "location" << bsoncxx::builder::stream::open_document << "lat" << lat << "lat" << lng << bsoncxx::builder::stream::close_document;
+            }
+
+            auto result = engine.sensors_collection.insert_one(s_doc << bsoncxx::builder::stream::finalize);
+            if (result)
+            {
+                auto id = result.value().inserted_id().get_string().value.to_string();
+                std::string fact_str = "(sensor (id " + id + ") (sensor_type " + s_type_id + ")";
+                if (l)
+                    fact_str += " (location " + std::to_string(l->lat) + " " + std::to_string(l->lng) + ")";
+                fact_str += ')';
+                auto *f = AssertString(engine.env, fact_str.c_str());
+                engine.sensors[id] = std::make_unique<sensor>(id, *engine.sensor_types.at(s_type_id), std::move(l), f);
+                LOG("Sensor created..");
+
+                LOG_DEBUG("Subscribing to '" + engine.root + SENSOR_TOPIC + '/' + id + "' topic..");
+                engine.mqtt_client.subscribe(engine.root + SENSOR_TOPIC + '/' + id, 1);
+            }
+        }
+        else if (msg_type == "update_sensor")
+        {
+        }
+    }
+
+    urban_sensing_engine::urban_sensing_engine(const std::string &root, const std::string &server_uri, const std::string &db_uri, const std::string &client_id) : root(root), mqtt_client(server_uri, client_id), conn{mongocxx::uri{db_uri}}, db(conn[root]), sensor_types_collection(db["sensor_types"]), sensors_collection(db["sensor_network"]), sensor_data_collection(db["sensor_data"]), msg_callback(*this), use_timer(1000, std::bind(&urban_sensing_engine::tick, this)), env(CreateEnvironment())
     {
         options.set_clean_session(true);
         options.set_keep_alive_interval(20);
@@ -363,18 +459,6 @@ namespace use
         DestroyEnvironment(env);
     }
 
-    void urban_sensing_engine::connect()
-    {
-        try
-        {
-            LOG("Connecting MQTT client to " + mqtt_client.get_server_uri() + "..");
-            mqtt_client.connect(options)->wait();
-        }
-        catch (const mqtt::exception &e)
-        {
-            LOG_ERR(e.what());
-        }
-    }
     void urban_sensing_engine::init()
     {
         LOG("Loading policy rules..");
@@ -382,6 +466,52 @@ namespace use
         Reset(env);
 
         AssertString(env, ("(configuration (engine_ptr " + std::to_string(reinterpret_cast<uintptr_t>(this)) + "))").c_str());
+
+        try
+        {
+            LOG("Connecting MQTT client to " + mqtt_client.get_server_uri() + "..");
+            mqtt_client.connect(options)->wait();
+
+            LOG("Retrieving all sensor types..");
+            for (auto doc : sensor_types_collection.find({}))
+            {
+                auto id = doc["_id"].get_oid().value.to_string();
+                auto name = doc["name"].get_string().value.to_string();
+                auto description = doc["description"].get_string().value.to_string();
+                auto f = AssertString(env, ("(sensor_type (id " + id + "name " + name + "description " + description + "))").c_str());
+                sensor_types[id] = std::make_unique<sensor_type>(id, name, description, f);
+            }
+
+            LOG("Retrieving all sensors..");
+            for (auto doc : sensors_collection.find({}))
+            {
+                auto id = doc["_id"].get_oid().value.to_string();
+                auto type_id = doc["type_id"].get_string().value.to_string();
+
+                auto loc = doc.find("location");
+                std::unique_ptr<location> l;
+                std::string fact_str = "(sensor (id " + id + ") (sensor_type " + type_id + ")";
+                if (loc != doc.end())
+                {
+                    auto loc_doc = loc->get_document().value;
+                    auto lat = loc_doc["lat"].get_double().value;
+                    auto lng = loc_doc["lng"].get_double().value;
+                    l = std::make_unique<location>(lat, lng);
+                    fact_str += " (location " + std::to_string(lat) + " " + std::to_string(lng) + ")";
+                }
+                fact_str += ')';
+                auto *f = AssertString(env, fact_str.c_str());
+                sensors[id] = std::make_unique<sensor>(id, *sensor_types.at(type_id), std::move(l), f);
+
+                LOG_DEBUG("Subscribing to '" + root + SENSOR_TOPIC + '/' + id + "' topic..");
+                mqtt_client.subscribe(root + SENSOR_TOPIC + '/' + id, 1);
+            }
+        }
+        catch (const mqtt::exception &e)
+        {
+            LOG_ERR(e.what());
+        }
+
         Run(env, -1);
 #ifdef VERBOSE_LOG
         Eval(env, "(facts)", NULL);

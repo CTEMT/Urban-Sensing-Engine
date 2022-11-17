@@ -30,7 +30,6 @@ int main(int argc, char const *argv[])
             dashboard_host = std::string(argv[++i]);
 
     use::urban_sensing_engine use(root, mqtt_host + ":" + mqtt_port, "mongodb://" + mongodb_host + ":" + mongodb_port);
-    use.connect();
     use.init();
 
     dashboard::dashboard dashboard_srv(root, dashboard_host, dashboard_port, mqtt_host + ":" + mqtt_port);

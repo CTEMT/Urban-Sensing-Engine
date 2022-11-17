@@ -1,11 +1,10 @@
 #pragma once
 
-#include "json.h"
-#include "mqtt/async_client.h"
-#include "clips.h"
+#include "sensor_network.h"
 #include "timer.h"
-#include "mongo_client.h"
 #include <unordered_set>
+#include "mqtt/async_client.h"
+#include <mongocxx/client.hpp>
 
 namespace use
 {
@@ -22,27 +21,10 @@ namespace use
     void connection_lost(const std::string &cause) override;
     void message_arrived(mqtt::const_message_ptr msg) override;
 
+    void update_sensor_network(json::json msg);
+
   private:
     urban_sensing_engine &engine;
-  };
-
-  class sensor
-  {
-  public:
-    sensor(const std::string &id, const std::string &type, Fact *fact);
-
-    const std::string &get_id() const { return id; }
-    const std::string &get_type() const { return type; }
-    Fact *get_fact() const { return fact; }
-
-    json::json &get_value() const { return *value; }
-    void set_value(std::unique_ptr<json::json> val) { value.swap(val); }
-
-  private:
-    const std::string id;
-    const std::string type;
-    Fact *fact;
-    std::unique_ptr<json::json> value;
   };
 
   class urban_sensing_engine
@@ -54,7 +36,6 @@ namespace use
     urban_sensing_engine(const std::string &root, const std::string &server_uri = "tcp://localhost:1883", const std::string &db_uri = "mongodb://localhost:27017", const std::string &client_id = "urban_sensing_engine");
     ~urban_sensing_engine();
 
-    void connect();
     void init();
     void disconnect();
 
@@ -73,12 +54,16 @@ namespace use
   private:
     const std::string root;
     mqtt::async_client mqtt_client;
-    mongo_client db_client;
     mqtt::connect_options options;
     mqtt_callback msg_callback;
-    ratio::time::timer use_timer;
-    std::unordered_set<std::string> sensor_types;
+    mongocxx::client conn;
+    mongocxx::v_noabi::database db;
+    mongocxx::v_noabi::collection sensor_types_collection;
+    mongocxx::v_noabi::collection sensors_collection;
+    mongocxx::v_noabi::collection sensor_data_collection;
+    std::unordered_map<std::string, std::unique_ptr<sensor_type>> sensor_types;
     std::unordered_map<std::string, std::unique_ptr<sensor>> sensors;
+    ratio::time::timer use_timer;
     std::list<std::unique_ptr<use_executor>> executors;
     Environment *env;
   };
