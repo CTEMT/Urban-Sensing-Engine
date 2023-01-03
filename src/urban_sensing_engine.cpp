@@ -2,6 +2,6 @@
 
 namespace use
 {
-    urban_sensing_engine::urban_sensing_engine() {}
+    urban_sensing_engine::urban_sensing_engine() : coco(db) {}
     urban_sensing_engine::~urban_sensing_engine() {}
 } // namespace use
