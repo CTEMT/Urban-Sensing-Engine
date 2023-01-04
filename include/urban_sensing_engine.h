@@ -1,19 +1,21 @@
 #pragma once
 
-#include "mongo_db.h"
-#include "coco.h"
-#include "mqtt_middleware.h"
+#include "coco_listener.h"
 
 namespace use
 {
-  class urban_sensing_engine
+  class urban_sensing_engine : public coco::coco_listener
   {
   public:
-    urban_sensing_engine(const std::string &root = COCO_ROOT, const std::string &mongodb_uri = MONGODB_URI(MONGODB_HOST, MONGODB_PORT), const std::string &mqtt_uri = MQTT_URI(MQTT_HOST, MQTT_PORT));
+    urban_sensing_engine(coco::coco &cc);
     ~urban_sensing_engine();
 
   private:
-    coco::mongo_db db;
-    coco::coco coco;
+    void message_arrived(const std::string &topic, json::json &msg) override;
+
+    void tick(const semitone::rational &time) override;
+
+    void start(const std::unordered_set<ratio::core::atom *> &atoms) override;
+    void end(const std::unordered_set<ratio::core::atom *> &atoms) override;
   };
 } // namespace use
