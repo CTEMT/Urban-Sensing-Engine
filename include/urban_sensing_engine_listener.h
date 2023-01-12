@@ -30,6 +30,8 @@ namespace use
     virtual void start([[maybe_unused]] const coco::coco_executor &exec, [[maybe_unused]] const std::unordered_set<ratio::core::atom *> &atoms) {}
     virtual void end([[maybe_unused]] const coco::coco_executor &exec, [[maybe_unused]] const std::unordered_set<ratio::core::atom *> &atoms) {}
 
+    virtual void update_bus_data([[maybe_unused]] const std::string &bus_id, [[maybe_unused]] const long &time, [[maybe_unused]] const double &lat, [[maybe_unused]] const double &lng, [[maybe_unused]] const long &passengers) {}
+
   protected:
     urban_sensing_engine &use;
   };

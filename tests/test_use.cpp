@@ -10,6 +10,8 @@
 
 void create_sensor_network(coco::mongo_db &db)
 {
+    db.drop(); // Warning!! We are deleting all the current data!!
+
     // we create the sensor types..
     auto temp_type_id = db.create_sensor_type("temperature", "A type of sensor for measuring temperature");
     auto bus_type_id = db.create_sensor_type("bus", "A smart bus");
@@ -97,7 +99,7 @@ void update_temperature(mqtt::async_client &mqtt_client, const std::string &root
 
     while (true)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
         temp += distr(generator);
 
         json::json temp_val;
@@ -116,7 +118,7 @@ void update_bus(mqtt::async_client &mqtt_client, const std::string &root, const 
 
     while (true)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(4000));
         lat += real_distr(generator);
         lng += real_distr(generator);
         do
@@ -208,10 +210,15 @@ void dynamic_set_sensor_values(coco::mongo_db &db)
     options.set_keep_alive_interval(20);
     mqtt_client.connect(options)->wait();
 
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
     auto temp0_ftr = std::async(std::launch::async, update_temperature, std::ref(mqtt_client), std::ref(root), std::ref(temp0_id), 20.0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
     auto bus0_ftr = std::async(std::launch::async, update_bus, std::ref(mqtt_client), std::ref(root), std::ref(bus0_id), 40.669, 16.609, 10);
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
     auto bus1_ftr = std::async(std::launch::async, update_bus, std::ref(mqtt_client), std::ref(root), std::ref(bus1_id), 40.659, 16.599, 15);
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
     auto gate0_ftr = std::async(std::launch::async, update_gate, std::ref(mqtt_client), std::ref(root), std::ref(gate0_id), 15);
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
     auto air_monitoring0_ftr = std::async(std::launch::async, update_air_monitoring, std::ref(mqtt_client), std::ref(root), std::ref(air_monitoring0_id), 10.0, 5.0);
 }
 
@@ -220,10 +227,16 @@ int main(int argc, char const *argv[])
     mongocxx::instance inst{}; // This should be done only once.
     coco::mongo_db db;
 
-    db.drop(); // Warning!! We are deleting all the current data!!
+    bool init = false;
+    if (init)
+    {
+        create_sensor_network(db);
+        set_sensor_values(db);
+    }
+    else
+        db.init();
 
-    create_sensor_network(db);
-    set_sensor_values(db);
+    // we dynamically set the values of the sensors..
     dynamic_set_sensor_values(db);
 
     return 0;
