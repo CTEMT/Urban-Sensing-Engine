@@ -4,19 +4,30 @@
 
 namespace use
 {
+    void send_message([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
+    {
+        UDFValue engine_ptr;
+        if (!UDFFirstArgument(udfc, INTEGER_BIT, &engine_ptr))
+            return;
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(engine_ptr.integerValue->contents);
+
+        UDFValue level;
+        if (!UDFNextArgument(udfc, SYMBOL_BIT, &level))
+            return;
+
+        UDFValue content;
+        if (!UDFNextArgument(udfc, STRING_BIT, &content))
+            return;
+
+        e.fire_new_message(level.lexemeValue->contents, content.lexemeValue->contents);
+    }
+
     void send_bus_message([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
     {
         UDFValue engine_ptr;
         if (!UDFFirstArgument(udfc, INTEGER_BIT, &engine_ptr))
             return;
-        auto &coco = *reinterpret_cast<coco::coco_core *>(engine_ptr.integerValue->contents);
-        urban_sensing_engine *use = nullptr;
-        for (auto &l : coco.get_listeners())
-            if (auto *coco_l = dynamic_cast<urban_sensing_engine *>(l))
-            {
-                use = coco_l;
-                break;
-            }
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(engine_ptr.integerValue->contents);
 
         UDFValue bus_id;
         if (!UDFNextArgument(udfc, STRING_BIT, &bus_id))
@@ -38,63 +49,24 @@ namespace use
         if (!UDFNextArgument(udfc, INTEGER_BIT, &passengers))
             return;
 
-        use->update_bus_data(bus_id.lexemeValue->contents, time.integerValue->contents, lat.floatValue->contents, lng.floatValue->contents, passengers.integerValue->contents);
+        e.fire_new_bus_data(bus_id.lexemeValue->contents, time.integerValue->contents, lat.floatValue->contents, lng.floatValue->contents, passengers.integerValue->contents);
     }
 
-    urban_sensing_engine::urban_sensing_engine(coco::coco_core &cc) : coco_listener(cc)
+    urban_sensing_engine::urban_sensing_engine(coco::coco_db &db) : coco_core(db)
     {
-        AddUDF(cc.get_environment(), "send_bus_message", "v", 6, 6, "lslddl", send_bus_message, "send_bus_message", NULL);
-    }
-    urban_sensing_engine::~urban_sensing_engine() {}
-
-    void urban_sensing_engine::new_solver(const coco::coco_executor &exec)
-    {
-        for (const auto &listener : listeners)
-            listener->new_solver(exec);
+        AddUDF(env, "send_message", "v", 3, 3, "lss", send_message, "send_message", NULL);
+        AddUDF(env, "send_bus_message", "v", 6, 6, "lslddl", send_bus_message, "send_bus_message", NULL);
     }
 
-    void urban_sensing_engine::started_solving(const coco::coco_executor &exec)
+    void urban_sensing_engine::fire_new_message(const std::string &level, const std::string &content)
     {
-        for (const auto &listener : listeners)
-            listener->started_solving(exec);
-    }
-    void urban_sensing_engine::solution_found(const coco::coco_executor &exec)
-    {
-        for (const auto &listener : listeners)
-            listener->solution_found(exec);
-    }
-    void urban_sensing_engine::inconsistent_problem(const coco::coco_executor &exec)
-    {
-        for (const auto &listener : listeners)
-            listener->inconsistent_problem(exec);
+        for (auto &l : listeners)
+            l->new_message(level, content);
     }
 
-    void urban_sensing_engine::message_arrived(const std::string &topic, json::json &msg)
+    void urban_sensing_engine::fire_new_bus_data(const std::string &bus_id, const long &time, const double &lat, const double &lng, const long &passengers)
     {
-        for (const auto &listener : listeners)
-            listener->message_arrived(topic, msg);
-    }
-
-    void urban_sensing_engine::tick(const coco::coco_executor &exec, const semitone::rational &time)
-    {
-        for (const auto &listener : listeners)
-            listener->tick(exec, time);
-    }
-
-    void urban_sensing_engine::start(const coco::coco_executor &exec, const std::unordered_set<ratio::core::atom *> &atoms)
-    {
-        for (const auto &listener : listeners)
-            listener->start(exec, atoms);
-    }
-    void urban_sensing_engine::end(const coco::coco_executor &exec, const std::unordered_set<ratio::core::atom *> &atoms)
-    {
-        for (const auto &listener : listeners)
-            listener->end(exec, atoms);
-    }
-
-    void urban_sensing_engine::update_bus_data(const std::string &bus_id, const long &time, const double &lat, const double &lng, const long &passengers)
-    {
-        for (const auto &listener : listeners)
-            listener->update_bus_data(bus_id, time, lat, lng, passengers);
+        for (auto &l : listeners)
+            l->new_bus_data(bus_id, time, lat, lng, passengers);
     }
 } // namespace use
