@@ -9,7 +9,7 @@ namespace use
         UDFValue engine_ptr;
         if (!UDFFirstArgument(udfc, INTEGER_BIT, &engine_ptr))
             return;
-        auto &coco = *reinterpret_cast<coco::coco *>(engine_ptr.integerValue->contents);
+        auto &coco = *reinterpret_cast<coco::coco_core *>(engine_ptr.integerValue->contents);
         urban_sensing_engine *use = nullptr;
         for (auto &l : coco.get_listeners())
             if (auto *coco_l = dynamic_cast<urban_sensing_engine *>(l))
@@ -41,7 +41,7 @@ namespace use
         use->update_bus_data(bus_id.lexemeValue->contents, time.integerValue->contents, lat.floatValue->contents, lng.floatValue->contents, passengers.integerValue->contents);
     }
 
-    urban_sensing_engine::urban_sensing_engine(coco::coco &cc) : coco_listener(cc)
+    urban_sensing_engine::urban_sensing_engine(coco::coco_core &cc) : coco_listener(cc)
     {
         AddUDF(cc.get_environment(), "send_bus_message", "v", 6, 6, "lslddl", send_bus_message, "send_bus_message", NULL);
     }

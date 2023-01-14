@@ -11,7 +11,7 @@ namespace use
     friend class urban_sensing_engine_listener;
 
   public:
-    urban_sensing_engine(coco::coco &cc);
+    urban_sensing_engine(coco::coco_core &cc);
     ~urban_sensing_engine();
 
   private:
