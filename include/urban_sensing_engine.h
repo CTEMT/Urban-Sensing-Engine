@@ -15,10 +15,12 @@ namespace use
 
   private:
     friend void send_message(Environment *env, UDFContext *udfc, UDFValue *out);
+    friend void send_map_message(Environment *env, UDFContext *udfc, UDFValue *out);
     friend void send_bus_message(Environment *env, UDFContext *udfc, UDFValue *out);
 
   private:
     void fire_new_message(const std::string &level, const std::string &content);
+    void fire_new_map_message(const std::string &level, const double &lat, const double &lng, const std::string &content);
     void fire_new_bus_data(const std::string &bus_id, const long &time, const double &lat, const double &lng, const long &passengers);
 
   private:

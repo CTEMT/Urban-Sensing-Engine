@@ -13,6 +13,7 @@ namespace use
     virtual ~urban_sensing_engine_listener() { use.listeners.erase(std::find(use.listeners.cbegin(), use.listeners.cend(), this)); }
 
     virtual void new_message([[maybe_unused]] const std::string &level, [[maybe_unused]] const std::string &content) {}
+    virtual void new_map_message([[maybe_unused]] const std::string &level, [[maybe_unused]] const double &lat, [[maybe_unused]] const double &lng, [[maybe_unused]] const std::string &content) {}
     virtual void new_bus_data([[maybe_unused]] const std::string &bus_id, [[maybe_unused]] const long &time, [[maybe_unused]] const double &lat, [[maybe_unused]] const double &lng, [[maybe_unused]] const long &passengers) {}
 
   protected:
