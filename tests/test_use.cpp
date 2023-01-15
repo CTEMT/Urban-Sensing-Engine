@@ -65,30 +65,32 @@ void set_sensor_values(coco::mongo_db &db)
             air_monitoring0_id = sensor.get().get_id();
     }
 
-    auto temp0_val = std::make_unique<json::json>();
-    temp0_val->operator[]("temperature") = 20.0;
-    db.set_sensor_value(temp0_id, std::move(temp0_val));
+    auto time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
-    auto bus0_val = std::make_unique<json::json>();
-    bus0_val->operator[]("lat") = 40.669;
-    bus0_val->operator[]("lng") = 16.609;
-    bus0_val->operator[]("passengers") = 10.0;
-    db.set_sensor_value(bus0_id, std::move(bus0_val));
+    json::json temp0_val;
+    temp0_val["temperature"] = 20.0;
+    db.set_sensor_value(temp0_id, time, temp0_val);
 
-    auto bus1_val = std::make_unique<json::json>();
-    bus1_val->operator[]("lat") = 40.659;
-    bus1_val->operator[]("lng") = 16.599;
-    bus1_val->operator[]("passengers") = 15.0;
-    db.set_sensor_value(bus1_id, std::move(bus1_val));
+    json::json bus0_val;
+    bus0_val["lat"] = 40.669;
+    bus0_val["lng"] = 16.609;
+    bus0_val["passengers"] = 10.0;
+    db.set_sensor_value(bus0_id, time, bus0_val);
 
-    auto gate0_val = std::make_unique<json::json>();
-    gate0_val->operator[]("passes") = 15l;
-    db.set_sensor_value(gate0_id, std::move(gate0_val));
+    json::json bus1_val;
+    bus1_val["lat"] = 40.659;
+    bus1_val["lng"] = 16.599;
+    bus1_val["passengers"] = 15.0;
+    db.set_sensor_value(bus1_id, time, bus1_val);
 
-    auto air_monitoring0_val = std::make_unique<json::json>();
-    air_monitoring0_val->operator[]("pm10") = 10.0;
-    air_monitoring0_val->operator[]("pm2.5") = 5.0;
-    db.set_sensor_value(air_monitoring0_id, std::move(air_monitoring0_val));
+    json::json gate0_val;
+    gate0_val["passes"] = 15.0;
+    db.set_sensor_value(gate0_id, time, gate0_val);
+
+    json::json air_monitoring0_val;
+    air_monitoring0_val["pm10"] = 10.0;
+    air_monitoring0_val["pm2.5"] = 5.0;
+    db.set_sensor_value(air_monitoring0_id, time, air_monitoring0_val);
 }
 
 void update_temperature(mqtt::async_client &mqtt_client, const std::string &root, const std::string &temp_id, double temp)
