@@ -56,7 +56,7 @@ namespace use
         auto &e = *reinterpret_cast<urban_sensing_engine *>(engine_ptr.integerValue->contents);
 
         UDFValue bus_id;
-        if (!UDFNextArgument(udfc, STRING_BIT, &bus_id))
+        if (!UDFNextArgument(udfc, SYMBOL_BIT, &bus_id))
             return;
 
         UDFValue time;
