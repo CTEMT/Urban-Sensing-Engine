@@ -21,6 +21,8 @@ find_package(bsoncxx REQUIRED)
 include(CTest)
 enable_testing()
 
+set(MULTIPLE_EXECUTORS ON CACHE BOOL "Allows different executors" FORCE)
+
 add_subdirectory(extern/coco)
 
 file(GLOB URBAN_SENSING_ENGINE_SOURCES src/*.cpp)
