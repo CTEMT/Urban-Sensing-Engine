@@ -13,10 +13,10 @@ void create_sensor_network(coco::mongo_db &db)
     db.drop(); // Warning!! We are deleting all the current data!!
 
     // we create the sensor types..
-    auto temp_type_id = db.create_sensor_type("temperature", "A type of sensor for measuring temperature");
-    auto bus_type_id = db.create_sensor_type("bus", "A smart bus");
-    auto gate_type_id = db.create_sensor_type("gate", "A smart gate for detecting vehicles' passages");
-    auto air_monitoring_type_id = db.create_sensor_type("air_monitoring", "A smart air monitoring station");
+    auto temp_type_id = db.create_sensor_type("temperature", "A type of sensor for measuring temperature", {{"temperature", coco::parameter_type::Float}});
+    auto bus_type_id = db.create_sensor_type("bus", "A smart bus", {{"lat", coco::parameter_type::Float}, {"lng", coco::parameter_type::Float}, {"passengers", coco::parameter_type::Integer}});
+    auto gate_type_id = db.create_sensor_type("gate", "A smart gate for detecting vehicles' passages", {{"passes", coco::parameter_type::Integer}});
+    auto air_monitoring_type_id = db.create_sensor_type("air_monitoring", "A smart air monitoring station", {{"pm10", coco::parameter_type::Float}, {"pm25", coco::parameter_type::Float}, {"co2", coco::parameter_type::Float}, {"co", coco::parameter_type::Float}, {"no2", coco::parameter_type::Float}, {"o3", coco::parameter_type::Float}, {"so2", coco::parameter_type::Float}});
 
     // we create the sensors..
     auto temp0_loc = std::make_unique<coco::location>();
@@ -90,6 +90,11 @@ void set_sensor_values(coco::mongo_db &db)
     json::json air_monitoring0_val;
     air_monitoring0_val["pm10"] = 10.0;
     air_monitoring0_val["pm2.5"] = 5.0;
+    air_monitoring0_val["co2"] = 100.0;
+    air_monitoring0_val["co"] = 10.0;
+    air_monitoring0_val["no2"] = 5.0;
+    air_monitoring0_val["o3"] = 5.0;
+    air_monitoring0_val["so2"] = 5.0;
     db.set_sensor_value(air_monitoring0_id, time, air_monitoring0_val);
 }
 
@@ -158,7 +163,7 @@ void update_gate(mqtt::async_client &mqtt_client, const std::string &root, const
     }
 }
 
-void update_air_monitoring(mqtt::async_client &mqtt_client, const std::string &root, const std::string &air_monitoring_id, double pm10, double pm2_5)
+void update_air_monitoring(mqtt::async_client &mqtt_client, const std::string &root, const std::string &air_monitoring_id, double pm10, double pm2_5, double co2, double co, double no2, double o3, double so2)
 {
     std::random_device rnd_dev;
     std::mt19937 generator(rnd_dev());
@@ -166,13 +171,23 @@ void update_air_monitoring(mqtt::async_client &mqtt_client, const std::string &r
 
     while (true)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
         pm10 += distr(generator);
         pm2_5 += distr(generator);
+        co2 += distr(generator);
+        co += distr(generator);
+        no2 += distr(generator);
+        o3 += distr(generator);
+        so2 += distr(generator);
 
         json::json air_monitoring_val;
         air_monitoring_val["pm10"] = pm10;
         air_monitoring_val["pm2.5"] = pm2_5;
+        air_monitoring_val["co2"] = co2;
+        air_monitoring_val["co"] = co;
+        air_monitoring_val["no2"] = no2;
+        air_monitoring_val["o3"] = o3;
+        air_monitoring_val["so2"] = so2;
 
         mqtt_client.publish(mqtt::make_message(root + "/sensor/" + air_monitoring_id, air_monitoring_val.dump(), 1, true));
     }
@@ -221,7 +236,7 @@ void dynamic_set_sensor_values(coco::mongo_db &db)
     std::this_thread::sleep_for(std::chrono::milliseconds(300));
     auto gate0_ftr = std::async(std::launch::async, update_gate, std::ref(mqtt_client), std::ref(root), std::ref(gate0_id), 15);
     std::this_thread::sleep_for(std::chrono::milliseconds(300));
-    auto air_monitoring0_ftr = std::async(std::launch::async, update_air_monitoring, std::ref(mqtt_client), std::ref(root), std::ref(air_monitoring0_id), 10.0, 5.0);
+    auto air_monitoring0_ftr = std::async(std::launch::async, update_air_monitoring, std::ref(mqtt_client), std::ref(root), std::ref(air_monitoring0_id), 10.0, 5.0, 1000.0, 100.0, 200.0, 300.0, 400.0);
 }
 
 int main(int argc, char const *argv[])
