@@ -10,8 +10,6 @@
 
 void create_sensor_network(coco::mongo_db &db)
 {
-    db.drop(); // Warning!! We are deleting all the current data!!
-
     // we create the sensor types..
     auto temp_type_id = db.create_sensor_type("temperature", "A type of sensor for measuring temperature", {{"temperature", coco::parameter_type::Float}});
     auto bus_type_id = db.create_sensor_type("bus", "A smart bus", {{"lat", coco::parameter_type::Float}, {"lng", coco::parameter_type::Float}, {"passengers", coco::parameter_type::Integer}});
@@ -247,6 +245,8 @@ int main(int argc, char const *argv[])
     bool init = false;
     if (init)
     {
+        db.drop(); // Warning!! We are here deleting all the current data!!
+
         create_sensor_network(db);
         set_sensor_values(db);
     }
