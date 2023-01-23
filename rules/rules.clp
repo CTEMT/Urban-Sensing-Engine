@@ -1,7 +1,7 @@
 (defrule new_configuration
     (configuration (coco_ptr ?cc_ptr))
     =>
-    (new_solver_files ?cc_ptr main (create$ "extern/use/rules/urban_intelligence_domain.rddl"))
+    (new_solver_files ?cc_ptr main (create$ "extern/use/rules/urban_intelligence_domain.rddl" "extern/use/rules/urban_intelligence_init.rddl"))
 )
 
 (defrule execute_solved_problem
@@ -13,9 +13,9 @@
 
 (defrule maintenance_plan
     (configuration (coco_ptr ?cc_ptr))
-    (solver (solver_ptr ?slv_ptr) (solver_type main))
-    (sensor_data (sensor_id ?id) (local_time ?c_time) (data ?lat ?lng ?road))
+    (solver (solver_ptr ?slv_ptr) (solver_type main) (state finished))
     (sensor_type (id ?part_type_id) (name "participatory_sensing"))
+    (sensor_data (sensor_id ?id) (local_time ?c_time) (data ?lat ?lng ?road))
     ?part <- (sensor (id ?id) (sensor_type ?part_type_id))
     =>
     (send_map_message ?cc_ptr warning ?lat ?lng (str-cat "Attenzione! È stato segnalato un significativo deterioramento del manto stradale"))
@@ -25,8 +25,8 @@
 
 (defrule bus_position
     (configuration (coco_ptr ?cc_ptr))
-    (sensor_data (sensor_id ?id) (local_time ?c_time) (data ?lat ?lng ?passengers))
     (sensor_type (id ?bus_type_id) (name "bus"))
+    (sensor_data (sensor_id ?id) (local_time ?c_time) (data ?lat ?lng ?passengers))
     ?bus <- (sensor (id ?id) (sensor_type ?bus_type_id))
     =>
     (send_bus_message ?cc_ptr ?id ?c_time ?lat ?lng ?passengers)
