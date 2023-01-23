@@ -81,7 +81,7 @@ namespace use
     urban_sensing_engine::urban_sensing_engine(coco::coco_db &db) : coco_core(db)
     {
         AddUDF(env, "send_message", "v", 3, 3, "lss", send_message, "send_message", NULL);
-        AddUDF(env, "send_map_message", "v", 5, 5, "lsdds", send_map_message, "send_map_message", NULL);
+        AddUDF(env, "send_map_message", "v", 5, 5, "lydds", send_map_message, "send_map_message", NULL);
         AddUDF(env, "send_bus_message", "v", 6, 6, "lslddl", send_bus_message, "send_bus_message", NULL);
     }
 

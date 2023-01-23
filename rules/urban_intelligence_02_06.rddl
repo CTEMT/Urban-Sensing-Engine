@@ -1,0 +1,30 @@
+MunicipalTechnician Francesco = new MunicipalTechnician();
+MunicipalTechnician Giulia = new MunicipalTechnician();
+fact mt0_rm = new DoesRoadMaintainance(mt:Francesco);
+fact mt0_bm = new DoesBuildingMaintainance(mt:Francesco);
+fact mt1_rm = new DoesRoadMaintainance(mt:Giulia);
+fact mt1_gsm = new DoesGreenSpaceMaintainance(mt:Giulia);
+
+Road r0 = new Road();
+Road r1 = new Road();
+
+Building b0 = new Building();
+Building b1 = new Building();
+
+GreenSpace gs0 = new GreenSpace();
+GreenSpace gs1 = new GreenSpace();
+
+Maintainance agnt = new Maintainance();
+goal bm0 = new agnt.BuildingMaintainance(b:b0);
+goal gm0 = new agnt.GreenSpacesMaintainance(gs:gs0);
+goal rm0 = new agnt.RoadMaintainance(r:r0);
+rm0.start >= bm0.end;
+rm0.start >= gm0.end;
+
+goal bm1 = new agnt.BuildingMaintainance(b:b1);
+goal gm1 = new agnt.GreenSpacesMaintainance(gs:gs1);
+goal rm1 = new agnt.RoadMaintainance(r:r1);
+rm1.start >= bm1.end;
+rm1.start >= gm1.end;
+
+origin >= 10.0;
