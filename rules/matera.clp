@@ -1,3 +1,9 @@
+(defrule new_configuration
+    (configuration (coco_ptr ?cc_ptr))
+    =>
+    (new_solver_files ?cc_ptr main (create$ "extern/use/rules/rules.rddl" "extern/use/rules/matera.rddl"))
+)
+
 (deffacts
     (road (road_id r0) (road_name "Via XX Settembre"))
     (road (road_id r1) (road_name "Via Lucana"))
@@ -34,10 +40,4 @@
     (municipal_technician (municipal_technician_id mt0) (municipal_technician_name "Mario Rossi") (technician_role "Responsabile dell'edilizia pubblica"))
     (municipal_technician (municipal_technician_id mt1) (municipal_technician_name "Giuseppe Verdi") (technician_role "Responsabile della manutenzione stradale"))
     (municipal_technician (municipal_technician_id mt2) (municipal_technician_name "Luigi Bianchi") (technician_role "Responsabile della manutenzione del verde pubblico"))
-)
-
-(defrule new_configuration
-    (configuration (coco_ptr ?cc_ptr))
-    =>
-    (new_solver_files ?cc_ptr main (create$ "extern/use/rules/rules.rddl" "extern/use/rules/matera.rddl"))
 )
