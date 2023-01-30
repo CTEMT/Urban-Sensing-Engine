@@ -1,0 +1,31 @@
+Road r0 = new Road();
+Road r1 = new Road();
+Road r2 = new Road();
+Road r3 = new Road();
+Road r4 = new Road();
+Road r5 = new Road();
+Road r6 = new Road();
+Road r7 = new Road();
+Road r8 = new Road();
+Road r9 = new Road();
+Road r10 = new Road();
+
+Building b0 = new Building();
+Building b1 = new Building();
+Building b2 = new Building();
+Building b3 = new Building();
+Building b4 = new Building();
+Building b5 = new Building();
+Building b6 = new Building();
+Building b7 = new Building();
+Building b8 = new Building();
+
+GreenArea g0 = new GreenArea();
+GreenArea g1 = new GreenArea();
+
+MunicipalTechnician mt0 = new MunicipalTechnician();
+fact mt0_bm = new DoesBuildingMaintainance(mt:mt0);
+MunicipalTechnician mt1 = new MunicipalTechnician();
+fact mt1_rm = new DoesRoadMaintainance(mt:mt1);
+MunicipalTechnician mt2 = new MunicipalTechnician();
+fact mt2_gam = new DoesGreenAreaMaintainance(mt:mt2);

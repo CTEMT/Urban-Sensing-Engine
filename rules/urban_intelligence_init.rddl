@@ -3,7 +3,7 @@ MunicipalTechnician Giulia = new MunicipalTechnician();
 fact mt0_rm = new DoesRoadMaintainance(mt:Francesco);
 fact mt0_bm = new DoesBuildingMaintainance(mt:Francesco);
 fact mt1_rm = new DoesRoadMaintainance(mt:Giulia);
-fact mt1_gsm = new DoesGreenSpaceMaintainance(mt:Giulia);
+fact mt1_gsm = new DoesGreenAreaMaintainance(mt:Giulia);
 
 Road r0 = new Road();
 Road r1 = new Road();
@@ -11,7 +11,7 @@ Road r1 = new Road();
 Building b0 = new Building();
 Building b1 = new Building();
 
-GreenSpace gs0 = new GreenSpace();
-GreenSpace gs1 = new GreenSpace();
+GreenArea gs0 = new GreenArea();
+GreenArea gs1 = new GreenArea();
 
 Maintainance agnt = new Maintainance();

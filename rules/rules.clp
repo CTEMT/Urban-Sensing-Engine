@@ -1,7 +1,45 @@
-(defrule new_configuration
-    (configuration (coco_ptr ?cc_ptr))
-    =>
-    (new_solver_files ?cc_ptr main (create$ "extern/use/rules/urban_intelligence_domain.rddl" "extern/use/rules/urban_intelligence_init.rddl"))
+(deftemplate road
+    (slot road_id)
+    (slot road_name)
+    (slot s0 (default 1))
+    (slot s1 (default 1))
+    (slot s2 (default 1))
+    (slot s3 (default 1))
+    (slot road_state (default 1))
+    (slot road_avg_state (default 1))
+)
+
+(deftemplate building
+    (slot building_id)
+    (slot building_name)
+    (slot building_address)
+    (slot building_type)
+    (slot building_road)
+    (slot s0 (default 1))
+    (slot s1 (default 1))
+    (slot s2 (default 1))
+    (slot s3 (default 1))
+    (slot building_state (default 1))
+    (slot building_avg_state (default 1))
+)
+
+(deftemplate green_area
+    (slot green_area_id)
+    (slot green_area_name)
+    (slot green_area_address)
+    (slot green_area_road)
+    (slot s0 (default 1))
+    (slot s1 (default 1))
+    (slot s2 (default 1))
+    (slot s3 (default 1))
+    (slot green_area_state (default 1))
+    (slot green_area_avg_state (default 1))
+)
+
+(deftemplate municipal_technician
+    (slot technician_id)
+    (slot technician_name)
+    (slot technician_role)
 )
 
 (defrule execute_solved_problem
