@@ -77,6 +77,15 @@
     (modify ?road (planned_maintenance TRUE))
 )
 
+(defrule road_maintenance_documents
+    (configuration (coco_ptr ?cc_ptr))
+    (task (command start) (id ?id) (task_type RoadMaintainanceDocuments) (vals ?duration ?end ?mt ?r ?start ?tau))
+    (road (road_id ?r) (road_name ?name) (road_coordinates ?lat ?lng))
+    (municipal_technician (technician_id ?mt) (technician_name ?mt_name))
+    =>
+    (send_message ?cc_ptr info (str-cat "Inizio preparazione documenti per la gara d'appalto relativa alla manutenzione stradale in " ?name ". Il tecnico " ?mt_name " è stato assegnato al compito."))
+)
+
 (defrule compute_average_building_state
     ?sd <- (sensor_data (sensor_id ?id) (local_time ?t) (data ?status ?subject_id))
     ?building <- (building (building_id ?subject_id) (s0 ?s0) (s1 ?s1) (s2 ?s2) (s3 ?s3) (building_state ?state))
