@@ -62,24 +62,24 @@ class Maintainance : Agent {
         bmt.end <= start - 10.0;
     }
 
-    predicate GreenAreaMaintainanceDocuments(GreenArea gs, MunicipalTechnician mt) : Interval {
+    predicate GreenAreaMaintainanceDocuments(GreenArea ga, MunicipalTechnician mt) : Interval {
         duration >= 10.0;
         goal rm = new DoesGreenAreaMaintainance(mt:mt);
         fact mt_activity = new mt.activity.Use(start:start, duration:duration, end:end, amount:1.0);
     }
 
-    predicate GreenAreaMaintainanceTender(GreenArea gs, MunicipalTechnician mt) : Interval {
+    predicate GreenAreaMaintainanceTender(GreenArea ga, MunicipalTechnician mt) : Interval {
         duration >= 50.0;
-        goal gst = new GreenAreaMaintainanceDocuments(gs:gs, mt:mt);
-        gst.end <= start - 10.0;
+        goal gat = new GreenAreaMaintainanceDocuments(ga:ga, mt:mt);
+        gat.end <= start - 10.0;
     }
 
-    predicate GreenAreaMaintainance(GreenArea gs, MunicipalTechnician mt) : Interval {
+    predicate GreenAreaMaintainance(GreenArea ga, MunicipalTechnician mt) : Interval {
         duration >= 200.0;
         goal rm = new DoesGreenAreaMaintainance(mt:mt);
         fact mt_activity = new mt.activity.Use(start:start, duration:duration, end:end, amount:1.0);
-        goal gsmd = new GreenAreaMaintainanceTender(gs:gs, mt:mt);
-        gsmd.end <= start - 10.0;
+        goal gamd = new GreenAreaMaintainanceTender(ga:ga, mt:mt);
+        gamd.end <= start - 10.0;
     }
 }
 

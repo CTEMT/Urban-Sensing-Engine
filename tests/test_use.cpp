@@ -16,7 +16,7 @@ void create_sensor_network(coco::mongo_db &db)
     auto gate_type_id = db.create_sensor_type("gate", "A smart gate for detecting vehicles' passages", {{"passes", coco::parameter_type::Integer}});
     auto air_monitoring_type_id = db.create_sensor_type("air_monitoring", "A smart air monitoring station", {{"pm10", coco::parameter_type::Float}, {"pm25", coco::parameter_type::Float}, {"co2", coco::parameter_type::Float}, {"co", coco::parameter_type::Float}, {"no2", coco::parameter_type::Float}, {"o3", coco::parameter_type::Float}, {"so2", coco::parameter_type::Float}});
     auto weather_station_type_id = db.create_sensor_type("weather_station", "A smart weather station", {{"temperature", coco::parameter_type::Float}, {"humidity", coco::parameter_type::Float}, {"pressure", coco::parameter_type::Float}, {"wind_speed", coco::parameter_type::Float}, {"wind_direction", coco::parameter_type::Float}, {"rain", coco::parameter_type::Float}});
-    auto participatory_sensing_type_id = db.create_sensor_type("participatory_sensing", "A participatory sensing device", {{"lat", coco::parameter_type::Float}, {"lng", coco::parameter_type::Float}, {"road", coco::parameter_type::Integer}, {"road_condition", coco::parameter_type::Integer}, {"traffic_condition", coco::parameter_type::Integer}});
+    auto participatory_sensing_type_id = db.create_sensor_type("participatory_sensing", "A participatory sensing device", {{"status", coco::parameter_type::Float}, {"subject_id", coco::parameter_type::Symbol}});
     auto occupancy_prediction_type_id = db.create_sensor_type("occupancy_prediction", "A smart occupancy prediction device", {{"occupancy", coco::parameter_type::Integer}});
 
     // we create the sensors..
