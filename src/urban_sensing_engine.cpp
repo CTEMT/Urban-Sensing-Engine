@@ -22,6 +22,41 @@ namespace use
         e.fire_new_message(level.lexemeValue->contents, content.lexemeValue->contents);
     }
 
+    void send_question([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
+    {
+        UDFValue engine_ptr;
+        if (!UDFFirstArgument(udfc, INTEGER_BIT, &engine_ptr))
+            return;
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(engine_ptr.integerValue->contents);
+
+        UDFValue level;
+        if (!UDFNextArgument(udfc, SYMBOL_BIT, &level))
+            return;
+
+        UDFValue id;
+        if (!UDFNextArgument(udfc, INTEGER_BIT, &id))
+            return;
+
+        UDFValue content;
+        if (!UDFNextArgument(udfc, STRING_BIT, &content))
+            return;
+
+        UDFValue answers;
+        if (!UDFNextArgument(udfc, MULTIFIELD_BIT, &answers))
+            return;
+
+        std::vector<std::string> as;
+        for (size_t i = 0; i < answers.multifieldValue->length; i++)
+        {
+            auto &answer = answers.multifieldValue->contents[i];
+            if (answer.header->type != STRING_TYPE)
+                return;
+            as.push_back(answer.lexemeValue->contents);
+        }
+
+        e.fire_new_question(level.lexemeValue->contents, id.integerValue->contents, content.lexemeValue->contents, as);
+    }
+
     void send_map_message([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
     {
         UDFValue engine_ptr;
@@ -81,14 +116,39 @@ namespace use
     urban_sensing_engine::urban_sensing_engine(coco::coco_db &db) : coco_core(db)
     {
         AddUDF(env, "send_message", "v", 3, 3, "lys", send_message, "send_message", NULL);
+        AddUDF(env, "send_question", "v", 4, 4, "lysm", send_question, "send_question", NULL);
         AddUDF(env, "send_map_message", "v", 5, 5, "lydds", send_map_message, "send_map_message", NULL);
         AddUDF(env, "send_bus_message", "v", 6, 6, "lylddl", send_bus_message, "send_bus_message", NULL);
+    }
+
+    void urban_sensing_engine::answer_question(const long long id, const std::string &answer)
+    {
+        LOG_DEBUG("Answering question " << id << " with " << answer);
+        const std::lock_guard<std::mutex> lock(get_mutex());
+        
+        std::string fact_str = "(answer (question_id " + std::to_string(id) + ") (answer " + answer + "))";
+        LOG_DEBUG("Asserting fact: " << fact_str);
+
+        Fact *sv_f = AssertString(env, fact_str.c_str());
+        // we run the rules engine to update the policy..
+        Run(env, -1);
+
+        // we retract the sensor value fact..
+        Retract(sv_f);
+        // we run the rules engine to update the policy..
+        Run(env, -1);
     }
 
     void urban_sensing_engine::fire_new_message(const std::string &level, const std::string &content)
     {
         for (auto &l : listeners)
             l->new_message(level, content);
+    }
+
+    void urban_sensing_engine::fire_new_question(const std::string &level, const long long id, const std::string &content, const std::vector<std::string> &answers)
+    {
+        for (auto &l : listeners)
+            l->new_question(level, id, content, answers);
     }
 
     void urban_sensing_engine::fire_new_map_message(const std::string &level, const double &lat, const double &lng, const std::string &content)

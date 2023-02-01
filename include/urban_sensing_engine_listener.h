@@ -16,6 +16,7 @@ namespace use
 
   private:
     virtual void new_message([[maybe_unused]] const std::string &level, [[maybe_unused]] const std::string &content) {}
+    virtual void new_question([[maybe_unused]] const std::string &level, [[maybe_unused]] const long long id, [[maybe_unused]] const std::string &content, [[maybe_unused]] const std::vector<std::string> &answers) {}
     virtual void new_map_message([[maybe_unused]] const std::string &level, [[maybe_unused]] const double &lat, [[maybe_unused]] const double &lng, [[maybe_unused]] const std::string &content) {}
     virtual void new_bus_data([[maybe_unused]] const std::string &bus_id, [[maybe_unused]] const long &time, [[maybe_unused]] const double &lat, [[maybe_unused]] const double &lng, [[maybe_unused]] const long &passengers) {}
 
