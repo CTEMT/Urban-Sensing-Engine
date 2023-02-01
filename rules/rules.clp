@@ -83,7 +83,34 @@
     (road (road_id ?r) (road_name ?name) (road_coordinates ?lat ?lng))
     (municipal_technician (technician_id ?mt) (technician_name ?mt_name))
     =>
-    (send_message ?cc_ptr info (str-cat "Inizio preparazione documenti per la gara d'appalto relativa alla manutenzione stradale in " ?name ". Il tecnico " ?mt_name " è stato assegnato al compito."))
+    (send_message ?cc_ptr info (str-cat "Inizio preparazione documenti per la gara d'appalto relativa alla manutenzione stradale in " ?name ". Il compito è stato assegnato a " ?mt_name "."))
+)
+
+(defrule road_maintenance_tender
+    (configuration (coco_ptr ?cc_ptr))
+    (task (command start) (id ?id) (task_type RoadMaintainanceTender) (vals ?duration ?end ?mt ?r ?start ?tau))
+    (road (road_id ?r) (road_name ?name) (road_coordinates ?lat ?lng))
+    (municipal_technician (technician_id ?mt) (technician_name ?mt_name))
+    =>
+    (send_message ?cc_ptr info (str-cat "Inizio gara d'appalto relativa alla manutenzione stradale in " ?name ". Il compito è stato assegnato a " ?mt_name "."))
+)
+
+(defrule road_maintenance
+    (configuration (coco_ptr ?cc_ptr))
+    (task (command start) (id ?id) (task_type RoadMaintainance) (vals ?duration ?end ?mt ?r ?start ?tau))
+    (road (road_id ?r) (road_name ?name) (road_coordinates ?lat ?lng))
+    (municipal_technician (technician_id ?mt) (technician_name ?mt_name))
+    =>
+    (send_message ?cc_ptr info (str-cat "Inizio manutenzione stradale in " ?name ". Il compito è stato assegnato a " ?mt_name "."))
+)
+
+(defrule road_maintenance_finished
+    (configuration (coco_ptr ?cc_ptr))
+    (task (command end) (id ?id) (task_type RoadMaintainance) (vals ?duration ?end ?mt ?r ?start ?tau))
+    ?road <- (road (road_id ?r) (road_name ?name) (road_coordinates ?lat ?lng))
+    =>
+    (send_message ?cc_ptr info (str-cat "Fine manutenzione stradale in " ?name "."))
+    (modify ?road (planned_maintenance FALSE))
 )
 
 (defrule compute_average_building_state
