@@ -1,14 +1,46 @@
+class Thing {}
+
+class Infrastructure : Thing {}
+
+class BicycleLane : Infrastructure {}
+
+class Road : Infrastructure {}
+
+class NaturalAsset : Thing {}
+
+class GreenArea : NaturalAsset {}
+
+class UrbanPark : GreenArea {}
+
+class Service : Thing {}
+
+class PublicService : Service {}
+
+class PublicTransport : PublicService {}
+
+class WorshipPlace : PublicService {}
+
+class PublicSecurity : PublicService {}
+
+class School : PublicService {}
+
+class Hospital : PublicService {}
+
+class CulturalHeritage : Thing {}
+
+class UrbanAsset : CulturalHeritage {}
+
+class HistoricalCentre : UrbanAsset {}
+
 class MunicipalTechnician {
     ReusableResource activity = new ReusableResource(2.0);
 }
-
-class Road {}
 
 class Building {}
 
 class GreenArea {}
 
-predicate DoesRoadMaintainance(MunicipalTechnician mt) {
+predicate DoesInfrastructureMaintainance(MunicipalTechnician mt) {
     false;
 }
 
@@ -24,7 +56,7 @@ class Maintainance : Agent {
 
     predicate RoadMaintainanceDocuments(Road r, MunicipalTechnician mt) : Interval {
         duration >= 10.0;
-        goal rm = new DoesRoadMaintainance(mt:mt);
+        goal im = new DoesInfrastructureMaintainance(mt:mt);
         fact mt_activity = new mt.activity.Use(start:start, duration:duration, end:end, amount:1.0);
     }
 
@@ -36,7 +68,7 @@ class Maintainance : Agent {
 
     predicate RoadMaintainance(Road r, MunicipalTechnician mt) : Interval {
         duration >= 200.0;
-        goal rm = new DoesRoadMaintainance(mt:mt);
+        goal im = new DoesInfrastructureMaintainance(mt:mt);
         fact mt_activity = new mt.activity.Use(start:start, duration:duration, end:end, amount:1.0);
         goal rmt = new RoadMaintainanceTender(r:r, mt:mt);
         rmt.end <= start - 10.0;

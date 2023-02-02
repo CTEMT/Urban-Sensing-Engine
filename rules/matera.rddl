@@ -26,6 +26,6 @@ GreenArea g1 = new GreenArea();
 MunicipalTechnician mt0 = new MunicipalTechnician();
 fact mt0_bm = new DoesBuildingMaintainance(mt:mt0);
 MunicipalTechnician mt1 = new MunicipalTechnician();
-fact mt1_rm = new DoesRoadMaintainance(mt:mt1);
+fact mt1_im = new DoesInfrastructureMaintainance(mt:mt1);
 MunicipalTechnician mt2 = new MunicipalTechnician();
 fact mt2_gam = new DoesGreenAreaMaintainance(mt:mt2);
