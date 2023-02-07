@@ -51,6 +51,14 @@
     (slot technician_role)
 )
 
+(defrule message_sender
+    (configuration (coco_ptr ?cc_ptr))
+    (sensor_type (id ?message_sender_type_id) (name "message_sender"))
+    (sensor_data (sensor_id ?id) (local_time ?c_time) (data ?message))
+    =>
+    (send_message ?cc_ptr warning ?message)
+)
+
 (defrule execute_solved_problem
     (configuration (coco_ptr ?cc_ptr))
     (solver (solver_ptr ?slv_ptr) (solver_type main) (state idle))

@@ -18,6 +18,7 @@ void create_sensor_network(coco::mongo_db &db)
     auto weather_station_type_id = db.create_sensor_type("weather_station", "A smart weather station", {{"temperature", coco::parameter_type::Float}, {"humidity", coco::parameter_type::Float}, {"pressure", coco::parameter_type::Float}, {"wind_speed", coco::parameter_type::Float}, {"wind_direction", coco::parameter_type::Float}, {"rain", coco::parameter_type::Float}});
     auto participatory_sensing_type_id = db.create_sensor_type("participatory_sensing", "A participatory sensing device", {{"status", coco::parameter_type::Float}, {"subject_id", coco::parameter_type::Symbol}});
     auto occupancy_prediction_type_id = db.create_sensor_type("occupancy_prediction", "A smart occupancy prediction device", {{"occupancy", coco::parameter_type::Integer}});
+    auto message_sender_type_id = db.create_sensor_type("message_sender", "A message sender device", {{"message", coco::parameter_type::String}});
 
     // we create the sensors..
     auto temp0_loc = std::make_unique<coco::location>();
@@ -47,6 +48,8 @@ void create_sensor_network(coco::mongo_db &db)
     participatory_sensing0_loc->x = 40.646;
     participatory_sensing0_loc->y = 16.644;
     auto participatory_sensing0_id = db.create_sensor("ParticipatorySensing0", db.get_sensor_type(participatory_sensing_type_id), std::move(participatory_sensing0_loc));
+
+    auto message_sender0_id = db.create_sensor("MessageSender0", db.get_sensor_type(message_sender_type_id));
 }
 
 void set_sensor_values(coco::mongo_db &db)
