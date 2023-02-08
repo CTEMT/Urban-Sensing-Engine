@@ -124,8 +124,8 @@ namespace use
     void urban_sensing_engine::answer_question(const long long id, const std::string &answer)
     {
         LOG_DEBUG("Answering question " << id << " with " << answer);
-        const std::lock_guard<std::mutex> lock(get_mutex());
-        
+        const std::lock_guard<std::recursive_mutex> lock(get_mutex());
+
         std::string fact_str = "(answer (question_id " + std::to_string(id) + ") (answer " + answer + "))";
         LOG_DEBUG("Asserting fact: " << fact_str);
 
