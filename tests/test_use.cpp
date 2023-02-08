@@ -1,5 +1,5 @@
 #include "urban_sensing_engine.h"
-#include "mongo_db.h"
+#include "urban_sensing_engine_db.h"
 #include "mqtt/async_client.h"
 #include <thread>
 #include <chrono>
@@ -50,6 +50,78 @@ void create_sensor_network(coco::mongo_db &db)
     auto participatory_sensing0_id = db.create_sensor("ParticipatorySensing0", db.get_sensor_type(participatory_sensing_type_id), std::move(participatory_sensing0_loc));
 
     auto message_sender0_id = db.create_sensor("MessageSender0", db.get_sensor_type(message_sender_type_id));
+}
+
+void create_roads(use::urban_sensing_engine_db &db)
+{
+    // we create the roads..
+    if (COCO_ROOT == "CTE-MT")
+    {
+        auto road0_loc = std::make_unique<coco::location>();
+        road0_loc->x = 40.66886987440025;
+        road0_loc->y = 16.606201033431592;
+        auto road0_id = db.create_road("Via XX Settembre", std::move(road0_loc));
+
+        auto road1_loc = std::make_unique<coco::location>();
+        road1_loc->x = 40.66184045053739;
+        road1_loc->y = 16.610004133290108;
+        auto road1_id = db.create_road("Via Lucana", std::move(road1_loc));
+
+        auto road2_loc = std::make_unique<coco::location>();
+        road2_loc->x = 40.667417126550916;
+        road2_loc->y = 16.604441555519582;
+        auto road2_id = db.create_road("Via Roma", std::move(road2_loc));
+
+        auto road3_loc = std::make_unique<coco::location>();
+        road3_loc->x = 40.667882003624854;
+        road3_loc->y = 16.608006069013957;
+        auto road3_id = db.create_road("Via San Biagio", std::move(road3_loc));
+
+        auto road4_loc = std::make_unique<coco::location>();
+        road4_loc->x = 40.6669187521497;
+        road4_loc->y = 16.606513082508386;
+        auto road4_id = db.create_road("Piazza Vittorio Veneto", std::move(road4_loc));
+
+        auto road5_loc = std::make_unique<coco::location>();
+        road5_loc->x = 40.668147065962714;
+        road5_loc->y = 16.611608001257064;
+        auto road5_id = db.create_road("Vico Conservatorio", std::move(road5_loc));
+
+        auto road6_loc = std::make_unique<coco::location>();
+        road6_loc->x = 40.66624791599131;
+        road6_loc->y = 16.61030855551953;
+        auto road6_id = db.create_road("Via Duomo", std::move(road6_loc));
+
+        auto road7_loc = std::make_unique<coco::location>();
+        road7_loc->x = 40.66679155634107;
+        road7_loc->y = 16.611154282508345;
+        auto road7_id = db.create_road("Piazza Duomo", std::move(road7_loc));
+
+        auto road8_loc = std::make_unique<coco::location>();
+        road8_loc->x = 40.663425300341075;
+        road8_loc->y = 16.610178297849036;
+        auto road8_id = db.create_road("Piazzetta Pascoli", std::move(road8_loc));
+
+        auto road9_loc = std::make_unique<coco::location>();
+        road9_loc->x = 40.6660429407916;
+        road9_loc->y = 16.60974561148296;
+        auto road9_id = db.create_road("Piazza del Sedile", std::move(road9_loc));
+
+        auto road10_loc = std::make_unique<coco::location>();
+        road10_loc->x = 40.666770004486914;
+        road10_loc->y = 16.61219574017874;
+        auto road10_id = db.create_road("Via San Potito", std::move(road10_loc));
+
+        auto road11_loc = std::make_unique<coco::location>();
+        road11_loc->x = 40.662020781572956;
+        road11_loc->y = 16.60025755551943;
+        auto road11_id = db.create_road("Via del Castello", std::move(road11_loc));
+
+        auto road12_loc = std::make_unique<coco::location>();
+        road12_loc->x = 40.669571057618185;
+        road12_loc->y = 16.60734906901401;
+        auto road12_id = db.create_road("Via T. Stigliani", std::move(road12_loc));
+    }
 }
 
 void set_sensor_values(coco::mongo_db &db)
@@ -256,7 +328,7 @@ void dynamic_set_sensor_values(coco::mongo_db &db)
 int main(int argc, char const *argv[])
 {
     mongocxx::instance inst{}; // This should be done only once.
-    coco::mongo_db db;
+    use::urban_sensing_engine_db db;
 
     bool init = false;
     if (init)
@@ -265,6 +337,8 @@ int main(int argc, char const *argv[])
 
         create_sensor_network(db);
         set_sensor_values(db);
+
+        create_roads(db);
     }
     else
         db.init();
