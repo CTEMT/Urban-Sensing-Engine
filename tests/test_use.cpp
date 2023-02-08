@@ -199,23 +199,23 @@ void set_sensor_values(coco::mongo_db &db)
 
     json::json temp0_val;
     temp0_val["temperature"] = 20.0;
-    db.set_sensor_value(temp0_id, time, temp0_val);
+    db.set_sensor_value(db.get_sensor(temp0_id), time, temp0_val);
 
     json::json bus0_val;
     bus0_val["lat"] = 40.669;
     bus0_val["lng"] = 16.609;
     bus0_val["passengers"] = 10.0;
-    db.set_sensor_value(bus0_id, time, bus0_val);
+    db.set_sensor_value(db.get_sensor(bus0_id), time, bus0_val);
 
     json::json bus1_val;
     bus1_val["lat"] = 40.659;
     bus1_val["lng"] = 16.599;
     bus1_val["passengers"] = 15.0;
-    db.set_sensor_value(bus1_id, time, bus1_val);
+    db.set_sensor_value(db.get_sensor(bus1_id), time, bus1_val);
 
     json::json gate0_val;
     gate0_val["passes"] = 15.0;
-    db.set_sensor_value(gate0_id, time, gate0_val);
+    db.set_sensor_value(db.get_sensor(gate0_id), time, gate0_val);
 
     json::json air_monitoring0_val;
     air_monitoring0_val["pm10"] = 10.0;
@@ -225,7 +225,7 @@ void set_sensor_values(coco::mongo_db &db)
     air_monitoring0_val["no2"] = 5.0;
     air_monitoring0_val["o3"] = 5.0;
     air_monitoring0_val["so2"] = 5.0;
-    db.set_sensor_value(air_monitoring0_id, time, air_monitoring0_val);
+    db.set_sensor_value(db.get_sensor(air_monitoring0_id), time, air_monitoring0_val);
 }
 
 void update_temperature(mqtt::async_client &mqtt_client, const std::string &root, const std::string &temp_id, double temp)
