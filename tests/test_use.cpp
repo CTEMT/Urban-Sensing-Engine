@@ -13,7 +13,7 @@ void create_sensor_network(coco::mongo_db &db)
     // we create the sensor types..
     auto temp_type_id = db.create_sensor_type("temperature", "A type of sensor for measuring temperature", {{"temperature", coco::parameter_type::Float}});
     auto bus_type_id = db.create_sensor_type("bus", "A smart bus", {{"lat", coco::parameter_type::Float}, {"lng", coco::parameter_type::Float}, {"passengers", coco::parameter_type::Integer}});
-    auto gate_type_id = db.create_sensor_type("gate", "A smart gate for detecting vehicles' passages", {{"passes", coco::parameter_type::Integer}});
+    auto gate_type_id = db.create_sensor_type("gate", "A smart gate for detecting vehicles' passages", {{"pedestrian", coco::parameter_type::Integer}, {"vehicle", coco::parameter_type::Integer}, {"other", coco::parameter_type::Integer}});
     auto air_monitoring_type_id = db.create_sensor_type("air_monitoring", "A smart air monitoring station", {{"pm10", coco::parameter_type::Float}, {"pm25", coco::parameter_type::Float}, {"co2", coco::parameter_type::Float}, {"co", coco::parameter_type::Float}, {"no2", coco::parameter_type::Float}, {"o3", coco::parameter_type::Float}, {"so2", coco::parameter_type::Float}});
     auto weather_station_type_id = db.create_sensor_type("weather_station", "A smart weather station", {{"temperature", coco::parameter_type::Float}, {"humidity", coco::parameter_type::Float}, {"pressure", coco::parameter_type::Float}, {"wind_speed", coco::parameter_type::Float}, {"wind_direction", coco::parameter_type::Float}, {"rain", coco::parameter_type::Float}});
     auto participatory_sensing_type_id = db.create_sensor_type("participatory_sensing", "A participatory sensing device", {{"status", coco::parameter_type::Float}, {"subject_id", coco::parameter_type::Symbol}});
@@ -214,7 +214,10 @@ void set_sensor_values(coco::mongo_db &db)
     db.set_sensor_value(db.get_sensor(bus1_id), time, bus1_val);
 
     json::json gate0_val;
-    gate0_val["passes"] = 15.0;
+    gate0_val["pedestrian"] = 15.0;
+    gate0_val["vehicle"] = 10.0;
+    gate0_val["other"] = 5.0;
+
     db.set_sensor_value(db.get_sensor(gate0_id), time, gate0_val);
 
     json::json air_monitoring0_val;
@@ -272,7 +275,7 @@ void update_bus(mqtt::async_client &mqtt_client, const std::string &root, const 
     }
 }
 
-void update_gate(mqtt::async_client &mqtt_client, const std::string &root, const std::string &gate_id, long passes)
+void update_gate(mqtt::async_client &mqtt_client, const std::string &root, const std::string &gate_id, long pedestrian, long vehicle, long other)
 {
     std::random_device rnd_dev;
     std::mt19937 generator(rnd_dev());
@@ -283,11 +286,15 @@ void update_gate(mqtt::async_client &mqtt_client, const std::string &root, const
         std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         do
         {
-            passes += distr(generator);
-        } while (passes < 0);
+            pedestrian += distr(generator);
+            vehicle += distr(generator);
+            other += distr(generator);
+        } while (pedestrian < 0);
 
         json::json gate_val;
-        gate_val["passes"] = passes;
+        gate_val["pedestrian"] = pedestrian;
+        gate_val["vehicle"] = vehicle;
+        gate_val["other"] = other;
 
         mqtt_client.publish(mqtt::make_message(root + "/sensor/" + gate_id, gate_val.dump(), 1, true));
     }
@@ -364,7 +371,7 @@ void dynamic_set_sensor_values(coco::mongo_db &db)
     std::this_thread::sleep_for(std::chrono::milliseconds(300));
     auto bus1_ftr = std::async(std::launch::async, update_bus, std::ref(mqtt_client), std::ref(root), std::ref(bus1_id), 40.659, 16.599, 15);
     std::this_thread::sleep_for(std::chrono::milliseconds(300));
-    auto gate0_ftr = std::async(std::launch::async, update_gate, std::ref(mqtt_client), std::ref(root), std::ref(gate0_id), 15);
+    auto gate0_ftr = std::async(std::launch::async, update_gate, std::ref(mqtt_client), std::ref(root), std::ref(gate0_id), 15, 10, 2);
     std::this_thread::sleep_for(std::chrono::milliseconds(300));
     auto air_monitoring0_ftr = std::async(std::launch::async, update_air_monitoring, std::ref(mqtt_client), std::ref(root), std::ref(air_monitoring0_id), 10.0, 5.0, 1000.0, 100.0, 200.0, 300.0, 400.0);
 }
