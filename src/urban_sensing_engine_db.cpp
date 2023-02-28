@@ -14,7 +14,7 @@ namespace use
         LOG("Retrieving all roads..");
         for (const auto &doc : roads_collection.find({}))
         {
-            std::unique_ptr<coco::location> l;
+            auto l = std::make_unique<coco::location>();
             l->x = doc["coordinates"]["x"].get_double().value;
             l->y = doc["coordinates"]["y"].get_double().value;
             create_road(doc["_id"].get_oid().value.to_string(), doc["name"].get_string().value.to_string(), std::move(l));
@@ -25,7 +25,7 @@ namespace use
         LOG("Retrieving all buildings..");
         for (const auto &doc : buildings_collection.find({}))
         {
-            std::unique_ptr<coco::location> l;
+            auto l = std::make_unique<coco::location>();
             l->x = doc["coordinates"]["x"].get_double().value;
             l->y = doc["coordinates"]["y"].get_double().value;
             create_building(doc["_id"].get_oid().value.to_string(), doc["name"].get_string().value.to_string(), get_road(doc["road_id"].get_oid().value.to_string()), doc["address"].get_string().value.to_string(), std::move(l));
