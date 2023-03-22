@@ -2,7 +2,6 @@
 
 #include "vehicle_type.h"
 #include "location.h"
-#include <memory>
 
 namespace use
 {
@@ -12,7 +11,7 @@ namespace use
     friend class urban_sensing_engine_db;
 
   public:
-    vehicle(const std::string &id, const vehicle_type &vt, std::unique_ptr<coco::location> l) : id(id), type(vt), loc(std::move(l)) {}
+    vehicle(const std::string &id, const vehicle_type &vt, coco::location_ptr l) : id(id), type(vt), loc(std::move(l)) {}
 
     std::string get_id() const { return id; }
     const vehicle_type &get_type() const { return type; }
@@ -22,6 +21,7 @@ namespace use
   private:
     std::string id;
     const vehicle_type &type;
-    std::unique_ptr<coco::location> loc;
+    coco::location_ptr loc;
   };
+  using vehicle_ptr = utils::u_ptr<vehicle>;
 } // namespace use

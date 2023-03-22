@@ -13,31 +13,19 @@ namespace use
         roads.clear();
         LOG("Retrieving all roads..");
         for (const auto &doc : roads_collection.find({}))
-        {
-            auto l = std::make_unique<coco::location>();
-            l->x = doc["coordinates"]["x"].get_double().value;
-            l->y = doc["coordinates"]["y"].get_double().value;
-            create_road(doc["_id"].get_oid().value.to_string(), doc["name"].get_string().value.to_string(), std::move(l));
-        }
+            create_road(doc["_id"].get_oid().value.to_string(), doc["name"].get_string().value.to_string(), new coco::location{doc["coordinates"]["x"].get_double().value, doc["coordinates"]["y"].get_double().value});
         LOG("Retrieved " << roads.size() << " roads..");
 
         buildings.clear();
         LOG("Retrieving all buildings..");
         for (const auto &doc : buildings_collection.find({}))
-        {
-            auto l = std::make_unique<coco::location>();
-            l->x = doc["coordinates"]["x"].get_double().value;
-            l->y = doc["coordinates"]["y"].get_double().value;
-            create_building(doc["_id"].get_oid().value.to_string(), doc["name"].get_string().value.to_string(), get_road(doc["road_id"].get_oid().value.to_string()), doc["address"].get_string().value.to_string(), std::move(l));
-        }
+            create_building(doc["_id"].get_oid().value.to_string(), doc["name"].get_string().value.to_string(), get_road(doc["road_id"].get_oid().value.to_string()), doc["address"].get_string().value.to_string(), new coco::location{doc["coordinates"]["x"].get_double().value, doc["coordinates"]["y"].get_double().value});
         LOG("Retrieved " << buildings.size() << " buildings..");
 
         vehicle_types.clear();
         LOG("Retrieving all vehicle types..");
         for (const auto &doc : vehicle_types_collection.find({}))
-        {
             create_vehicle_type(doc["_id"].get_oid().value.to_string(), doc["name"].get_string().value.to_string(), doc["description"].get_string().value.to_string(), doc["manufacturer"].get_string().value.to_string());
-        }
         LOG("Retrieved " << vehicle_types.size() << " vehicle types..");
 
         vehicles.clear();
@@ -45,22 +33,15 @@ namespace use
         for (const auto &doc : vehicles_collection.find({}))
         {
             auto loc = doc.find("location");
-            std::unique_ptr<coco::location> l;
+            coco::location_ptr l;
             if (loc != doc.end())
-            {
-                auto loc_doc = loc->get_document().value;
-                auto x = loc_doc["x"].get_double().value;
-                auto y = loc_doc["y"].get_double().value;
-                l = std::make_unique<coco::location>();
-                l->x = x;
-                l->y = y;
-            }
+                l = new coco::location{loc->get_document().value["x"].get_double().value, loc->get_document().value["y"].get_double().value};
             create_vehicle(doc["_id"].get_oid().value.to_string(), get_vehicle_type(doc["vehicle_type_id"].get_oid().value.to_string()), std::move(l));
         }
         LOG("Retrieved " << vehicles.size() << " vehicles..");
     }
 
-    std::string urban_sensing_engine_db::create_road(const std::string &name, std::unique_ptr<coco::location> l)
+    std::string urban_sensing_engine_db::create_road(const std::string &name, coco::location_ptr l)
     {
         auto result = roads_collection.insert_one(bsoncxx::builder::stream::document{} << "name" << name << "coordinates" << bsoncxx::builder::stream::open_document << "x" << l->x << "y" << l->y << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize);
         if (result)
@@ -73,7 +54,7 @@ namespace use
             return {};
     }
 
-    void urban_sensing_engine_db::create_road(const std::string &id, const std::string &name, std::unique_ptr<coco::location> l) { roads.emplace(id, std::make_unique<use::road>(id, name, std::move(l))); }
+    void urban_sensing_engine_db::create_road(const std::string &id, const std::string &name, coco::location_ptr l) { roads.emplace(id, new road(id, name, std::move(l))); }
 
     road &urban_sensing_engine_db::get_road(const std::string &id) { return *roads.at(id); }
 
@@ -85,7 +66,7 @@ namespace use
         return result;
     }
 
-    std::string urban_sensing_engine_db::create_building(const std::string &name, const road &r, const std::string &address, std::unique_ptr<coco::location> l)
+    std::string urban_sensing_engine_db::create_building(const std::string &name, const road &r, const std::string &address, coco::location_ptr l)
     {
         auto result = buildings_collection.insert_one(bsoncxx::builder::stream::document{} << "name" << name << "road_id" << bsoncxx::oid{bsoncxx::stdx::string_view{r.get_id()}} << "address" << address << "coordinates" << bsoncxx::builder::stream::open_document << "x" << l->x << "y" << l->y << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize);
         if (result)
@@ -98,7 +79,7 @@ namespace use
             return {};
     }
 
-    void urban_sensing_engine_db::create_building(const std::string &id, const std::string &name, const road &r, const std::string &address, std::unique_ptr<coco::location> l) { buildings.emplace(id, std::make_unique<use::building>(id, name, r, address, std::move(l))); }
+    void urban_sensing_engine_db::create_building(const std::string &id, const std::string &name, const road &r, const std::string &address, coco::location_ptr l) { buildings.emplace(id, new building(id, name, r, address, std::move(l))); }
 
     std::vector<std::reference_wrapper<building>> urban_sensing_engine_db::get_all_buildings()
     {
@@ -123,7 +104,7 @@ namespace use
             return {};
     }
 
-    void urban_sensing_engine_db::create_vehicle_type(const std::string &id, const std::string &name, const std::string &description, const std::string &manufacturer) { vehicle_types.emplace(id, std::make_unique<use::vehicle_type>(id, name, description, manufacturer)); }
+    void urban_sensing_engine_db::create_vehicle_type(const std::string &id, const std::string &name, const std::string &description, const std::string &manufacturer) { vehicle_types.emplace(id, new vehicle_type(id, name, description, manufacturer)); }
 
     vehicle_type &urban_sensing_engine_db::get_vehicle_type(const std::string &id) { return *vehicle_types.at(id); }
 
@@ -135,7 +116,7 @@ namespace use
         return result;
     }
 
-    std::string urban_sensing_engine_db::create_vehicle(const vehicle_type &vt, std::unique_ptr<coco::location> l)
+    std::string urban_sensing_engine_db::create_vehicle(const vehicle_type &vt, coco::location_ptr l)
     {
         auto s_doc = bsoncxx::builder::basic::document{};
         s_doc.append(bsoncxx::builder::basic::kvp("vehicle_type_id", bsoncxx::oid{bsoncxx::stdx::string_view{vt.get_id()}}));
@@ -154,7 +135,7 @@ namespace use
             return {};
     }
 
-    void urban_sensing_engine_db::create_vehicle(const std::string &id, const vehicle_type &vt, std::unique_ptr<coco::location> l) { vehicles.emplace(id, std::make_unique<use::vehicle>(id, vt, std::move(l))); }
+    void urban_sensing_engine_db::create_vehicle(const std::string &id, const vehicle_type &vt, coco::location_ptr l) { vehicles.emplace(id, new vehicle(id, vt, std::move(l))); }
 
     vehicle &urban_sensing_engine_db::get_vehicle(const std::string &id) { return *vehicles.at(id); }
 
@@ -166,7 +147,7 @@ namespace use
         return result;
     }
 
-    void urban_sensing_engine_db::set_vehicle_location(vehicle &v, std::unique_ptr<coco::location> l)
+    void urban_sensing_engine_db::set_vehicle_location(vehicle &v, coco::location_ptr l)
     {
         if (l)
         {

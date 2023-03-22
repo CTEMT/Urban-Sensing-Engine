@@ -1,14 +1,13 @@
 #pragma once
 
 #include "location.h"
-#include <memory>
 
 namespace use
 {
   class road
   {
   public:
-    road(const std::string &id, const std::string &name, std::unique_ptr<coco::location> l) : id(id), name(name), loc(std::move(l)) {}
+    road(const std::string &id, const std::string &name, coco::location_ptr l) : id(id), name(name), loc(std::move(l)) {}
 
     std::string get_id() const { return id; }
     std::string get_name() const { return name; }
@@ -17,6 +16,7 @@ namespace use
   private:
     const std::string id;
     std::string name;
-    std::unique_ptr<coco::location> loc;
+    coco::location_ptr loc;
   };
+  using road_ptr = utils::u_ptr<road>;
 } // namespace use

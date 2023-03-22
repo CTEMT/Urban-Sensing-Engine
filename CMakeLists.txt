@@ -11,13 +11,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-find_package(Threads REQUIRED)
-if(NOT PahoMqttCpp_FOUND)
-    find_package(PahoMqttCpp REQUIRED)
-endif()
-find_package(mongocxx REQUIRED)
-find_package(bsoncxx REQUIRED)
-
 include(CTest)
 enable_testing()
 
@@ -28,8 +21,7 @@ file(GLOB URBAN_SENSING_ENGINE_HEADERS include/*.h)
 
 add_library(${PROJECT_NAME} STATIC ${URBAN_SENSING_ENGINE_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/include $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> $<INSTALL_INTERFACE:> ${Boost_INCLUDE_DIRS} ${CLIPS_INCLUDE_DIR} ${LIBMONGOCXX_INCLUDE_DIR} ${LIBBSONCXX_INCLUDE_DIR})
-target_link_directories(${PROJECT_NAME} PUBLIC ${CLIPS_LIB_DIR})
-target_link_libraries(${PROJECT_NAME} PRIVATE COCO PlExA oRatioSolver ratioCore RiDDLe SeMiTONE json ${CMAKE_THREAD_LIBS_INIT} PahoMqttCpp::paho-mqttpp3-static clips mongo::bsoncxx_shared mongo::mongocxx_shared)
+target_link_libraries(${PROJECT_NAME} PUBLIC COCO)
 
 if(BUILD_TESTING)
     add_subdirectory(tests)

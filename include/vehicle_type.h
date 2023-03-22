@@ -1,5 +1,6 @@
 #pragma once
 
+#include "memory.h"
 #include <string>
 
 namespace use
@@ -20,4 +21,5 @@ namespace use
     std::string description;
     std::string manufacturer;
   };
+  using vehicle_type_ptr = utils::u_ptr<vehicle_type>;
 } // namespace use

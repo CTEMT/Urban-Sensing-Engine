@@ -1,14 +1,13 @@
 #pragma once
 
 #include "road.h"
-#include <memory>
 
 namespace use
 {
   class building
   {
   public:
-    building(const std::string &id, const std::string &name, const road &r, const std::string &address, std::unique_ptr<coco::location> l) : id(id), name(name), r(r), address(address), loc(std::move(l)) {}
+    building(const std::string &id, const std::string &name, const road &r, const std::string &address, coco::location_ptr l) : id(id), name(name), r(r), address(address), loc(std::move(l)) {}
 
     std::string get_id() const { return id; }
     std::string get_name() const { return name; }
@@ -21,6 +20,7 @@ namespace use
     std::string name;
     const road &r;
     std::string address;
-    std::unique_ptr<coco::location> loc;
+    coco::location_ptr loc;
   };
+  using building_ptr = utils::u_ptr<building>;
 } // namespace use
