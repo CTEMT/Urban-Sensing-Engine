@@ -8,9 +8,18 @@
 
 #define MQTT_URI(host, port) host ":" port
 
+void create_users(coco::mongo_db &db)
+{
+    LOG("Creating main users..");
+    db.create_user("Riccardo", "De Benedictis", "riccardo.debenedictis@cnr.it", "admin", {{"type", "admin"}});
+    db.create_user("Luca", "Colombi", "luca.colombi@cnr.it", "admin", {{"type", "admin"}});
+}
+
 void create_sensor_network(coco::mongo_db &db)
 {
-    // we create the sensor types..
+    LOG("Creating sensor network..");
+
+    LOG("Creating sensor types..");
     auto temp_type_id = db.create_sensor_type("temperature", "A type of sensor for measuring temperature", {{"temperature", coco::parameter_type::Float}});
     auto bus_type_id = db.create_sensor_type("bus", "A smart bus", {{"lat", coco::parameter_type::Float}, {"lng", coco::parameter_type::Float}, {"passengers", coco::parameter_type::Integer}});
     auto gate_type_id = db.create_sensor_type("gate", "A smart gate for detecting vehicles' passages", {{"pedestrian", coco::parameter_type::Integer}, {"vehicle", coco::parameter_type::Integer}, {"other", coco::parameter_type::Integer}});
@@ -20,27 +29,42 @@ void create_sensor_network(coco::mongo_db &db)
     auto occupancy_prediction_type_id = db.create_sensor_type("occupancy_prediction", "A smart occupancy prediction device", {{"occupancy", coco::parameter_type::Integer}});
     auto message_sender_type_id = db.create_sensor_type("message_sender", "A message sender device", {{"message", coco::parameter_type::String}});
 
-    // we create the sensors..
-    db.create_sensor("Temp0", db.get_sensor_type(temp_type_id), new coco::location{16.604, 40.666});
-
-    db.create_sensor("Bus0", db.get_sensor_type(bus_type_id));
-    db.create_sensor("Bus1", db.get_sensor_type(bus_type_id));
-
-    db.create_sensor("Gate0", db.get_sensor_type(gate_type_id), new coco::location{16.614, 40.676});
-
-    db.create_sensor("AirMonitoring0", db.get_sensor_type(air_monitoring_type_id), new coco::location{16.594, 40.686});
-
-    db.create_sensor("WeatherStation0", db.get_sensor_type(weather_station_type_id), new coco::location{16.624, 40.656});
-
-    db.create_sensor("ParticipatorySensing0", db.get_sensor_type(participatory_sensing_type_id), new coco::location{16.644, 40.646});
-
+    LOG("Creating sensors..");
     db.create_sensor("MessageSender0", db.get_sensor_type(message_sender_type_id));
-}
 
-void create_roads(use::urban_sensing_engine_db &db)
-{ // we create the roads..
     if (COCO_ROOT == "CTE-MT")
     {
+        LOG("Creating CTE-MT sensors..");
+        auto temp0_id = db.create_sensor("Temp0", db.get_sensor_type(temp_type_id), new coco::location{16.604, 40.666});
+        auto bus0_id = db.create_sensor("Bus0", db.get_sensor_type(bus_type_id));
+        auto bus1_id = db.create_sensor("Bus1", db.get_sensor_type(bus_type_id));
+        auto gate0_id = db.create_sensor("Gate0", db.get_sensor_type(gate_type_id), new coco::location{16.614, 40.676});
+        auto air_monitoring0_id = db.create_sensor("AirMonitoring0", db.get_sensor_type(air_monitoring_type_id), new coco::location{16.594, 40.686});
+        auto weather_station0_id = db.create_sensor("WeatherStation0", db.get_sensor_type(weather_station_type_id), new coco::location{16.624, 40.656});
+        auto occupancy_prediction0_id = db.create_sensor("OccupancyPrediction0", db.get_sensor_type(occupancy_prediction_type_id), new coco::location{16.654, 40.636});
+        auto participatory_sensing0_id = db.create_sensor("ParticipatorySensing0", db.get_sensor_type(participatory_sensing_type_id), new coco::location{16.644, 40.646});
+
+        LOG("Setting CTE-MT sensor values..");
+        auto time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+        db.set_sensor_value(db.get_sensor(temp0_id), time, {{"temperature", 20.0}});
+        db.set_sensor_value(db.get_sensor(bus0_id), time, {{"lat", 40.669}, {"lng", 16.609}, {"passengers", 10.0}});
+        db.set_sensor_value(db.get_sensor(bus1_id), time, {{"lat", 40.659}, {"lng", 16.599}, {"passengers", 15.0}});
+        db.set_sensor_value(db.get_sensor(gate0_id), time, {{"pedestrian", 15.0}, {"vehicle", 10.0}, {"other", 5.0}});
+        db.set_sensor_value(db.get_sensor(air_monitoring0_id), time, {{"pm10", 10.0}, {"pm2.5", 5.0}, {"co2", 100.0}, {"co", 10.0}, {"no2", 5.0}, {"o3", 5.0}, {"so2", 5.0}});
+    }
+}
+
+void create_data(use::urban_sensing_engine_db &db)
+{
+    if (COCO_ROOT == "CTE-MT")
+    {
+        LOG("Creating CTE-MT users..");
+        auto usr0_id = db.create_user("Mario", "Rossi", "mario.rossi@test.it", "psw_01", {{"type", "user"}, {"roles", {"edilizia", "mobilita"}}});
+        auto usr1_id = db.create_user("Giuseppe", "Verdi", "giuseppe.verdi@test.it", "psw_02", {{"type", "user"}, {"roles", {"mobilita"}}});
+        auto usr2_id = db.create_user("Luigi", "Bianchi", "luigi.bianchi@test.it", "psw_03", {{"type", "user"}, {"roles", {"edilizia", "verde"}}});
+
+        LOG("Creating CTE-MT roads..");
         auto road0_id = db.create_road("Via XX Settembre", new coco::location{16.606201033431592, 40.66886987440025});
         auto road1_id = db.create_road("Via Lucana", new coco::location{16.610004133290108, 40.66184045053739});
         auto road2_id = db.create_road("Via Roma", new coco::location{16.604441555519582, 40.667417126550916});
@@ -55,6 +79,7 @@ void create_roads(use::urban_sensing_engine_db &db)
         auto road11_id = db.create_road("Via del Castello", new coco::location{16.60025755551943, 40.662020781572956});
         auto road12_id = db.create_road("Via T. Stigliani", new coco::location{16.60734906901401, 40.669571057618185});
 
+        LOG("Creating CTE-MT buildings..");
         auto building0_id = db.create_building("Palazzo dell'Annunziata", db.get_road(road4_id), "Piazza Vittorio Veneto", new coco::location{16.606513082508386, 40.6669187521497});
         auto building1_id = db.create_building("Palazzo Bernardini", db.get_road(road5_id), "Via Conservatorio", new coco::location{16.608006069013957, 40.667882003624854});
         auto building2_id = db.create_building("Palazzo Bronzini", db.get_road(road6_id), "Via Duomo, 2", new coco::location{16.61030855551953, 40.66624791599131});
@@ -65,45 +90,6 @@ void create_roads(use::urban_sensing_engine_db &db)
         auto building7_id = db.create_building("Palazzo del Sedile", db.get_road(road9_id), "Piazza del Sedile", new coco::location{16.60025755551943, 40.662020781572956});
         auto building8_id = db.create_building("Palazzo Venusio", db.get_road(road10_id), "Via San Potito", new coco::location{16.60734906901401, 40.669571057618185});
     }
-}
-
-void set_sensor_values(coco::mongo_db &db)
-{
-    auto sensors = db.get_all_sensors();
-
-    std::string temp0_id;
-    std::string bus0_id;
-    std::string bus1_id;
-    std::string gate0_id;
-    std::string air_monitoring0_id;
-
-    for (const auto &sensor : sensors)
-    {
-        if (sensor.get().get_type().get_name() == "temperature")
-            temp0_id = sensor.get().get_id();
-        else if (sensor.get().get_type().get_name() == "gate")
-            gate0_id = sensor.get().get_id();
-        else if (sensor.get().get_type().get_name() == "bus")
-        {
-            if (sensor.get().get_name() == "Bus0")
-                bus0_id = sensor.get().get_id();
-            else if (sensor.get().get_name() == "Bus1")
-                bus1_id = sensor.get().get_id();
-        }
-        else if (sensor.get().get_type().get_name() == "air_monitoring")
-            air_monitoring0_id = sensor.get().get_id();
-    }
-
-    auto time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-
-    db.set_sensor_value(db.get_sensor(temp0_id), time, {{"temperature", 20.0}});
-
-    db.set_sensor_value(db.get_sensor(bus0_id), time, {{"lat", 40.669}, {"lng", 16.609}, {"passengers", 10.0}});
-    db.set_sensor_value(db.get_sensor(bus1_id), time, {{"lat", 40.659}, {"lng", 16.599}, {"passengers", 15.0}});
-
-    db.set_sensor_value(db.get_sensor(gate0_id), time, {{"pedestrian", 15.0}, {"vehicle", 10.0}, {"other", 5.0}});
-
-    db.set_sensor_value(db.get_sensor(air_monitoring0_id), time, {{"pm10", 10.0}, {"pm2.5", 5.0}, {"co2", 100.0}, {"co", 10.0}, {"no2", 5.0}, {"o3", 5.0}, {"so2", 5.0}});
 }
 
 void update_temperature(mqtt::async_client &mqtt_client, const std::string &root, const std::string &temp_id, double temp)
@@ -245,10 +231,10 @@ int main(int argc, char const *argv[])
     {
         db.drop(); // Warning!! We are here deleting all the current data!!
 
+        create_users(db);
         create_sensor_network(db);
-        set_sensor_values(db);
 
-        create_roads(db);
+        create_data(db);
     }
     else
         db.init();
