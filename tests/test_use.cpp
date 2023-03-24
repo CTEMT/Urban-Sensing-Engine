@@ -177,7 +177,7 @@ void update_air_monitoring(mqtt::async_client &mqtt_client, const std::string &r
 
 void dynamic_set_sensor_values(coco::mongo_db &db)
 {
-    auto sensors = db.get_all_sensors();
+    auto sensors = db.get_sensors();
 
     std::string temp0_id;
     std::string bus0_id;
