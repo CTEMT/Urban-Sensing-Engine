@@ -11,8 +11,8 @@
 void create_users(coco::mongo_db &db)
 {
     LOG("Creating main users..");
-    db.create_user("Riccardo", "De Benedictis", "riccardo.debenedictis@cnr.it", "admin", {{"type", "admin"}});
-    db.create_user("Luca", "Colombi", "luca.colombi@cnr.it", "admin", {{"type", "admin"}});
+    db.create_user("Riccardo", "De Benedictis", "riccardo.debenedictis@cnr.it", "admin", {"CTE-MT"}, {{"type", "admin"}});
+    db.create_user("Luca", "Colombi", "luca.colombi@cnr.it", "admin", {"CTE-MT"}, {{"type", "admin"}});
 }
 
 void create_sensor_network(coco::mongo_db &db)
@@ -60,9 +60,9 @@ void create_data(use::urban_sensing_engine_db &db)
     if (COCO_ROOT == "CTE-MT")
     {
         LOG("Creating CTE-MT users..");
-        auto usr0_id = db.create_user("Mario", "Rossi", "mario.rossi@test.it", "psw_01", {{"type", "user"}, {"roles", {"edilizia", "mobilita"}}});
-        auto usr1_id = db.create_user("Giuseppe", "Verdi", "giuseppe.verdi@test.it", "psw_02", {{"type", "user"}, {"roles", {"mobilita"}}});
-        auto usr2_id = db.create_user("Luigi", "Bianchi", "luigi.bianchi@test.it", "psw_03", {{"type", "user"}, {"roles", {"edilizia", "verde"}}});
+        auto usr0_id = db.create_user("Mario", "Rossi", "mario.rossi@test.it", "psw_01", {"CTE-MT"}, {{"type", "user"}, {"roles", {"edilizia", "mobilita"}}});
+        auto usr1_id = db.create_user("Giuseppe", "Verdi", "giuseppe.verdi@test.it", "psw_02", {"CTE-MT"}, {{"type", "user"}, {"roles", {"mobilita"}}});
+        auto usr2_id = db.create_user("Luigi", "Bianchi", "luigi.bianchi@test.it", "psw_03", {"CTE-MT"}, {{"type", "user"}, {"roles", {"edilizia", "verde"}}});
 
         LOG("Creating CTE-MT roads..");
         auto road0_id = db.create_road("Via XX Settembre", new coco::location{16.606201033431592, 40.66886987440025});
