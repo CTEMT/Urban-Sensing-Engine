@@ -11,8 +11,8 @@
 void create_users(coco::mongo_db &db)
 {
     LOG("Creating main users..");
-    db.create_user("Riccardo", "De Benedictis", "riccardo.debenedictis@cnr.it", "admin", {"CTE-MT"}, {{"type", "admin"}});
-    db.create_user("Luca", "Colombi", "luca.colombi@cnr.it", "admin", {"CTE-MT"}, {{"type", "admin"}});
+    db.create_user("Admin1", "Admin1", "admin1@cnr.it", "admin", {"CTE-MT"}, {{"type", "admin"}});
+    db.create_user("Admin2", "Admin2", "admin2@cnr.it", "admin", {"CTE-MT"}, {{"type", "admin"}});
 }
 
 void create_sensor_network(coco::mongo_db &db)
