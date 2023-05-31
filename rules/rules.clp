@@ -52,18 +52,16 @@
 )
 
 (defrule message_sender
-    (configuration (coco_ptr ?cc_ptr))
     (sensor_type (id ?message_sender_type_id) (name "message_sender"))
     (sensor_data (sensor_id ?id) (local_time ?c_time) (data ?message))
     =>
-    (send_message ?cc_ptr warning ?message)
+    (send_message info ?message)
 )
 
 (defrule execute_solved_problem
-    (configuration (coco_ptr ?cc_ptr))
     (solver (solver_ptr ?slv_ptr) (solver_type main) (state idle))
     =>
-    (start_execution ?cc_ptr ?slv_ptr)
+    (start_execution ?slv_ptr)
 )
 
 (defrule compute_average_road_state
@@ -75,49 +73,44 @@
 )
 
 (defrule trigger_road_manintenance
-    (configuration (coco_ptr ?cc_ptr))
     (solver (solver_ptr ?slv_ptr) (solver_type main) (state idle|executing|finished))
     ?road <- (road (road_id ?id) (road_name ?name) (road_coordinates ?lat ?lng) (road_avg_state ?avg_state) (planned_maintenance FALSE))
     (test (<= ?avg_state 0.2))
     =>
-    (send_map_message ?cc_ptr warning ?lat ?lng (str-cat "Attenzione! È stato segnalato un significativo deterioramento del manto stradale in " ?name "."))
+    (send_map_message warning ?lat ?lng (str-cat "Attenzione! È stato segnalato un significativo deterioramento del manto stradale in " ?name "."))
     (adapt_script ?slv_ptr (str-cat "goal rm_" ?id " = new agnt.RoadMaintainance(r:" ?id ");"))
     (modify ?road (planned_maintenance TRUE))
 )
 
 (defrule road_maintenance_documents
-    (configuration (coco_ptr ?cc_ptr))
     (task (command start) (id ?id) (task_type RoadMaintainanceDocuments) (vals ?duration ?end ?mt ?r ?start ?tau))
     (road (road_id ?r) (road_name ?name) (road_coordinates ?lat ?lng))
     (municipal_technician (technician_id ?mt) (technician_name ?mt_name))
     =>
-    (send_message ?cc_ptr info (str-cat "Inizio preparazione documenti per la gara d'appalto relativa alla manutenzione stradale in " ?name ". Il compito è stato assegnato a " ?mt_name "."))
+    (send_message info (str-cat "Inizio preparazione documenti per la gara d'appalto relativa alla manutenzione stradale in " ?name ". Il compito è stato assegnato a " ?mt_name "."))
 )
 
-(defrule road_maintenance_tender
-    (configuration (coco_ptr ?cc_ptr))
+(defrule road_maintenance_tender 
     (task (command start) (id ?id) (task_type RoadMaintainanceTender) (vals ?duration ?end ?mt ?r ?start ?tau))
     (road (road_id ?r) (road_name ?name) (road_coordinates ?lat ?lng))
     (municipal_technician (technician_id ?mt) (technician_name ?mt_name))
     =>
-    (send_message ?cc_ptr info (str-cat "Inizio gara d'appalto relativa alla manutenzione stradale in " ?name ". Il compito è stato assegnato a " ?mt_name "."))
+    (send_message info (str-cat "Inizio gara d'appalto relativa alla manutenzione stradale in " ?name ". Il compito è stato assegnato a " ?mt_name "."))
 )
 
-(defrule road_maintenance
-    (configuration (coco_ptr ?cc_ptr))
+(defrule road_maintenance 
     (task (command start) (id ?id) (task_type RoadMaintainance) (vals ?duration ?end ?mt ?r ?start ?tau))
     (road (road_id ?r) (road_name ?name) (road_coordinates ?lat ?lng))
     (municipal_technician (technician_id ?mt) (technician_name ?mt_name))
     =>
-    (send_message ?cc_ptr info (str-cat "Inizio manutenzione stradale in " ?name ". Il compito è stato assegnato a " ?mt_name "."))
+    (send_message info (str-cat "Inizio manutenzione stradale in " ?name ". Il compito è stato assegnato a " ?mt_name "."))
 )
 
-(defrule road_maintenance_finished
-    (configuration (coco_ptr ?cc_ptr))
+(defrule road_maintenance_finished 
     (task (command end) (id ?id) (task_type RoadMaintainance) (vals ?duration ?end ?mt ?r ?start ?tau))
     ?road <- (road (road_id ?r) (road_name ?name) (road_coordinates ?lat ?lng))
     =>
-    (send_message ?cc_ptr info (str-cat "Fine manutenzione stradale in " ?name "."))
+    (send_message info (str-cat "Fine manutenzione stradale in " ?name "."))
     (modify ?road (planned_maintenance FALSE))
 )
 
@@ -129,13 +122,12 @@
     (retract ?sd)
 )
 
-(defrule trigger_building_manintenance
-    (configuration (coco_ptr ?cc_ptr))
+(defrule trigger_building_manintenance 
     (solver (solver_ptr ?slv_ptr) (solver_type main) (state idle|executing|finished))
     ?building <- (building (building_id ?id) (building_name ?name) (building_address ?address) (building_coordinates ?lat ?lng) (building_avg_state ?avg_state) (planned_maintenance FALSE))
     (<= ?avg_state 0.2)
     =>
-    (send_map_message ?cc_ptr warning ?lat ?lng (str-cat "Attenzione! È stato segnalato un significativo deterioramento di " ?name ", in " ?address "."))
+    (send_map_message warning ?lat ?lng (str-cat "Attenzione! È stato segnalato un significativo deterioramento di " ?name ", in " ?address "."))
     (adapt_script ?slv_ptr (str-cat "goal bm_" ?id " = new agnt.BuildingMaintainance(b:" ?id ");"))
     (modify ?building (planned_maintenance TRUE))
 )
@@ -148,23 +140,21 @@
     (retract ?sd)
 )
 
-(defrule trigger_green_area_manintenance
-    (configuration (coco_ptr ?cc_ptr))
+(defrule trigger_green_area_manintenance 
     (solver (solver_ptr ?slv_ptr) (solver_type main) (state idle|executing|finished))
     ?green_area <- (green_area (green_area_id ?id) (green_area_name ?name) (green_area_address ?address) (green_area_coordinates ?lat ?lng) (green_area_avg_state ?avg_state) (planned_maintenance FALSE))
     (<= ?avg_state 0.2)
     =>
-    (send_map_message ?cc_ptr warning ?lat ?lng (str-cat "Attenzione! È stato segnalato un significativo deterioramento di " ?name ", in " ?address "."))
+    (send_map_message warning ?lat ?lng (str-cat "Attenzione! È stato segnalato un significativo deterioramento di " ?name ", in " ?address "."))
     (adapt_script ?slv_ptr (str-cat "goal gam_" ?id " = new agnt.GreenAreaMaintainance(ga:" ?id ");"))
     (modify ?green_area (planned_maintenance TRUE))
 )
 
-(defrule bus_position
-    (configuration (coco_ptr ?cc_ptr))
+(defrule bus_position 
     (sensor_type (id ?bus_type_id) (name "bus"))
     (sensor_data (sensor_id ?id) (local_time ?c_time) (data ?lat ?lng ?passengers))
     ?bus <- (sensor (id ?id) (sensor_type ?bus_type_id))
     =>
-    (send_bus_message ?cc_ptr ?id ?c_time ?lat ?lng ?passengers)
+    (send_bus_message ?id ?c_time ?lat ?lng ?passengers)
     (modify ?bus (location ?lat ?lng))
 )

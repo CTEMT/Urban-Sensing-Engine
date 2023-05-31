@@ -1,9 +1,3 @@
-(defrule new_configuration
-    (configuration (coco_ptr ?cc_ptr))
-    =>
-    (new_solver_files ?cc_ptr main (create$ "extern/use/rules/rules.rddl" "extern/use/rules/matera.rddl"))
-)
-
 (deffacts roads
     (road (road_id r0) (road_name "Via XX Settembre") (road_coordinates 40.66886987440025 16.606201033431592))
     (road (road_id r1) (road_name "Via Lucana") (road_coordinates 40.66184045053739 16.610004133290108))

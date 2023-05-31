@@ -6,13 +6,10 @@ namespace use
 {
     void send_message([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
     {
-        UDFValue engine_ptr;
-        if (!UDFFirstArgument(udfc, INTEGER_BIT, &engine_ptr))
-            return;
-        auto &e = *reinterpret_cast<urban_sensing_engine *>(engine_ptr.integerValue->contents);
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
 
         UDFValue level;
-        if (!UDFNextArgument(udfc, SYMBOL_BIT, &level))
+        if (!UDFFirstArgument(udfc, SYMBOL_BIT, &level))
             return;
 
         UDFValue content;
@@ -24,13 +21,10 @@ namespace use
 
     void send_question([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
     {
-        UDFValue engine_ptr;
-        if (!UDFFirstArgument(udfc, INTEGER_BIT, &engine_ptr))
-            return;
-        auto &e = *reinterpret_cast<urban_sensing_engine *>(engine_ptr.integerValue->contents);
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
 
         UDFValue level;
-        if (!UDFNextArgument(udfc, SYMBOL_BIT, &level))
+        if (!UDFFirstArgument(udfc, SYMBOL_BIT, &level))
             return;
 
         UDFValue id;
@@ -59,13 +53,10 @@ namespace use
 
     void send_map_message([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
     {
-        UDFValue engine_ptr;
-        if (!UDFFirstArgument(udfc, INTEGER_BIT, &engine_ptr))
-            return;
-        auto &e = *reinterpret_cast<urban_sensing_engine *>(engine_ptr.integerValue->contents);
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
 
         UDFValue level;
-        if (!UDFNextArgument(udfc, SYMBOL_BIT, &level))
+        if (!UDFFirstArgument(udfc, SYMBOL_BIT, &level))
             return;
 
         UDFValue lat;
@@ -85,13 +76,10 @@ namespace use
 
     void send_bus_message([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
     {
-        UDFValue engine_ptr;
-        if (!UDFFirstArgument(udfc, INTEGER_BIT, &engine_ptr))
-            return;
-        auto &e = *reinterpret_cast<urban_sensing_engine *>(engine_ptr.integerValue->contents);
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
 
         UDFValue bus_id;
-        if (!UDFNextArgument(udfc, SYMBOL_BIT, &bus_id))
+        if (!UDFFirstArgument(udfc, SYMBOL_BIT, &bus_id))
             return;
 
         UDFValue time;
@@ -115,10 +103,10 @@ namespace use
 
     urban_sensing_engine::urban_sensing_engine(coco::coco_db &db) : coco_core(db)
     {
-        AddUDF(env, "send_message", "v", 3, 3, "lys", send_message, "send_message", NULL);
-        AddUDF(env, "send_question", "v", 4, 4, "lysm", send_question, "send_question", NULL);
-        AddUDF(env, "send_map_message", "v", 5, 5, "lydds", send_map_message, "send_map_message", NULL);
-        AddUDF(env, "send_bus_message", "v", 6, 6, "lylddl", send_bus_message, "send_bus_message", NULL);
+        AddUDF(env, "send_message", "v", 2, 2, "ys", send_message, "send_message", this);
+        AddUDF(env, "send_question", "v", 3, 3, "ysm", send_question, "send_question", this);
+        AddUDF(env, "send_map_message", "v", 4, 4, "ydds", send_map_message, "send_map_message", this);
+        AddUDF(env, "send_bus_message", "v", 5, 5, "ylddl", send_bus_message, "send_bus_message", this);
     }
 
     void urban_sensing_engine::answer_question(const long long id, const std::string &answer)

@@ -45,7 +45,7 @@ void create_sensor_network(coco::mongo_db &db)
         auto participatory_sensing0_id = db.create_sensor("ParticipatorySensing0", db.get_sensor_type(participatory_sensing_type_id), new coco::location{16.644, 40.646});
 
         LOG("Setting CTE-MT sensor values..");
-        auto time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        auto time = std::chrono::system_clock::now();
 
         db.set_sensor_value(db.get_sensor(temp0_id), time, {{"temperature", 20.0}});
         db.set_sensor_value(db.get_sensor(bus0_id), time, {{"lat", 40.669}, {"lng", 16.609}, {"passengers", 10.0}});
