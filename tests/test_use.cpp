@@ -57,12 +57,23 @@ void create_sensor_network(coco::mongo_db &db)
 
 void create_data(use::urban_sensing_engine_db &db)
 {
+    std::string part_type_id;
+    for (auto &type : db.get_sensor_types())
+        if (type.get().get_name() == "participatory_sensing")
+        {
+            part_type_id = type.get().get_id();
+            break;
+        }
+
     if (COCO_ROOT == "CTE-MT")
     {
         LOG("Creating CTE-MT users..");
-        auto usr0_id = db.create_user("Mario", "Rossi", "mario.rossi@test.it", "psw_01", {"CTE-MT"}, {{"type", "user"}, {"roles", {"edilizia", "mobilita"}}});
-        auto usr1_id = db.create_user("Giuseppe", "Verdi", "giuseppe.verdi@test.it", "psw_02", {"CTE-MT"}, {{"type", "user"}, {"roles", {"mobilita"}}});
-        auto usr2_id = db.create_user("Luigi", "Bianchi", "luigi.bianchi@test.it", "psw_03", {"CTE-MT"}, {{"type", "user"}, {"roles", {"edilizia", "verde"}}});
+        auto part0_id = db.create_sensor("MarioRossi", db.get_sensor_type(part_type_id));
+        auto usr0_id = db.create_user("Mario", "Rossi", "mario.rossi@test.it", "psw_01", {"CTE-MT"}, {{"type", "user"}, {"roles", {"edilizia", "mobilita"}}, {"participatory", part0_id}});
+        auto part1_id = db.create_sensor("GiuseppeVerdi", db.get_sensor_type(part_type_id));
+        auto usr1_id = db.create_user("Giuseppe", "Verdi", "giuseppe.verdi@test.it", "psw_02", {"CTE-MT"}, {{"type", "user"}, {"roles", {"mobilita"}}, {"participatory", part1_id}});
+        auto part2_id = db.create_sensor("LuigiBianchi", db.get_sensor_type(part_type_id));
+        auto usr2_id = db.create_user("Luigi", "Bianchi", "luigi.bianchi@test.it", "psw_03", {"CTE-MT"}, {{"type", "user"}, {"roles", {"edilizia", "verde"}}, {"participatory", part2_id}});
 
         LOG("Creating CTE-MT roads..");
         auto road0_id = db.create_road("Via XX Settembre", new coco::location{16.606201033431592, 40.66886987440025});
