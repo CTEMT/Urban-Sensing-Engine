@@ -19,4 +19,6 @@ namespace use
     coco::location_ptr loc;
   };
   using road_ptr = utils::u_ptr<road>;
+
+  inline json::json to_json(const road &r) { return {{"id", r.get_id()}, {"name", r.get_name()}, {"location", to_json(r.get_location())}}; }
 } // namespace use
