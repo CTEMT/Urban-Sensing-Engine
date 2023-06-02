@@ -18,7 +18,7 @@ namespace use
     std::string create_road(const std::string &name, coco::location_ptr l);
     road &get_road(const std::string &id);
 
-    std::vector<std::reference_wrapper<road>> get_all_roads();
+    std::vector<std::reference_wrapper<road>> get_all_roads(const std::string &filter = "", const unsigned int limit = 0);
 
     std::string create_building(const std::string &name, const road &r, const std::string &address, coco::location_ptr l);
     building &get_building(const std::string &id);

@@ -58,11 +58,16 @@ namespace use
 
     road &urban_sensing_engine_db::get_road(const std::string &id) { return *roads.at(id); }
 
-    std::vector<std::reference_wrapper<road>> urban_sensing_engine_db::get_all_roads()
+    std::vector<std::reference_wrapper<road>> urban_sensing_engine_db::get_all_roads(const std::string &filter, const unsigned int limit)
     {
         std::vector<std::reference_wrapper<road>> result;
         for (auto &&road : roads)
-            result.push_back(*road.second);
+            if (road.second->get_name().find(filter) != std::string::npos)
+            {
+                result.push_back(*road.second);
+                if (result.size() == limit)
+                    break;
+            }
         return result;
     }
 
