@@ -55,7 +55,7 @@
     (sensor_type (id ?message_sender_type_id) (name "message_sender"))
     (sensor_data (sensor_id ?id) (local_time ?c_time) (data ?message))
     =>
-    (send_message info ?message)
+    (send_message info (str-cat ?message))
 )
 
 (defrule execute_solved_problem
