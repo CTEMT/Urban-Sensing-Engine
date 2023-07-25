@@ -61,13 +61,19 @@ namespace use
     std::vector<std::reference_wrapper<road>> urban_sensing_engine_db::get_all_roads(const std::string &filter, const unsigned int limit)
     {
         std::vector<std::reference_wrapper<road>> result;
+        std::string filter_lower = filter;
+        for (auto &&c : filter_lower)
+            c = std::tolower(c);
         for (auto &&road : roads)
-            if (road.second->get_name().find(filter) != std::string::npos)
-            {
+        {
+            std::string name = road.second->get_name();
+            for (auto &&c : name)
+                c = std::tolower(c);
+            if (name.find(filter_lower) != std::string::npos)
                 result.push_back(*road.second);
-                if (result.size() == limit)
-                    break;
-            }
+            if (result.size() == limit)
+                break;
+        }
         return result;
     }
 
