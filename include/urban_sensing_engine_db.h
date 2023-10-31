@@ -27,7 +27,7 @@ namespace use
      * @param data The data of the user.
      * @return std::string The id of the created user.
      */
-    std::string create_user(const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role = USER_ROLE_CITIZEN);
+    std::string create_user(const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role = USER_ROLE_CITIZEN, const std::vector<std::string> &skills = {});
 
     /**
      * @brief Check if the user object with the given id exists.
@@ -100,6 +100,18 @@ namespace use
      */
     void set_user_password(user &u, const std::string &password);
     void set_user_password(const std::string &id, const std::string &password) { set_user_password(*users.at(id), password); }
+    /**
+     * @brief Set the user's skills.
+     *
+     * @param u the user to update.
+     * @param skills the new skills of the user.
+     */
+    void set_user_skills(user &u, const std::vector<std::string> &skills);
+    void set_user_skills(const std::string &id, const std::vector<std::string> &skills) { set_user_skills(*users.at(id), skills); }
+    void add_user_skill(user &u, const std::string &skill);
+    void add_user_skill(const std::string &id, const std::string &skill) { add_user_skill(*users.at(id), skill); }
+    void remove_user_skill(user &u, const std::string &skill);
+    void remove_user_skill(const std::string &id, const std::string &skill) { remove_user_skill(*users.at(id), skill); }
 
     /**
      * @brief Delete the user object with the given id.

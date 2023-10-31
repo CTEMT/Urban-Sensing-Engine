@@ -6,13 +6,15 @@
 
 namespace use
 {
+  class urban_sensing_engine;
   class urban_sensing_engine_db;
 
   enum user_role
   {
     USER_ROLE_ADMIN = 0,
     USER_ROLE_DECISION_MAKER = 1,
-    USER_ROLE_CITIZEN = 2
+    USER_ROLE_TECHNICIAN = 2,
+    USER_ROLE_CITIZEN = 3
   };
 
   /**
@@ -21,10 +23,11 @@ namespace use
    */
   class user
   {
+    friend class urban_sensing_engine;
     friend class urban_sensing_engine_db;
 
   public:
-    user(const std::string &id, const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role) : id(id), role(role), first_name(first_name), last_name(last_name), email(email), password(password) {}
+    user(const std::string &id, const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role = USER_ROLE_CITIZEN, const std::vector<std::string> &skills = {}, coco::location_ptr l = nullptr) : id(id), role(role), first_name(first_name), last_name(last_name), email(email), password(password), skills(skills), loc(std::move(l)) {}
 
     /**
      * @brief Get the id of user.
@@ -62,6 +65,25 @@ namespace use
      * @return const std::string& The password of the user.
      */
     const std::string &get_password() const { return password; }
+    /**
+     * @brief Get the skills of the user.
+     *
+     * @return const std::vector<std::string>& The skills of the user.
+     */
+    const std::vector<std::string> &get_skills() const { return skills; }
+    void add_skill(const std::string &skill) { skills.push_back(skill); }
+    void remove_skill(const std::string &skill)
+    {
+      auto it = std::find(skills.begin(), skills.end(), skill);
+      if (it != skills.end())
+        skills.erase(it);
+    }
+    /**
+     * @brief Get the location of the user.
+     *
+     * @return const coco::location_ptr& The location of the user.
+     */
+    const coco::location_ptr &get_location() const { return loc; }
 
     /**
      * @brief Get the fact of the user.
@@ -74,6 +96,8 @@ namespace use
     const std::string id;
     user_role role;
     std::string first_name, last_name, email, password;
+    std::vector<std::string> skills;
+    coco::location_ptr loc;
     Fact *fact = nullptr;
   };
 
@@ -87,6 +111,15 @@ namespace use
     j["first_name"] = u.get_first_name();
     j["last_name"] = u.get_last_name();
     j["email"] = u.get_email();
+    if (!u.get_skills().empty())
+    {
+      json::json skills(json::json_type::array);
+      for (auto &s : u.get_skills())
+        skills.push_back(s);
+      j["skills"] = std::move(skills);
+    }
+    if (u.get_location())
+      j["location"] = {{"lat", u.get_location()->y}, {"lng", u.get_location()->x}};
     return j;
   }
 } // namespace focaal

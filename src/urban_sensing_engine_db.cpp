@@ -14,7 +14,13 @@ namespace use
         users.clear();
         LOG("Retrieving all users..");
         for (const auto &doc : users_collection.find({}))
-            users.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<user>(doc["_id"].get_oid().value.to_string(), doc["first_name"].get_string().value.to_string(), doc["last_name"].get_string().value.to_string(), doc["email"].get_string().value.to_string(), doc["password"].get_string().value.to_string(), static_cast<user_role>(doc["role"].get_int32().value)));
+        {
+            std::vector<std::string> skills;
+            auto skills_array = doc["skills"].get_array().value;
+            for (auto &&s : skills_array)
+                skills.push_back(s.get_string().value.to_string());
+            users.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<user>(doc["_id"].get_oid().value.to_string(), doc["first_name"].get_string().value.to_string(), doc["last_name"].get_string().value.to_string(), doc["email"].get_string().value.to_string(), doc["password"].get_string().value.to_string(), static_cast<user_role>(doc["role"].get_int32().value), skills));
+        }
         LOG("Retrieved " << users.size() << " users..");
 
         roads.clear();
@@ -48,7 +54,7 @@ namespace use
         LOG("Retrieved " << vehicles.size() << " vehicles..");
     }
 
-    std::string urban_sensing_engine_db::create_user(const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role)
+    std::string urban_sensing_engine_db::create_user(const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role, const std::vector<std::string> &skills)
     {
         using bsoncxx::builder::basic::kvp;
         auto u_doc = bsoncxx::builder::basic::document{};
@@ -57,12 +63,19 @@ namespace use
         u_doc.append(kvp("email", email));
         u_doc.append(kvp("password", password));
         u_doc.append(kvp("role", role));
+        if (!skills.empty())
+        {
+            auto skills_array = bsoncxx::builder::basic::array{};
+            for (auto &&s : skills)
+                skills_array.append(s);
+            u_doc.append(kvp("skills", skills_array));
+        }
 
         auto result = users_collection.insert_one(u_doc.view());
         if (result)
         {
             auto id = result->inserted_id().get_oid().value.to_string();
-            users.emplace(id, std::make_unique<user>(id, first_name, last_name, email, password, role));
+            users.emplace(id, std::make_unique<user>(id, first_name, last_name, email, password, role, skills));
             return id;
         }
         else
@@ -110,6 +123,25 @@ namespace use
     {
         if (users_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(u.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "password" << password << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
             users.at(u.id)->password = password;
+    }
+
+    void urban_sensing_engine_db::set_user_skills(user &u, const std::vector<std::string> &skills)
+    {
+        auto skills_array = bsoncxx::builder::basic::array{};
+        for (auto &&s : skills)
+            skills_array.append(s);
+        if (users_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(u.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "skills" << skills_array << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
+            users.at(u.id)->skills = skills;
+    }
+    void urban_sensing_engine_db::add_user_skill(user &u, const std::string &skill)
+    {
+        if (users_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(u.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$addToSet" << bsoncxx::builder::stream::open_document << "skills" << skill << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
+            users.at(u.id)->skills.push_back(skill);
+    }
+    void urban_sensing_engine_db::remove_user_skill(user &u, const std::string &skill)
+    {
+        if (users_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(u.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$pull" << bsoncxx::builder::stream::open_document << "skills" << skill << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
+            users.at(u.id)->skills.erase(std::remove(users.at(u.id)->skills.begin(), users.at(u.id)->skills.end(), skill), users.at(u.id)->skills.end());
     }
 
     void urban_sensing_engine_db::delete_user(user &u)

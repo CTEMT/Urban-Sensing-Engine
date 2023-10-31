@@ -18,6 +18,16 @@ void create_users(use::urban_sensing_engine_db &db)
     db.create_user("DecisionMaker1", "DecisionMaker1", "dm1@cnr.it", "dm", use::user_role::USER_ROLE_DECISION_MAKER);
     db.create_user("DecisionMaker2", "DecisionMaker2", "dm2@cnr.it", "dm", use::user_role::USER_ROLE_DECISION_MAKER);
 
+    LOG("Creating technicians..");
+    json::json tch1_skills(json::json_type::array);
+    tch1_skills.push_back("construction");
+    tch1_skills.push_back("road_maintenance");
+    db.create_user("Technician1", "Technician1", "tch1@cnr.it", "tcn", use::user_role::USER_ROLE_TECHNICIAN, {{"skills", tch1_skills}});
+    json::json tch2_skills(json::json_type::array);
+    tch2_skills.push_back("road_maintenance");
+    tch2_skills.push_back("public_green");
+    db.create_user("Technician2", "Technician2", "tch2@ncr.it", "tcn", use::user_role::USER_ROLE_TECHNICIAN, {{"skills", tch2_skills}});
+
     LOG("Creating citizens..");
     db.create_user("Mario", "Rossi", "mario.rossi@test.it", "psw_01", use::user_role::USER_ROLE_CITIZEN);
     db.create_user("Giuseppe", "Verdi", "giuseppe.verdi@test.it", "psw_02", use::user_role::USER_ROLE_CITIZEN);
@@ -74,7 +84,7 @@ void create_data(use::urban_sensing_engine_db &db)
             break;
         }
 
-    if (COCO_NAME == "CTE-MT")
+    if (std::strcmp(COCO_NAME, "CTE-MT") == 0)
     {
         LOG("Creating CTE-MT users..");
         auto part0_id = db.create_sensor("MarioRossi", db.get_sensor_type(part_type_id));
@@ -247,6 +257,8 @@ int main(int argc, char const *argv[])
     if (init)
     {
         db.drop(); // Warning!! We are here deleting all the current data!!
+
+        db.create_instance();
 
         create_users(db);
         create_sensor_network(db);

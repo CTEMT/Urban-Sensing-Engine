@@ -1,4 +1,5 @@
 #include "urban_sensing_engine.h"
+#include "urban_sensing_engine_db.h"
 #include "urban_sensing_engine_listener.h"
 #include "logging.h"
 
@@ -101,12 +102,96 @@ namespace use
         e.fire_new_bus_data(bus_id.lexemeValue->contents, time.integerValue->contents, lat.floatValue->contents, lng.floatValue->contents, passengers.integerValue->contents);
     }
 
-    urban_sensing_engine::urban_sensing_engine(coco::coco_db &db) : coco_core(db)
+    urban_sensing_engine::urban_sensing_engine(urban_sensing_engine_db &db) : coco_core(db)
     {
         AddUDF(env, "send_message", "v", 2, 2, "ys", send_message, "send_message", this);
         AddUDF(env, "send_question", "v", 3, 3, "ysm", send_question, "send_question", this);
         AddUDF(env, "send_map_message", "v", 4, 4, "ydds", send_map_message, "send_map_message", this);
         AddUDF(env, "send_bus_message", "v", 5, 5, "ylddl", send_bus_message, "send_bus_message", this);
+    }
+
+    void urban_sensing_engine::init()
+    {
+        coco_core::init();
+
+        urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
+
+        std::string fact_str;
+
+        // we assert the user facts..
+        for (auto &u : db.get_users())
+        {
+            fact_str = "(user (user_id " + u.get().get_id() + ") (role ";
+            switch (u.get().get_role())
+            {
+            case user_role::USER_ROLE_ADMIN:
+                fact_str += "admin";
+                break;
+            case user_role::USER_ROLE_DECISION_MAKER:
+                fact_str += "decision_maker";
+                break;
+            case user_role::USER_ROLE_TECHNICIAN:
+                fact_str += "technician";
+                break;
+            case user_role::USER_ROLE_CITIZEN:
+                fact_str += "citizen";
+                break;
+            default:
+                LOG_ERR("Unknown user role: " << u.get().get_role());
+                break;
+            }
+            fact_str += ") (first_name " + u.get().get_first_name() + ") (last_name " + u.get().get_last_name() + ") (email " + u.get().get_email() + ")";
+            if (u.get().get_location())
+                fact_str += " (coordinates " + std::to_string(u.get().get_location()->y) + " " + std::to_string(u.get().get_location()->x) + ")";
+            fact_str += ")";
+            LOG_DEBUG("Asserting fact: " << fact_str);
+            u.get().fact = AssertString(env, fact_str.c_str());
+
+            for (auto &s : u.get().get_skills())
+            {
+                fact_str = "(skill (user_id " + u.get().get_id() + ") (skill " + s + "))";
+                LOG_DEBUG("Asserting fact: " << fact_str);
+                AssertString(env, fact_str.c_str());
+            }
+        }
+
+        // we assert the road facts..
+        for (auto &r : db.get_roads())
+        {
+            fact_str = "(road (road_id " + r.get().get_id() + ") (name " + r.get().get_name() + ") (coordinates " + std::to_string(r.get().get_location()->y) + " " + std::to_string(r.get().get_location()->x) + "))";
+            LOG_DEBUG("Asserting fact: " << fact_str);
+            r.get().fact = AssertString(env, fact_str.c_str());
+        }
+
+        // we assert the building facts..
+        for (auto &b : db.get_buildings())
+        {
+            fact_str = "(building (building_id " + b.get().get_id() + ") (name " + b.get().get_name() + ") (coordinates " + std::to_string(b.get().get_location()->y) + " " + std::to_string(b.get().get_location()->x) + "))";
+            LOG_DEBUG("Asserting fact: " << fact_str);
+            b.get().fact = AssertString(env, fact_str.c_str());
+        }
+
+        // we assert the vehicle type facts..
+        for (auto &vt : db.get_vehicle_types())
+        {
+            fact_str = "(vehicle_type (vehicle_type_id " + vt.get().get_id() + ") (name " + vt.get().get_name() + ") (description " + vt.get().get_description() + ") (manufacturer " + vt.get().get_manufacturer() + "))";
+            LOG_DEBUG("Asserting fact: " << fact_str);
+            vt.get().fact = AssertString(env, fact_str.c_str());
+        }
+
+        // we assert the vehicle facts..
+        for (auto &v : db.get_vehicles())
+        {
+            fact_str = "(vehicle (vehicle_id " + v.get().get_id() + ") (vehicle_type_id " + v.get().get_type().get_id() + ")";
+            if (v.get().get_location())
+                fact_str += " (coordinates " + std::to_string(v.get().get_location()->y) + " " + std::to_string(v.get().get_location()->x) + ")";
+            fact_str += ")";
+            LOG_DEBUG("Asserting fact: " << fact_str);
+            v.get().fact = AssertString(env, fact_str.c_str());
+        }
+
+        // we run the rules engine to update the policy..
+        Run(env, -1);
     }
 
     void urban_sensing_engine::answer_question(const long long id, const std::string &answer)
