@@ -8,14 +8,23 @@
 
 #define MQTT_URI(host, port) host ":" port
 
-void create_users(coco::mongo_db &db)
+void create_users(use::urban_sensing_engine_db &db)
 {
-    LOG("Creating main users..");
-    db.create_user("Admin1", "Admin1", "admin1@cnr.it", "admin", {"CTE-MT"}, {{"type", "admin"}});
-    db.create_user("Admin2", "Admin2", "admin2@cnr.it", "admin", {"CTE-MT"}, {{"type", "admin"}});
+    LOG("Creating admins..");
+    db.create_user("Admin1", "Admin1", "admin1@cnr.it", "admin", use::user_role::USER_ROLE_ADMIN);
+    db.create_user("Admin2", "Admin2", "admin2@cnr.it", "admin", use::user_role::USER_ROLE_ADMIN);
+
+    LOG("Creating decision makers..");
+    db.create_user("DecisionMaker1", "DecisionMaker1", "dm1@cnr.it", "dm", use::user_role::USER_ROLE_DECISION_MAKER);
+    db.create_user("DecisionMaker2", "DecisionMaker2", "dm2@cnr.it", "dm", use::user_role::USER_ROLE_DECISION_MAKER);
+
+    LOG("Creating citizens..");
+    db.create_user("Mario", "Rossi", "mario.rossi@test.it", "psw_01", use::user_role::USER_ROLE_CITIZEN);
+    db.create_user("Giuseppe", "Verdi", "giuseppe.verdi@test.it", "psw_02", use::user_role::USER_ROLE_CITIZEN);
+    db.create_user("Luigi", "Bianchi", "luigi.bianchi@test.it", "psw_03", use::user_role::USER_ROLE_CITIZEN);
 }
 
-void create_sensor_network(coco::mongo_db &db)
+void create_sensor_network(use::urban_sensing_engine_db &db)
 {
     LOG("Creating sensor network..");
 
@@ -25,33 +34,33 @@ void create_sensor_network(coco::mongo_db &db)
     auto gate_type_id = db.create_sensor_type("gate", "A smart gate for detecting vehicles' passages", {{"pedestrian", coco::parameter_type::Integer}, {"vehicle", coco::parameter_type::Integer}, {"other", coco::parameter_type::Integer}});
     auto air_monitoring_type_id = db.create_sensor_type("air_monitoring", "A smart air monitoring station", {{"pm10", coco::parameter_type::Float}, {"pm2.5", coco::parameter_type::Float}, {"co2", coco::parameter_type::Float}, {"co", coco::parameter_type::Float}, {"no2", coco::parameter_type::Float}, {"o3", coco::parameter_type::Float}, {"so2", coco::parameter_type::Float}});
     auto weather_station_type_id = db.create_sensor_type("weather_station", "A smart weather station", {{"temperature", coco::parameter_type::Float}, {"humidity", coco::parameter_type::Float}, {"pressure", coco::parameter_type::Float}, {"wind_speed", coco::parameter_type::Float}, {"wind_direction", coco::parameter_type::Float}, {"rain", coco::parameter_type::Float}});
-    auto participatory_sensing_type_id = db.create_sensor_type("participatory_sensing", "A participatory sensing device", {{"status", coco::parameter_type::Float}, {"subject_id", coco::parameter_type::Symbol}});
+    auto participatory_sensing_type_id = db.create_sensor_type("participatory_sensing", "A participatory sensing device", {{"user_id", coco::parameter_type::Symbol}, {"status", coco::parameter_type::Float}, {"subject_id", coco::parameter_type::Symbol}});
     auto occupancy_prediction_type_id = db.create_sensor_type("occupancy_prediction", "A smart occupancy prediction device", {{"occupancy", coco::parameter_type::Integer}});
     auto message_sender_type_id = db.create_sensor_type("message_sender", "A message sender device", {{"message", coco::parameter_type::String}});
 
     LOG("Creating sensors..");
     db.create_sensor("MessageSender0", db.get_sensor_type(message_sender_type_id));
 
-    if (COCO_ROOT == "CTE-MT")
+    if (COCO_NAME == "CTE-MT")
     {
         LOG("Creating CTE-MT sensors..");
-        auto temp0_id = db.create_sensor("Temp0", db.get_sensor_type(temp_type_id), new coco::location{16.604, 40.666});
+        auto temp0_id = db.create_sensor("Temp0", db.get_sensor_type(temp_type_id), std::make_unique<coco::location>(16.604, 40.666));
         auto bus0_id = db.create_sensor("Bus0", db.get_sensor_type(bus_type_id));
         auto bus1_id = db.create_sensor("Bus1", db.get_sensor_type(bus_type_id));
-        auto gate0_id = db.create_sensor("Gate0", db.get_sensor_type(gate_type_id), new coco::location{16.614, 40.676});
-        auto air_monitoring0_id = db.create_sensor("AirMonitoring0", db.get_sensor_type(air_monitoring_type_id), new coco::location{16.594, 40.686});
-        auto weather_station0_id = db.create_sensor("WeatherStation0", db.get_sensor_type(weather_station_type_id), new coco::location{16.624, 40.656});
-        auto occupancy_prediction0_id = db.create_sensor("OccupancyPrediction0", db.get_sensor_type(occupancy_prediction_type_id), new coco::location{16.654, 40.636});
-        auto participatory_sensing0_id = db.create_sensor("ParticipatorySensing0", db.get_sensor_type(participatory_sensing_type_id), new coco::location{16.644, 40.646});
+        auto gate0_id = db.create_sensor("Gate0", db.get_sensor_type(gate_type_id), std::make_unique<coco::location>(16.614, 40.676));
+        auto air_monitoring0_id = db.create_sensor("AirMonitoring0", db.get_sensor_type(air_monitoring_type_id), std::make_unique<coco::location>(16.594, 40.686));
+        auto weather_station0_id = db.create_sensor("WeatherStation0", db.get_sensor_type(weather_station_type_id), std::make_unique<coco::location>(16.624, 40.656));
+        auto occupancy_prediction0_id = db.create_sensor("OccupancyPrediction0", db.get_sensor_type(occupancy_prediction_type_id), std::make_unique<coco::location>(16.654, 40.636));
+        auto participatory_sensing0_id = db.create_sensor("ParticipatorySensing0", db.get_sensor_type(participatory_sensing_type_id), std::make_unique<coco::location>(16.644, 40.646));
 
         LOG("Setting CTE-MT sensor values..");
         auto time = std::chrono::system_clock::now();
 
-        db.set_sensor_value(db.get_sensor(temp0_id), time, {{"temperature", 20.0}});
-        db.set_sensor_value(db.get_sensor(bus0_id), time, {{"lat", 40.669}, {"lng", 16.609}, {"passengers", 10.0}});
-        db.set_sensor_value(db.get_sensor(bus1_id), time, {{"lat", 40.659}, {"lng", 16.599}, {"passengers", 15.0}});
-        db.set_sensor_value(db.get_sensor(gate0_id), time, {{"pedestrian", 15.0}, {"vehicle", 10.0}, {"other", 5.0}});
-        db.set_sensor_value(db.get_sensor(air_monitoring0_id), time, {{"pm10", 10.0}, {"pm2.5", 5.0}, {"co2", 100.0}, {"co", 10.0}, {"no2", 5.0}, {"o3", 5.0}, {"so2", 5.0}});
+        db.set_sensor_data(db.get_sensor(temp0_id), time, {{"temperature", 20.0}});
+        db.set_sensor_data(db.get_sensor(bus0_id), time, {{"lat", 40.669}, {"lng", 16.609}, {"passengers", 10.0}});
+        db.set_sensor_data(db.get_sensor(bus1_id), time, {{"lat", 40.659}, {"lng", 16.599}, {"passengers", 15.0}});
+        db.set_sensor_data(db.get_sensor(gate0_id), time, {{"pedestrian", 15.0}, {"vehicle", 10.0}, {"other", 5.0}});
+        db.set_sensor_data(db.get_sensor(air_monitoring0_id), time, {{"pm10", 10.0}, {"pm2.5", 5.0}, {"co2", 100.0}, {"co", 10.0}, {"no2", 5.0}, {"o3", 5.0}, {"so2", 5.0}});
     }
 }
 
@@ -65,41 +74,38 @@ void create_data(use::urban_sensing_engine_db &db)
             break;
         }
 
-    if (COCO_ROOT == "CTE-MT")
+    if (COCO_NAME == "CTE-MT")
     {
         LOG("Creating CTE-MT users..");
         auto part0_id = db.create_sensor("MarioRossi", db.get_sensor_type(part_type_id));
-        auto usr0_id = db.create_user("Mario", "Rossi", "mario.rossi@test.it", "psw_01", {"CTE-MT"}, {{"type", "user"}, {"roles", {"edilizia", "mobilita"}}, {"participatory", part0_id}});
         auto part1_id = db.create_sensor("GiuseppeVerdi", db.get_sensor_type(part_type_id));
-        auto usr1_id = db.create_user("Giuseppe", "Verdi", "giuseppe.verdi@test.it", "psw_02", {"CTE-MT"}, {{"type", "user"}, {"roles", {"mobilita"}}, {"participatory", part1_id}});
         auto part2_id = db.create_sensor("LuigiBianchi", db.get_sensor_type(part_type_id));
-        auto usr2_id = db.create_user("Luigi", "Bianchi", "luigi.bianchi@test.it", "psw_03", {"CTE-MT"}, {{"type", "user"}, {"roles", {"edilizia", "verde"}}, {"participatory", part2_id}});
 
         LOG("Creating CTE-MT roads..");
-        auto road0_id = db.create_road("Via XX Settembre", new coco::location{16.606201033431592, 40.66886987440025});
-        auto road1_id = db.create_road("Via Lucana", new coco::location{16.610004133290108, 40.66184045053739});
-        auto road2_id = db.create_road("Via Roma", new coco::location{16.604441555519582, 40.667417126550916});
-        auto road3_id = db.create_road("Via San Biagio", new coco::location{16.608006069013957, 40.667882003624854});
-        auto road4_id = db.create_road("Piazza Vittorio Veneto", new coco::location{16.606513082508386, 40.6669187521497});
-        auto road5_id = db.create_road("Vico Conservatorio", new coco::location{16.611608001257064, 40.668147065962714});
-        auto road6_id = db.create_road("Via Duomo", new coco::location{16.61030855551953, 40.66624791599131});
-        auto road7_id = db.create_road("Piazza Duomo", new coco::location{16.611154282508345, 40.66679155634107});
-        auto road8_id = db.create_road("Piazzetta Pascoli", new coco::location{16.610178297849036, 40.663425300341075});
-        auto road9_id = db.create_road("Piazza del Sedile", new coco::location{16.60974561148296, 40.6660429407916});
-        auto road10_id = db.create_road("Via San Potito", new coco::location{16.61219574017874, 40.666770004486914});
-        auto road11_id = db.create_road("Via del Castello", new coco::location{16.60025755551943, 40.662020781572956});
-        auto road12_id = db.create_road("Via T. Stigliani", new coco::location{16.60734906901401, 40.669571057618185});
+        auto road0_id = db.create_road("Via XX Settembre", std::make_unique<coco::location>(16.606201033431592, 40.66886987440025));
+        auto road1_id = db.create_road("Via Lucana", std::make_unique<coco::location>(16.610004133290108, 40.66184045053739));
+        auto road2_id = db.create_road("Via Roma", std::make_unique<coco::location>(16.604441555519582, 40.667417126550916));
+        auto road3_id = db.create_road("Via San Biagio", std::make_unique<coco::location>(16.608006069013957, 40.667882003624854));
+        auto road4_id = db.create_road("Piazza Vittorio Veneto", std::make_unique<coco::location>(16.606513082508386, 40.6669187521497));
+        auto road5_id = db.create_road("Vico Conservatorio", std::make_unique<coco::location>(16.611608001257064, 40.668147065962714));
+        auto road6_id = db.create_road("Via Duomo", std::make_unique<coco::location>(16.61030855551953, 40.66624791599131));
+        auto road7_id = db.create_road("Piazza Duomo", std::make_unique<coco::location>(16.611154282508345, 40.66679155634107));
+        auto road8_id = db.create_road("Piazzetta Pascoli", std::make_unique<coco::location>(16.610178297849036, 40.663425300341075));
+        auto road9_id = db.create_road("Piazza del Sedile", std::make_unique<coco::location>(16.60974561148296, 40.6660429407916));
+        auto road10_id = db.create_road("Via San Potito", std::make_unique<coco::location>(16.61219574017874, 40.666770004486914));
+        auto road11_id = db.create_road("Via del Castello", std::make_unique<coco::location>(16.60025755551943, 40.662020781572956));
+        auto road12_id = db.create_road("Via T. Stigliani", std::make_unique<coco::location>(16.60734906901401, 40.669571057618185));
 
         LOG("Creating CTE-MT buildings..");
-        auto building0_id = db.create_building("Palazzo dell'Annunziata", db.get_road(road4_id), "Piazza Vittorio Veneto", new coco::location{16.606513082508386, 40.6669187521497});
-        auto building1_id = db.create_building("Palazzo Bernardini", db.get_road(road5_id), "Via Conservatorio", new coco::location{16.608006069013957, 40.667882003624854});
-        auto building2_id = db.create_building("Palazzo Bronzini", db.get_road(road6_id), "Via Duomo, 2", new coco::location{16.61030855551953, 40.66624791599131});
-        auto building3_id = db.create_building("Palazzo Gattini", db.get_road(road7_id), "Piazza Duomo, 13", new coco::location{16.611154282508345, 40.66679155634107});
-        auto building4_id = db.create_building("Palazzo Lanfranchi", db.get_road(road8_id), "Piazzetta Pascoli, 1", new coco::location{16.610178297849036, 40.663425300341075});
-        auto building5_id = db.create_building("Palazzo Malvinni-Malvezzi", db.get_road(road7_id), "Piazza Duomo, 14", new coco::location{16.60974561148296, 40.6660429407916});
-        auto building6_id = db.create_building("Palazzo Ridola", db.get_road(road10_id), "Piazza Duomo", new coco::location{16.61219574017874, 40.666770004486914});
-        auto building7_id = db.create_building("Palazzo del Sedile", db.get_road(road9_id), "Piazza del Sedile", new coco::location{16.60025755551943, 40.662020781572956});
-        auto building8_id = db.create_building("Palazzo Venusio", db.get_road(road10_id), "Via San Potito", new coco::location{16.60734906901401, 40.669571057618185});
+        auto building0_id = db.create_building("Palazzo dell'Annunziata", db.get_road(road4_id), "Piazza Vittorio Veneto", std::make_unique<coco::location>(16.606513082508386, 40.6669187521497));
+        auto building1_id = db.create_building("Palazzo Bernardini", db.get_road(road5_id), "Via Conservatorio", std::make_unique<coco::location>(16.608006069013957, 40.667882003624854));
+        auto building2_id = db.create_building("Palazzo Bronzini", db.get_road(road6_id), "Via Duomo, 2", std::make_unique<coco::location>(16.61030855551953, 40.66624791599131));
+        auto building3_id = db.create_building("Palazzo Gattini", db.get_road(road7_id), "Piazza Duomo, 13", std::make_unique<coco::location>(16.611154282508345, 40.66679155634107));
+        auto building4_id = db.create_building("Palazzo Lanfranchi", db.get_road(road8_id), "Piazzetta Pascoli, 1", std::make_unique<coco::location>(16.610178297849036, 40.663425300341075));
+        auto building5_id = db.create_building("Palazzo Malvinni-Malvezzi", db.get_road(road7_id), "Piazza Duomo, 14", std::make_unique<coco::location>(16.60974561148296, 40.6660429407916));
+        auto building6_id = db.create_building("Palazzo Ridola", db.get_road(road10_id), "Piazza Duomo", std::make_unique<coco::location>(16.61219574017874, 40.666770004486914));
+        auto building7_id = db.create_building("Palazzo del Sedile", db.get_road(road9_id), "Piazza del Sedile", std::make_unique<coco::location>(16.60025755551943, 40.662020781572956));
+        auto building8_id = db.create_building("Palazzo Venusio", db.get_road(road10_id), "Via San Potito", std::make_unique<coco::location>(16.60734906901401, 40.669571057618185));
     }
 }
 
@@ -186,7 +192,7 @@ void update_air_monitoring(mqtt::async_client &mqtt_client, const std::string &r
     }
 }
 
-void dynamic_set_sensor_values(coco::mongo_db &db)
+void dynamic_set_sensor_data(use::urban_sensing_engine_db &db)
 {
     auto sensors = db.get_sensors();
 
@@ -213,7 +219,7 @@ void dynamic_set_sensor_values(coco::mongo_db &db)
             air_monitoring0_id = sensor.get().get_id();
     }
 
-    std::string root = COCO_ROOT;
+    std::string root = COCO_NAME;
     mqtt::async_client mqtt_client(MQTT_URI(MQTT_HOST, MQTT_PORT), root + "-test-client");
     mqtt::connect_options options;
     options.set_clean_session(true);
@@ -251,7 +257,7 @@ int main(int argc, char const *argv[])
         db.init();
 
     // we dynamically set the values of the sensors..
-    dynamic_set_sensor_values(db);
+    dynamic_set_sensor_data(db);
 
     return 0;
 }

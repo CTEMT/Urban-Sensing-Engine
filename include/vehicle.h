@@ -23,5 +23,5 @@ namespace use
     const vehicle_type &type;
     coco::location_ptr loc;
   };
-  using vehicle_ptr = utils::u_ptr<vehicle>;
+  using vehicle_ptr = std::unique_ptr<vehicle>;
 } // namespace use

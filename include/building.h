@@ -22,5 +22,5 @@ namespace use
     std::string address;
     coco::location_ptr loc;
   };
-  using building_ptr = utils::u_ptr<building>;
+  using building_ptr = std::unique_ptr<building>;
 } // namespace use
