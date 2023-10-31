@@ -1,6 +1,7 @@
 #pragma once
 
 #include "coco_core.h"
+#include "user.h"
 
 namespace use
 {
@@ -17,6 +18,13 @@ namespace use
     void answer_question(const long long id, const std::string &answer);
 
     void init() override;
+
+    void create_user(const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role = user_role::USER_ROLE_CITIZEN, const std::vector<std::string> &skills = {});
+    void set_user_email(const std::string &id, const std::string &email);
+    void set_user_password(const std::string &id, const std::string &password);
+    void set_user_role(const std::string &id, const user_role &role);
+    void set_user_skills(const std::string &id, const std::vector<std::string> &skills);
+    void delete_user(const std::string &id);
 
   private:
     friend void send_message(Environment *env, UDFContext *udfc, UDFValue *out);

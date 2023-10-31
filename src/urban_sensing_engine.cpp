@@ -194,6 +194,149 @@ namespace use
         Run(env, -1);
     }
 
+    void urban_sensing_engine::create_user(const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role, const std::vector<std::string> &skills)
+    {
+        const std::lock_guard<std::recursive_mutex> lock(get_mutex());
+
+        urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
+        db.create_user(first_name, last_name, email, password, role, skills);
+
+        std::string fact_str = "(user (user_id " + email + ") (role ";
+        switch (role)
+        {
+        case user_role::USER_ROLE_ADMIN:
+            fact_str += "admin";
+            break;
+        case user_role::USER_ROLE_DECISION_MAKER:
+            fact_str += "decision_maker";
+            break;
+        case user_role::USER_ROLE_TECHNICIAN:
+            fact_str += "technician";
+            break;
+        case user_role::USER_ROLE_CITIZEN:
+            fact_str += "citizen";
+            break;
+        default:
+            LOG_ERR("Unknown user role: " << role);
+            break;
+        }
+        fact_str += ") (first_name " + first_name + ") (last_name " + last_name + ") (email " + email + ")";
+        fact_str += ")";
+        LOG_DEBUG("Asserting fact: " << fact_str);
+
+        AssertString(env, fact_str.c_str());
+
+        for (auto &s : skills)
+        {
+            fact_str = "(skill (user_id " + email + ") (skill " + s + "))";
+            LOG_DEBUG("Asserting fact: " << fact_str);
+            AssertString(env, fact_str.c_str());
+        }
+
+        // we run the rules engine to update the policy..
+        Run(env, -1);
+    }
+
+    void urban_sensing_engine::set_user_email(const std::string &id, const std::string &email)
+    {
+        const std::lock_guard<std::recursive_mutex> lock(get_mutex());
+
+        urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
+        db.set_user_email(id, email);
+
+        FMPutSlotString(CreateFactModifier(env, db.get_user(id).fact), "email", email.c_str());
+
+        // we run the rules engine to update the policy..
+        Run(env, -1);
+    }
+
+    void urban_sensing_engine::set_user_password(const std::string &id, const std::string &password)
+    {
+        const std::lock_guard<std::recursive_mutex> lock(get_mutex());
+
+        urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
+        db.set_user_password(id, password);
+
+        FMPutSlotString(CreateFactModifier(env, db.get_user(id).fact), "password", password.c_str());
+
+        // we run the rules engine to update the policy..
+        Run(env, -1);
+    }
+
+    void urban_sensing_engine::set_user_role(const std::string &id, const user_role &role)
+    {
+        const std::lock_guard<std::recursive_mutex> lock(get_mutex());
+
+        urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
+        db.set_user_role(id, role);
+
+        std::string fact_str = "(user (user_id " + id + ") (role ";
+        switch (role)
+        {
+        case user_role::USER_ROLE_ADMIN:
+            fact_str += "admin";
+            break;
+        case user_role::USER_ROLE_DECISION_MAKER:
+            fact_str += "decision_maker";
+            break;
+        case user_role::USER_ROLE_TECHNICIAN:
+            fact_str += "technician";
+            break;
+        case user_role::USER_ROLE_CITIZEN:
+            fact_str += "citizen";
+            break;
+        default:
+            LOG_ERR("Unknown user role: " << role);
+            break;
+        }
+        fact_str += "))";
+        LOG_DEBUG("Asserting fact: " << fact_str);
+
+        FMPutSlotSymbol(CreateFactModifier(env, db.get_user(id).fact), "role", fact_str.c_str());
+
+        // we run the rules engine to update the policy..
+        Run(env, -1);
+    }
+
+    void urban_sensing_engine::set_user_skills(const std::string &id, const std::vector<std::string> &skills)
+    {
+        const std::lock_guard<std::recursive_mutex> lock(get_mutex());
+
+        urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
+        db.set_user_skills(id, skills);
+
+        // we retract the old skills..
+        Eval(env, ("(do-for-all-facts ((?s skill)) (eq ?s:user_id \"" + id + "\") (retract ?s))").c_str(), NULL);
+
+        // we assert the new skills..
+        for (auto &s : skills)
+        {
+            std::string fact_str = "(skill (user_id " + id + ") (skill " + s + "))";
+            LOG_DEBUG("Asserting fact: " << fact_str);
+            AssertString(env, fact_str.c_str());
+        }
+
+        // we run the rules engine to update the policy..
+        Run(env, -1);
+    }
+
+    void urban_sensing_engine::delete_user(const std::string &id)
+    {
+        const std::lock_guard<std::recursive_mutex> lock(get_mutex());
+
+        urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
+        db.delete_user(id);
+
+        // we retract the user..
+        Retract(db.get_user(id).fact);
+
+        // we retract the skills..
+        Eval(env, ("(do-for-all-facts ((?s skill)) (eq ?s:user_id \"" + id + "\") (retract ?s))").c_str(), NULL);
+
+        // we run the rules engine to update the policy..
+        Run(env, -1);
+    }
+
     void urban_sensing_engine::answer_question(const long long id, const std::string &answer)
     {
         LOG_DEBUG("Answering question " << id << " with " << answer);

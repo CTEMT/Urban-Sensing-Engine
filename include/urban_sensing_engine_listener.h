@@ -1,6 +1,7 @@
 #pragma once
 
 #include "coco_listener.h"
+#include "user.h"
 #include "urban_sensing_engine.h"
 
 namespace use
@@ -15,6 +16,10 @@ namespace use
     virtual ~urban_sensing_engine_listener() { use.listeners.erase(std::find(use.listeners.cbegin(), use.listeners.cend(), this)); }
 
   private:
+    virtual void new_user([[maybe_unused]] const use::user &u) {}
+    virtual void updated_user([[maybe_unused]] const use::user &u) {}
+    virtual void removed_user([[maybe_unused]] const use::user &u) {}
+
     virtual void new_message([[maybe_unused]] const std::string &level, [[maybe_unused]] const std::string &content) {}
     virtual void new_question([[maybe_unused]] const std::string &level, [[maybe_unused]] const long long id, [[maybe_unused]] const std::string &content, [[maybe_unused]] const std::vector<std::string> &answers) {}
     virtual void new_map_message([[maybe_unused]] const std::string &level, [[maybe_unused]] const double &lat, [[maybe_unused]] const double &lng, [[maybe_unused]] const std::string &content) {}
