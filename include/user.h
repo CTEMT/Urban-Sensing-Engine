@@ -107,7 +107,23 @@ namespace use
   {
     json::json j;
     j["id"] = u.get_id();
-    j["role"] = u.get_role();
+    switch (u.get_role())
+    {
+    case USER_ROLE_ADMIN:
+      j["role"] = "admin";
+      break;
+    case USER_ROLE_DECISION_MAKER:
+      j["role"] = "decision_maker";
+      break;
+    case USER_ROLE_TECHNICIAN:
+      j["role"] = "technician";
+      break;
+    case USER_ROLE_CITIZEN:
+      j["role"] = "citizen";
+      break;
+    default:
+      break;
+    }
     j["first_name"] = u.get_first_name();
     j["last_name"] = u.get_last_name();
     j["email"] = u.get_email();
