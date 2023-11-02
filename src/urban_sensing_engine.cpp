@@ -121,7 +121,7 @@ namespace use
         // we assert the user facts..
         for (auto &u : db.get_users())
         {
-            fact_str = "(user (user_id " + u.get().get_id() + ") (role ";
+            fact_str = "(user (user_id " + u.get().get_id() + ") (user_role ";
             switch (u.get().get_role())
             {
             case user_role::USER_ROLE_ADMIN:
@@ -140,7 +140,7 @@ namespace use
                 LOG_ERR("Unknown user role: " << u.get().get_role());
                 break;
             }
-            fact_str += ") (first_name " + u.get().get_first_name() + ") (last_name " + u.get().get_last_name() + ") (email " + u.get().get_email() + ")";
+            fact_str += ") (first_name \"" + u.get().get_first_name() + "\") (last_name \"" + u.get().get_last_name() + "\") (email \"" + u.get().get_email() + "\")";
             if (u.get().get_location())
                 fact_str += " (coordinates " + std::to_string(u.get().get_location()->y) + " " + std::to_string(u.get().get_location()->x) + ")";
             fact_str += ")";
@@ -149,7 +149,7 @@ namespace use
 
             for (auto &s : u.get().get_skills())
             {
-                fact_str = "(skill (user_id " + u.get().get_id() + ") (skill " + s + "))";
+                fact_str = "(skill (user_id " + u.get().get_id() + ") (name " + s + "))";
                 LOG_DEBUG("Asserting fact: " << fact_str);
                 AssertString(env, fact_str.c_str());
             }
@@ -158,7 +158,7 @@ namespace use
         // we assert the road facts..
         for (auto &r : db.get_roads())
         {
-            fact_str = "(road (road_id " + r.get().get_id() + ") (name " + r.get().get_name() + ") (coordinates " + std::to_string(r.get().get_location()->y) + " " + std::to_string(r.get().get_location()->x) + "))";
+            fact_str = "(road (road_id " + r.get().get_id() + ") (name \"" + r.get().get_name() + "\") (coordinates " + std::to_string(r.get().get_location()->y) + " " + std::to_string(r.get().get_location()->x) + "))";
             LOG_DEBUG("Asserting fact: " << fact_str);
             r.get().fact = AssertString(env, fact_str.c_str());
         }
@@ -166,7 +166,7 @@ namespace use
         // we assert the building facts..
         for (auto &b : db.get_buildings())
         {
-            fact_str = "(building (building_id " + b.get().get_id() + ") (name " + b.get().get_name() + ") (coordinates " + std::to_string(b.get().get_location()->y) + " " + std::to_string(b.get().get_location()->x) + "))";
+            fact_str = "(building (building_id " + b.get().get_id() + ") (name \"" + b.get().get_name() + "\") (coordinates " + std::to_string(b.get().get_location()->y) + " " + std::to_string(b.get().get_location()->x) + "))";
             LOG_DEBUG("Asserting fact: " << fact_str);
             b.get().fact = AssertString(env, fact_str.c_str());
         }
@@ -174,7 +174,7 @@ namespace use
         // we assert the vehicle type facts..
         for (auto &vt : db.get_vehicle_types())
         {
-            fact_str = "(vehicle_type (vehicle_type_id " + vt.get().get_id() + ") (name " + vt.get().get_name() + ") (description " + vt.get().get_description() + ") (manufacturer " + vt.get().get_manufacturer() + "))";
+            fact_str = "(vehicle_type (vehicle_type_id " + vt.get().get_id() + ") (name \"" + vt.get().get_name() + "\") (description \"" + vt.get().get_description() + "\") (manufacturer \"" + vt.get().get_manufacturer() + "\"))";
             LOG_DEBUG("Asserting fact: " << fact_str);
             vt.get().fact = AssertString(env, fact_str.c_str());
         }

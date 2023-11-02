@@ -51,7 +51,7 @@ void create_sensor_network(use::urban_sensing_engine_db &db)
     LOG("Creating sensors..");
     db.create_sensor("MessageSender0", db.get_sensor_type(message_sender_type_id));
 
-    if (COCO_NAME == "CTE-MT")
+    if (std::strcmp(COCO_NAME, "CTE-MT") == 0)
     {
         LOG("Creating CTE-MT sensors..");
         auto temp0_id = db.create_sensor("Temp0", db.get_sensor_type(temp_type_id), std::make_unique<coco::location>(16.604, 40.666));
@@ -86,7 +86,7 @@ void create_data(use::urban_sensing_engine_db &db)
 
     if (std::strcmp(COCO_NAME, "CTE-MT") == 0)
     {
-        LOG("Creating CTE-MT users..");
+        LOG("Creating CTE-MT participatory sensors..");
         auto part0_id = db.create_sensor("MarioRossi", db.get_sensor_type(part_type_id));
         auto part1_id = db.create_sensor("GiuseppeVerdi", db.get_sensor_type(part_type_id));
         auto part2_id = db.create_sensor("LuigiBianchi", db.get_sensor_type(part_type_id));
@@ -253,7 +253,7 @@ int main(int argc, char const *argv[])
     mongocxx::instance inst{}; // This should be done only once.
     use::urban_sensing_engine_db db;
 
-    bool init = false;
+    bool init = true;
     if (init)
     {
         db.drop(); // Warning!! We are here deleting all the current data!!

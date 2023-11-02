@@ -16,9 +16,12 @@ namespace use
         for (const auto &doc : users_collection.find({}))
         {
             std::vector<std::string> skills;
-            auto skills_array = doc["skills"].get_array().value;
-            for (auto &&s : skills_array)
-                skills.push_back(s.get_string().value.to_string());
+            if (doc.find("skills") != doc.end())
+            {
+                auto skills_array = doc["skills"].get_array().value;
+                for (auto &&s : skills_array)
+                    skills.push_back(s.get_string().value.to_string());
+            }
             users.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<user>(doc["_id"].get_oid().value.to_string(), doc["first_name"].get_string().value.to_string(), doc["last_name"].get_string().value.to_string(), doc["email"].get_string().value.to_string(), doc["password"].get_string().value.to_string(), static_cast<user_role>(doc["role"].get_int32().value), skills));
         }
         LOG("Retrieved " << users.size() << " users..");
