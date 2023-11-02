@@ -5,7 +5,7 @@
 
 namespace use
 {
-    urban_sensing_engine_db::urban_sensing_engine_db(const std::string &root, const std::string &mongodb_uri) : mongo_db(root, mongodb_uri), roads_collection(db["roads"]), buildings_collection(db["buildings_collection"]), vehicle_types_collection(db["vehicle_types"]), vehicles_collection(db["vehicles"]) {}
+    urban_sensing_engine_db::urban_sensing_engine_db(const std::string &root, const std::string &mongodb_uri) : mongo_db(root, mongodb_uri), users_collection(db["users"]), roads_collection(db["roads"]), buildings_collection(db["buildings_collection"]), vehicle_types_collection(db["vehicle_types"]), vehicles_collection(db["vehicles"]) {}
 
     void urban_sensing_engine_db::init()
     {
