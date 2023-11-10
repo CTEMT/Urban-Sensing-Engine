@@ -5,7 +5,38 @@
 
 namespace use
 {
-    void send_message([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
+    void update_road_state(Environment *, UDFContext *udfc, UDFValue *)
+    {
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
+
+        UDFValue road_id;
+        if (!UDFFirstArgument(udfc, SYMBOL_BIT, &road_id))
+            return;
+
+        UDFValue state;
+        if (!UDFNextArgument(udfc, INTEGER_BIT, &state))
+            return;
+
+        e.road_state[road_id.lexemeValue->contents] = state.integerValue->contents;
+        e.fire_new_road_state(road_id.lexemeValue->contents, state.integerValue->contents);
+    }
+    void update_building_state(Environment *, UDFContext *udfc, UDFValue *)
+    {
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
+
+        UDFValue building_id;
+        if (!UDFFirstArgument(udfc, SYMBOL_BIT, &building_id))
+            return;
+
+        UDFValue state;
+        if (!UDFNextArgument(udfc, INTEGER_BIT, &state))
+            return;
+
+        e.building_state[building_id.lexemeValue->contents] = state.integerValue->contents;
+        e.fire_new_building_state(building_id.lexemeValue->contents, state.integerValue->contents);
+    }
+
+    void send_message([[maybe_unused]] Environment *, UDFContext *udfc, [[maybe_unused]] UDFValue *)
     {
         auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
 
@@ -20,7 +51,7 @@ namespace use
         e.fire_new_message(level.lexemeValue->contents, content.lexemeValue->contents);
     }
 
-    void send_question([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
+    void send_question([[maybe_unused]] Environment *, UDFContext *udfc, [[maybe_unused]] UDFValue *)
     {
         auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
 
@@ -52,7 +83,7 @@ namespace use
         e.fire_new_question(level.lexemeValue->contents, id.integerValue->contents, content.lexemeValue->contents, as);
     }
 
-    void send_map_message([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
+    void send_map_message([[maybe_unused]] Environment *, UDFContext *udfc, [[maybe_unused]] UDFValue *)
     {
         auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
 
@@ -75,7 +106,7 @@ namespace use
         e.fire_new_map_message(level.lexemeValue->contents, lat.floatValue->contents, lng.floatValue->contents, content.lexemeValue->contents);
     }
 
-    void send_bus_message([[maybe_unused]] Environment *env, UDFContext *udfc, [[maybe_unused]] UDFValue *out)
+    void send_bus_message([[maybe_unused]] Environment *, UDFContext *udfc, [[maybe_unused]] UDFValue *)
     {
         auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
 
@@ -104,6 +135,9 @@ namespace use
 
     urban_sensing_engine::urban_sensing_engine(urban_sensing_engine_db &db) : coco_core(db)
     {
+        AddUDF(env, "update_road_state", "v", 2, 2, "yd", update_road_state, "update_road_state", this);
+        AddUDF(env, "update_building_state", "v", 2, 2, "yd", update_building_state, "update_building_state", this);
+
         AddUDF(env, "send_message", "v", 2, 2, "ys", send_message, "send_message", this);
         AddUDF(env, "send_question", "v", 3, 3, "ysm", send_question, "send_question", this);
         AddUDF(env, "send_map_message", "v", 4, 4, "ydds", send_map_message, "send_map_message", this);
@@ -353,6 +387,17 @@ namespace use
         Retract(sv_f);
         // we run the rules engine to update the policy..
         Run(env, -1);
+    }
+
+    void urban_sensing_engine::fire_new_road_state(const std::string &road_id, const float &state)
+    {
+        for (auto &l : listeners)
+            l->new_road_state(road_id, state);
+    }
+    void urban_sensing_engine::fire_new_building_state(const std::string &building_id, const float &state)
+    {
+        for (auto &l : listeners)
+            l->new_building_state(building_id, state);
     }
 
     void urban_sensing_engine::fire_new_message(const std::string &level, const std::string &content)

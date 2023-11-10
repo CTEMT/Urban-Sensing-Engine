@@ -20,6 +20,9 @@ namespace use
     virtual void updated_user([[maybe_unused]] const use::user &u) {}
     virtual void removed_user([[maybe_unused]] const use::user &u) {}
 
+    virtual void new_road_state([[maybe_unused]] const std::string &road_id, [[maybe_unused]] const float &state) {}
+    virtual void new_building_state([[maybe_unused]] const std::string &building_id, [[maybe_unused]] const float &state) {}
+
     virtual void new_message([[maybe_unused]] const std::string &level, [[maybe_unused]] const std::string &content) {}
     virtual void new_question([[maybe_unused]] const std::string &level, [[maybe_unused]] const long long id, [[maybe_unused]] const std::string &content, [[maybe_unused]] const std::vector<std::string> &answers) {}
     virtual void new_map_message([[maybe_unused]] const std::string &level, [[maybe_unused]] const double &lat, [[maybe_unused]] const double &lng, [[maybe_unused]] const std::string &content) {}
