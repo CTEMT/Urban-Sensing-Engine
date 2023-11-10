@@ -1,9 +1,26 @@
 (deftemplate user (slot user_id (type SYMBOL)) (slot user_role (type SYMBOL)) (slot first_name (type STRING)) (slot last_name (type STRING)) (slot email (type STRING)))
 (deftemplate skill (slot user_id (type SYMBOL)) (slot name (type SYMBOL)))
-(deftemplate road (slot road_id (type SYMBOL)) (slot name (type STRING)) (multislot coordinates (type FLOAT)) (slot s0 (default 1)) (slot s1 (default 1)) (slot s2 (default 1)) (slot s3 (default 1)) (slot road_state (default 1)) (slot local_time (default 0)) (slot road_avg_state (default 1)))
+(deftemplate road (slot road_id (type SYMBOL)) (slot name (type STRING)) (multislot coordinates (type FLOAT)) (slot s0 (default 1)) (slot s1 (default 1)) (slot s2 (default 1)) (slot s3 (default 1)) (slot road_state (default 1)) (slot local_time (default 0)) (slot road_avg_state (default 1)) (slot flow (default 0)) (slot congestion (default FALSE)) (slot probability (default 0)) (slot samples (default 0)))
 (deftemplate building (slot building_id (type SYMBOL)) (slot name (type STRING)) (multislot coordinates (type FLOAT)) (slot s0 (default 1)) (slot s1 (default 1)) (slot s2 (default 1)) (slot s3 (default 1)) (slot building_state (default 1)) (slot local_time (default 0)) (slot building_avg_state (default 1)))
 (deftemplate vehicle_type (slot vehicle_type_id (type SYMBOL)) (slot name (type STRING)) (slot description (type STRING)) (slot manufacturer (type STRING)))
 (deftemplate vehicle (slot vehicle_id (type SYMBOL)) (slot vehicle_type_id (type SYMBOL)) (multislot coordinates (type FLOAT)))
+
+(defrule r0
+    ?strada_predizione <- (road (road_id ss114))
+    (road (road_id 3O) (flow ?f3O))
+    (test (> ?f3O 1.5))
+    =>
+    (modify ?strada_predizione (congestion TRUE) (probability 82.24) (samples 304))
+)
+
+(defrule r1
+    ?strada_predizione <- (road (road_id ss114))
+    (road (road_id 3O) (flow ?f3O))
+    (road (road_id 2S) (flow ?f2S))
+    (test (and (<= ?f3O 1.5) (<= ?f2S 2.5)))
+    =>
+    (modify ?strada_predizione (congestion FALSE) (probability 100.00) (samples 143))
+)
 
 (deffunction sensor_data (?sensor ?sensor_type ?time ?data)
     (if (eq (fact-slot-value ?sensor_type name) "participatory_sensing")
