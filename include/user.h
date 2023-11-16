@@ -27,7 +27,7 @@ namespace use
     friend class urban_sensing_engine_db;
 
   public:
-    user(const std::string &id, const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role = USER_ROLE_CITIZEN, const std::vector<std::string> &skills = {}, coco::location_ptr l = nullptr) : id(id), role(role), first_name(first_name), last_name(last_name), email(email), password(password), skills(skills), loc(std::move(l)) {}
+    user(const std::string &id, const std::string &participatory_id, const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role = USER_ROLE_CITIZEN, const std::vector<std::string> &skills = {}, coco::location_ptr l = nullptr) : id(id), participatory_id(participatory_id), role(role), first_name(first_name), last_name(last_name), email(email), password(password), skills(skills), loc(std::move(l)) {}
 
     /**
      * @brief Get the id of user.
@@ -35,6 +35,12 @@ namespace use
      * @return const std::string& the id of the user.
      */
     const std::string &get_id() const { return id; }
+    /**
+     * @brief Get the participatory id of the user.
+     *
+     * @return const std::string& The participatory id of the user.
+     */
+    const std::string &get_participatory_id() const { return participatory_id; }
     /**
      * @brief Get the role of the user.
      *
@@ -93,7 +99,7 @@ namespace use
     Fact *get_fact() const { return fact; }
 
   private:
-    const std::string id;
+    const std::string id, participatory_id;
     user_role role;
     std::string first_name, last_name, email, password;
     std::vector<std::string> skills;
@@ -107,6 +113,7 @@ namespace use
   {
     json::json j;
     j["id"] = u.get_id();
+    j["participatory_id"] = u.get_participatory_id();
     switch (u.get_role())
     {
     case USER_ROLE_ADMIN:

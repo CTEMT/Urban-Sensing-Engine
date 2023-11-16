@@ -23,11 +23,12 @@
 )
 
 (deffunction sensor_data (?sensor ?sensor_type ?time ?data)
-    (if (eq (fact-slot-value ?sensor_type name) "participatory_sensing")
+    (if (eq (fact-slot-value ?sensor_type name) "participatory")
         then
-        (bind ?status (nth$ 1 ?data))
-        (bind ?subject_id (nth$ 2 ?data))
-        (bind ?user_id (nth$ 3 ?data))
+        (bind ?details (nth$ 1 ?data))
+        (bind ?status (nth$ 2 ?data))
+        (bind ?subject_id (nth$ 3 ?data))
+        (bind ?user_id (nth$ 4 ?data))
         (do-for-fact ((?r road)) (eq ?r:road_id ?subject_id)
             (modify ?r (local_time ?time) (s0 ?r:s1) (s1 ?r:s2) (s2 ?r:s3) (s3 ?r:road_state) (road_state ?status) (road_avg_state (/ (+ ?r:s1 ?r:s2 ?r:s3 ?r:road_state ?status) 5)))
             (update_road_state ?r:road_id ?r:road_avg_state)

@@ -7,6 +7,8 @@
 #include "vehicle_type.h"
 #include "vehicle.h"
 
+#define PARTICIPATORY_TYPE "participatory"
+
 namespace use
 {
   class urban_sensing_engine_db : public coco::mongo_db
@@ -124,18 +126,12 @@ namespace use
     std::string create_road(const std::string &name, coco::location_ptr l);
     road &get_road(const std::string &id) { return *roads.at(id); }
 
-    std::vector<std::reference_wrapper<road>> get_roads(const std::string &filter = "", const unsigned int limit = -1);
+    std::vector<std::reference_wrapper<road>> get_roads(const std::string &filter = "", const unsigned int limit = -1) const;
 
     std::string create_building(const std::string &name, const road &r, const std::string &address, coco::location_ptr l);
     building &get_building(const std::string &id) { return *buildings.at(id); }
 
-    std::vector<std::reference_wrapper<building>> get_buildings() const
-    {
-      std::vector<std::reference_wrapper<building>> buildings_vector;
-      for (auto &b : buildings)
-        buildings_vector.push_back(std::ref(*b.second));
-      return buildings_vector;
-    }
+    std::vector<std::reference_wrapper<building>> get_buildings(const std::string &filter = "", const unsigned int limit = -1) const;
 
     std::string create_vehicle_type(const std::string &name, const std::string &description, const std::string &manufacturer);
     vehicle_type &get_vehicle_type(const std::string &id) { return *vehicle_types.at(id); }

@@ -11,6 +11,17 @@ namespace use
     {
         mongo_db::init();
 
+        if (!has_sensor_type_by_name(PARTICIPATORY_TYPE))
+        {
+            LOG("Creating participatory sensor type..");
+            std::vector<coco::parameter_ptr> parameters;
+            parameters.push_back(std::make_unique<coco::symbol_parameter>("user_id", std::vector<std::string>()));
+            parameters.push_back(std::make_unique<coco::float_parameter>("status", 0, 1));
+            parameters.push_back(std::make_unique<coco::symbol_parameter>("subject_id", std::vector<std::string>()));
+            parameters.push_back(std::make_unique<coco::string_parameter>("details"));
+            create_sensor_type(PARTICIPATORY_TYPE, "Participatory sensor type", std::move(parameters));
+        }
+
         users.clear();
         LOG("Retrieving all users..");
         for (const auto &doc : users_collection.find({}))
@@ -22,7 +33,7 @@ namespace use
                 for (auto &&s : skills_array)
                     skills.push_back(s.get_string().value.to_string());
             }
-            users.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<user>(doc["_id"].get_oid().value.to_string(), doc["first_name"].get_string().value.to_string(), doc["last_name"].get_string().value.to_string(), doc["email"].get_string().value.to_string(), doc["password"].get_string().value.to_string(), static_cast<user_role>(doc["role"].get_int32().value), skills));
+            users.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<user>(doc["_id"].get_oid().value.to_string(), doc["participatory_id"].get_oid().value.to_string(), doc["first_name"].get_string().value.to_string(), doc["last_name"].get_string().value.to_string(), doc["email"].get_string().value.to_string(), doc["password"].get_string().value.to_string(), static_cast<user_role>(doc["role"].get_int32().value), skills));
         }
         LOG("Retrieved " << users.size() << " users..");
 
@@ -59,8 +70,10 @@ namespace use
 
     std::string urban_sensing_engine_db::create_user(const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role, const std::vector<std::string> &skills)
     {
+        auto part_sens_id = create_sensor("part_" + email, get_sensor_type_by_name(PARTICIPATORY_TYPE));
         using bsoncxx::builder::basic::kvp;
         auto u_doc = bsoncxx::builder::basic::document{};
+        u_doc.append(kvp("participatory_id", bsoncxx::oid{bsoncxx::stdx::string_view{part_sens_id}}));
         u_doc.append(kvp("first_name", first_name));
         u_doc.append(kvp("last_name", last_name));
         u_doc.append(kvp("email", email));
@@ -78,7 +91,7 @@ namespace use
         if (result)
         {
             auto id = result->inserted_id().get_oid().value.to_string();
-            users.emplace(id, std::make_unique<user>(id, first_name, last_name, email, password, role, skills));
+            users.emplace(id, std::make_unique<user>(id, part_sens_id, first_name, last_name, email, password, role, skills));
             return id;
         }
         else
@@ -91,7 +104,7 @@ namespace use
         if (result)
         {
             auto id = result->view()["_id"].get_oid().value.to_string();
-            users.emplace(id, std::make_unique<user>(id, result->view()["first_name"].get_string().value.to_string(), result->view()["last_name"].get_string().value.to_string(), email, password, static_cast<user_role>(result->view()["role"].get_int32().value)));
+            users.emplace(id, std::make_unique<user>(id, result->view()["participatory_id"].get_oid().value.to_string(), result->view()["first_name"].get_string().value.to_string(), result->view()["last_name"].get_string().value.to_string(), email, password, static_cast<user_role>(result->view()["role"].get_int32().value)));
             return id;
         }
         else
@@ -166,7 +179,7 @@ namespace use
             return {};
     }
 
-    std::vector<std::reference_wrapper<road>> urban_sensing_engine_db::get_roads(const std::string &filter, const unsigned int limit)
+    std::vector<std::reference_wrapper<road>> urban_sensing_engine_db::get_roads(const std::string &filter, const unsigned int limit) const
     {
         std::vector<std::reference_wrapper<road>> result;
         std::string filter_lower = filter;
@@ -196,6 +209,25 @@ namespace use
         }
         else
             return {};
+    }
+
+    std::vector<std::reference_wrapper<building>> urban_sensing_engine_db::get_buildings(const std::string &filter, const unsigned int limit) const
+    {
+        std::vector<std::reference_wrapper<building>> result;
+        std::string filter_lower = filter;
+        for (auto &&c : filter_lower)
+            c = std::tolower(c);
+        for (auto &&building : buildings)
+        {
+            std::string name = building.second->get_name();
+            for (auto &&c : name)
+                c = std::tolower(c);
+            if (name.find(filter_lower) != std::string::npos)
+                result.push_back(*building.second);
+            if (result.size() == limit)
+                break;
+        }
+        return result;
     }
 
     std::string urban_sensing_engine_db::create_vehicle_type(const std::string &name, const std::string &description, const std::string &manufacturer)

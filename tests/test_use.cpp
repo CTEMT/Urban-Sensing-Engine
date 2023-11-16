@@ -39,17 +39,47 @@ void create_sensor_network(use::urban_sensing_engine_db &db)
     LOG("Creating sensor network..");
 
     LOG("Creating sensor types..");
-    auto temp_type_id = db.create_sensor_type("temperature", "A type of sensor for measuring temperature", {{"temperature", coco::parameter_type::Float}});
-    auto bus_type_id = db.create_sensor_type("bus", "A smart bus", {{"lat", coco::parameter_type::Float}, {"lng", coco::parameter_type::Float}, {"passengers", coco::parameter_type::Integer}});
-    auto gate_type_id = db.create_sensor_type("gate", "A smart gate for detecting vehicles' passages", {{"pedestrian", coco::parameter_type::Integer}, {"vehicle", coco::parameter_type::Integer}, {"other", coco::parameter_type::Integer}});
-    auto air_monitoring_type_id = db.create_sensor_type("air_monitoring", "A smart air monitoring station", {{"pm10", coco::parameter_type::Float}, {"pm2.5", coco::parameter_type::Float}, {"co2", coco::parameter_type::Float}, {"co", coco::parameter_type::Float}, {"no2", coco::parameter_type::Float}, {"o3", coco::parameter_type::Float}, {"so2", coco::parameter_type::Float}});
-    auto weather_station_type_id = db.create_sensor_type("weather_station", "A smart weather station", {{"temperature", coco::parameter_type::Float}, {"humidity", coco::parameter_type::Float}, {"pressure", coco::parameter_type::Float}, {"wind_speed", coco::parameter_type::Float}, {"wind_direction", coco::parameter_type::Float}, {"rain", coco::parameter_type::Float}});
-    auto participatory_sensing_type_id = db.create_sensor_type("participatory_sensing", "A participatory sensing device", {{"user_id", coco::parameter_type::Symbol}, {"status", coco::parameter_type::Float}, {"subject_id", coco::parameter_type::Symbol}});
-    auto occupancy_prediction_type_id = db.create_sensor_type("occupancy_prediction", "A smart occupancy prediction device", {{"occupancy", coco::parameter_type::Integer}});
-    auto message_sender_type_id = db.create_sensor_type("message_sender", "A message sender device", {{"message", coco::parameter_type::String}});
+    std::vector<coco::parameter_ptr> temp_pars;
+    temp_pars.push_back(std::make_unique<coco::float_parameter>("temperature", -100, 100));
+    auto temp_type_id = db.create_sensor_type("temperature", "A type of sensor for measuring temperature", std::move(temp_pars));
+    std::vector<coco::parameter_ptr> bus_pars;
+    bus_pars.push_back(std::make_unique<coco::float_parameter>("lat", -90, 90));
+    bus_pars.push_back(std::make_unique<coco::float_parameter>("lng", -180, 180));
+    bus_pars.push_back(std::make_unique<coco::integer_parameter>("passengers", 0, 100));
+    auto bus_type_id = db.create_sensor_type("bus", "A smart bus for detecting its position and the number of passengers", std::move(bus_pars));
+    std::vector<coco::parameter_ptr> gate_pars;
+    gate_pars.push_back(std::make_unique<coco::integer_parameter>("pedestrians", 0, 100));
+    gate_pars.push_back(std::make_unique<coco::integer_parameter>("vehicles", 0, 100));
+    gate_pars.push_back(std::make_unique<coco::integer_parameter>("others", 0, 100));
+    auto gate_type_id = db.create_sensor_type("gate", "A smart gate for detecting vehicles' passages", std::move(gate_pars));
+    std::vector<coco::parameter_ptr> air_pars;
+    air_pars.push_back(std::make_unique<coco::float_parameter>("pm10", 0, 100));
+    air_pars.push_back(std::make_unique<coco::float_parameter>("pm2.5", 0, 100));
+    air_pars.push_back(std::make_unique<coco::float_parameter>("co2", 0, 1000));
+    air_pars.push_back(std::make_unique<coco::float_parameter>("co", 0, 100));
+    air_pars.push_back(std::make_unique<coco::float_parameter>("no2", 0, 100));
+    air_pars.push_back(std::make_unique<coco::float_parameter>("o3", 0, 100));
+    air_pars.push_back(std::make_unique<coco::float_parameter>("so2", 0, 100));
+    auto air_type_id = db.create_sensor_type("air_monitoring", "A smart air monitoring station", std::move(air_pars));
+    std::vector<coco::parameter_ptr> weather_pars;
+    weather_pars.push_back(std::make_unique<coco::float_parameter>("temperature", -100, 100));
+    weather_pars.push_back(std::make_unique<coco::float_parameter>("humidity", 0, 100));
+    weather_pars.push_back(std::make_unique<coco::float_parameter>("pressure", 0, 100));
+    weather_pars.push_back(std::make_unique<coco::float_parameter>("wind_speed", 0, 100));
+    weather_pars.push_back(std::make_unique<coco::float_parameter>("wind_direction", 0, 360));
+    weather_pars.push_back(std::make_unique<coco::float_parameter>("rain", 0, 100));
+    auto weather_type_id = db.create_sensor_type("weather_station", "A smart weather station", std::move(weather_pars));
+    std::vector<coco::parameter_ptr> occup_pars;
+    occup_pars.push_back(std::make_unique<coco::integer_parameter>("occupancy", 0, 1000));
+    auto occup_type_id = db.create_sensor_type("occupancy", "A smart occupancy device", std::move(occup_pars));
+    std::vector<coco::parameter_ptr> message_pars;
+    message_pars.push_back(std::make_unique<coco::symbol_parameter>("recipients", std::vector<std::string>{"all", "decision_makers", "technicians", "citizens"}));
+    message_pars.push_back(std::make_unique<coco::symbol_parameter>("recipient", std::vector<std::string>()));
+    message_pars.push_back(std::make_unique<coco::string_parameter>("message"));
+    auto message_type_id = db.create_sensor_type("message", "A message device", std::move(message_pars));
 
     LOG("Creating sensors..");
-    db.create_sensor("MessageSender0", db.get_sensor_type(message_sender_type_id));
+    db.create_sensor("MessageSender0", db.get_sensor_type(message_type_id));
 
     if (std::strcmp(COCO_NAME, "CTE-MT") == 0)
     {
@@ -58,10 +88,9 @@ void create_sensor_network(use::urban_sensing_engine_db &db)
         auto bus0_id = db.create_sensor("Bus0", db.get_sensor_type(bus_type_id));
         auto bus1_id = db.create_sensor("Bus1", db.get_sensor_type(bus_type_id));
         auto gate0_id = db.create_sensor("Gate0", db.get_sensor_type(gate_type_id), std::make_unique<coco::location>(16.614, 40.676));
-        auto air_monitoring0_id = db.create_sensor("AirMonitoring0", db.get_sensor_type(air_monitoring_type_id), std::make_unique<coco::location>(16.594, 40.686));
-        auto weather_station0_id = db.create_sensor("WeatherStation0", db.get_sensor_type(weather_station_type_id), std::make_unique<coco::location>(16.624, 40.656));
-        auto occupancy_prediction0_id = db.create_sensor("OccupancyPrediction0", db.get_sensor_type(occupancy_prediction_type_id), std::make_unique<coco::location>(16.654, 40.636));
-        auto participatory_sensing0_id = db.create_sensor("ParticipatorySensing0", db.get_sensor_type(participatory_sensing_type_id), std::make_unique<coco::location>(16.644, 40.646));
+        auto air_monitoring0_id = db.create_sensor("AirMonitoring0", db.get_sensor_type(air_type_id), std::make_unique<coco::location>(16.594, 40.686));
+        auto weather_station0_id = db.create_sensor("WeatherStation0", db.get_sensor_type(weather_type_id), std::make_unique<coco::location>(16.624, 40.656));
+        auto occupancy_prediction0_id = db.create_sensor("OccupancyPrediction0", db.get_sensor_type(occup_type_id), std::make_unique<coco::location>(16.654, 40.636));
 
         LOG("Setting CTE-MT sensor values..");
         auto time = std::chrono::system_clock::now();
@@ -76,21 +105,8 @@ void create_sensor_network(use::urban_sensing_engine_db &db)
 
 void create_data(use::urban_sensing_engine_db &db)
 {
-    std::string part_type_id;
-    for (auto &type : db.get_sensor_types())
-        if (type.get().get_name() == "participatory_sensing")
-        {
-            part_type_id = type.get().get_id();
-            break;
-        }
-
     if (std::strcmp(COCO_NAME, "CTE-MT") == 0)
     {
-        LOG("Creating CTE-MT participatory sensors..");
-        auto part0_id = db.create_sensor("MarioRossi", db.get_sensor_type(part_type_id));
-        auto part1_id = db.create_sensor("GiuseppeVerdi", db.get_sensor_type(part_type_id));
-        auto part2_id = db.create_sensor("LuigiBianchi", db.get_sensor_type(part_type_id));
-
         LOG("Creating CTE-MT roads..");
         auto road0_id = db.create_road("Via XX Settembre", std::make_unique<coco::location>(16.606201033431592, 40.66886987440025));
         auto road1_id = db.create_road("Via Lucana", std::make_unique<coco::location>(16.610004133290108, 40.66184045053739));
@@ -258,7 +274,7 @@ int main(int argc, char const *argv[])
     {
         db.drop(); // Warning!! We are here deleting all the current data!!
 
-        db.create_instance();
+        db.init();
 
         create_users(db);
         create_sensor_network(db);
