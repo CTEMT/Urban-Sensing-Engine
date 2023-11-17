@@ -19,8 +19,8 @@ namespace use
 
     void init() override;
 
-    const std::unordered_map<std::string, float> &get_road_state() const { return road_state; }
-    const std::unordered_map<std::string, float> &get_building_state() const { return building_state; }
+    const std::unordered_map<std::string, double> &get_road_state() const { return road_state; }
+    const std::unordered_map<std::string, double> &get_building_state() const { return building_state; }
 
     void create_user(const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role = user_role::USER_ROLE_CITIZEN, const std::vector<std::string> &skills = {});
     void set_user_email(const std::string &id, const std::string &email);
@@ -48,8 +48,8 @@ namespace use
     void fire_new_bus_data(const std::string &bus_id, const long &time, const double &lat, const double &lng, const long &passengers);
 
   private:
-    std::unordered_map<std::string, float> road_state;      // the road state..
-    std::unordered_map<std::string, float> building_state;  // the building state..
+    std::unordered_map<std::string, double> road_state;      // the road state..
+    std::unordered_map<std::string, double> building_state;  // the building state..
     std::vector<urban_sensing_engine_listener *> listeners; // the urban sensing engine listeners..
   };
 } // namespace use

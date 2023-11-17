@@ -14,11 +14,12 @@ namespace use
             return;
 
         UDFValue state;
-        if (!UDFNextArgument(udfc, INTEGER_BIT, &state))
+        if (!UDFNextArgument(udfc, FLOAT_BIT, &state))
             return;
 
-        e.road_state[road_id.lexemeValue->contents] = state.integerValue->contents;
-        e.fire_new_road_state(road_id.lexemeValue->contents, state.integerValue->contents);
+        LOG_DEBUG("Road '" + static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_road(road_id.lexemeValue->contents).get_name() + "' state is now " + std::to_string(state.floatValue->contents));
+        e.road_state[road_id.lexemeValue->contents] = state.floatValue->contents;
+        e.fire_new_road_state(road_id.lexemeValue->contents, state.floatValue->contents);
     }
     void update_building_state(Environment *, UDFContext *udfc, UDFValue *)
     {
@@ -29,11 +30,12 @@ namespace use
             return;
 
         UDFValue state;
-        if (!UDFNextArgument(udfc, INTEGER_BIT, &state))
+        if (!UDFNextArgument(udfc, FLOAT_BIT, &state))
             return;
 
-        e.building_state[building_id.lexemeValue->contents] = state.integerValue->contents;
-        e.fire_new_building_state(building_id.lexemeValue->contents, state.integerValue->contents);
+        LOG_DEBUG("Building '" + static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_building(building_id.lexemeValue->contents).get_name() + "' state is now " + std::to_string(state.floatValue->contents));
+        e.building_state[building_id.lexemeValue->contents] = state.floatValue->contents;
+        e.fire_new_building_state(building_id.lexemeValue->contents, state.floatValue->contents);
     }
 
     void send_message([[maybe_unused]] Environment *, UDFContext *udfc, [[maybe_unused]] UDFValue *)
