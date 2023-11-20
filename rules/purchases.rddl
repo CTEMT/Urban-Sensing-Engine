@@ -17,10 +17,38 @@ predicate ContractRepertoire(real id) : Interval {
     duration >= 1.0;
 }
 
-predicate Order(real id) : Interval {
+predicate Delivery(real id) : Interval {
     duration >= 1.0;
 }
 
-predicate Delivery(real id) : Interval {
+predicate Order(real id) : Interval {
+    duration >= 1.0;
+
+    goal fa = new FinalAssignment(id: id); fa.end <= start;
+    goal pa = new ProvisionalAssignment(id: id, end: fa.start);
+    goal rfd = new RequestForDocuments(id: id); rfd.start <= pa.start;
+}
+
+predicate FinalAssignment(real id) : Interval {
+    duration >= 1.0;
+}
+
+predicate ProvisionalAssignment(real id) : Interval {
+    duration >= 1.0;
+}
+
+predicate RequestForDocuments(real id) : Interval {
+    duration >= 1.0;
+
+    goal dtn = new DecisionToNegotiate(id: id, end: start);
+}
+
+predicate DecisionToNegotiate(real id) : Interval {
+    duration >= 1.0;
+
+    goal rf = new RequestForm(id: id, end: start);
+}
+
+predicate RequestForm(real id) : Interval {
     duration >= 1.0;
 }
