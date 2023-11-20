@@ -5,7 +5,7 @@
 
 namespace use
 {
-    urban_sensing_engine_db::urban_sensing_engine_db(const std::string &root, const std::string &mongodb_uri) : mongo_db(root, mongodb_uri), users_collection(db["users"]), roads_collection(db["roads"]), buildings_collection(db["buildings_collection"]), vehicle_types_collection(db["vehicle_types"]), vehicles_collection(db["vehicles"]) {}
+    urban_sensing_engine_db::urban_sensing_engine_db(const std::string &root, const std::string &mongodb_uri) : mongo_db(root, mongodb_uri), users_collection(db["users"]), roads_collection(db["roads"]), buildings_collection(db["buildings"]), vehicle_types_collection(db["vehicle_types"]), vehicles_collection(db["vehicles"]) {}
 
     void urban_sensing_engine_db::init()
     {
@@ -40,13 +40,13 @@ namespace use
         roads.clear();
         LOG("Retrieving all roads..");
         for (const auto &doc : roads_collection.find({}))
-            roads.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<road>(doc["_id"].get_oid().value.to_string(), doc["name"].get_string().value.to_string(), std::make_unique<coco::location>(doc["coordinates"]["x"].get_double().value, doc["coordinates"]["y"].get_double().value)));
+            roads.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<road>(doc["_id"].get_oid().value.to_string(), doc["name"].get_string().value.to_string(), doc["state"].get_double().value, std::make_unique<coco::location>(doc["coordinates"]["x"].get_double().value, doc["coordinates"]["y"].get_double().value)));
         LOG("Retrieved " << roads.size() << " roads..");
 
         buildings.clear();
         LOG("Retrieving all buildings..");
         for (const auto &doc : buildings_collection.find({}))
-            buildings.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<building>(doc["_id"].get_oid().value.to_string(), doc["name"].get_string().value.to_string(), get_road(doc["road_id"].get_oid().value.to_string()), doc["address"].get_string().value.to_string(), std::make_unique<coco::location>(doc["coordinates"]["x"].get_double().value, doc["coordinates"]["y"].get_double().value)));
+            buildings.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<building>(doc["_id"].get_oid().value.to_string(), doc["name"].get_string().value.to_string(), get_road(doc["road_id"].get_oid().value.to_string()), doc["address"].get_string().value.to_string(), doc["state"].get_double().value, std::make_unique<coco::location>(doc["coordinates"]["x"].get_double().value, doc["coordinates"]["y"].get_double().value)));
         LOG("Retrieved " << buildings.size() << " buildings..");
 
         vehicle_types.clear();
@@ -166,17 +166,23 @@ namespace use
             users.erase(u.id);
     }
 
-    std::string urban_sensing_engine_db::create_road(const std::string &name, coco::location_ptr l)
+    std::string urban_sensing_engine_db::create_road(const std::string &name, const double &state, coco::location_ptr l)
     {
-        auto result = roads_collection.insert_one(bsoncxx::builder::stream::document{} << "name" << name << "coordinates" << bsoncxx::builder::stream::open_document << "x" << l->x << "y" << l->y << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize);
+        auto result = roads_collection.insert_one(bsoncxx::builder::stream::document{} << "name" << name << "state" << state << "coordinates" << bsoncxx::builder::stream::open_document << "x" << l->x << "y" << l->y << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize);
         if (result)
         {
             auto id = result->inserted_id().get_oid().value.to_string();
-            roads.emplace(id, std::make_unique<road>(id, name, std::move(l)));
+            roads.emplace(id, std::make_unique<road>(id, name, state, std::move(l)));
             return id;
         }
         else
             return {};
+    }
+
+    void urban_sensing_engine_db::set_road_state(road &r, const double &state)
+    {
+        if (roads_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(r.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "state" << state << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
+            roads.at(r.id)->state = state;
     }
 
     std::vector<std::reference_wrapper<road>> urban_sensing_engine_db::get_roads(const std::string &filter, const unsigned int limit) const
@@ -198,17 +204,23 @@ namespace use
         return result;
     }
 
-    std::string urban_sensing_engine_db::create_building(const std::string &name, const road &r, const std::string &address, coco::location_ptr l)
+    std::string urban_sensing_engine_db::create_building(const std::string &name, const road &r, const std::string &address, const double &state, coco::location_ptr l)
     {
-        auto result = buildings_collection.insert_one(bsoncxx::builder::stream::document{} << "name" << name << "road_id" << bsoncxx::oid{bsoncxx::stdx::string_view{r.get_id()}} << "address" << address << "coordinates" << bsoncxx::builder::stream::open_document << "x" << l->x << "y" << l->y << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize);
+        auto result = buildings_collection.insert_one(bsoncxx::builder::stream::document{} << "name" << name << "road_id" << bsoncxx::oid{bsoncxx::stdx::string_view{r.get_id()}} << "address" << address << "state" << state << "coordinates" << bsoncxx::builder::stream::open_document << "x" << l->x << "y" << l->y << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize);
         if (result)
         {
             auto id = result->inserted_id().get_oid().value.to_string();
-            buildings.emplace(id, std::make_unique<building>(id, name, r, address, std::move(l)));
+            buildings.emplace(id, std::make_unique<building>(id, name, r, address, state, std::move(l)));
             return id;
         }
         else
             return {};
+    }
+
+    void urban_sensing_engine_db::set_building_state(building &b, const double &state)
+    {
+        if (buildings_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(b.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "state" << state << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
+            buildings.at(b.id)->state = state;
     }
 
     std::vector<std::reference_wrapper<building>> urban_sensing_engine_db::get_buildings(const std::string &filter, const unsigned int limit) const

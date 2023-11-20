@@ -108,30 +108,30 @@ void create_data(use::urban_sensing_engine_db &db)
     if (std::strcmp(COCO_NAME, "CTE-MT") == 0)
     {
         LOG("Creating CTE-MT roads..");
-        auto road0_id = db.create_road("Via XX Settembre", std::make_unique<coco::location>(16.606201033431592, 40.66886987440025));
-        auto road1_id = db.create_road("Via Lucana", std::make_unique<coco::location>(16.610004133290108, 40.66184045053739));
-        auto road2_id = db.create_road("Via Roma", std::make_unique<coco::location>(16.604441555519582, 40.667417126550916));
-        auto road3_id = db.create_road("Via San Biagio", std::make_unique<coco::location>(16.608006069013957, 40.667882003624854));
-        auto road4_id = db.create_road("Piazza Vittorio Veneto", std::make_unique<coco::location>(16.606513082508386, 40.6669187521497));
-        auto road5_id = db.create_road("Vico Conservatorio", std::make_unique<coco::location>(16.611608001257064, 40.668147065962714));
-        auto road6_id = db.create_road("Via Duomo", std::make_unique<coco::location>(16.61030855551953, 40.66624791599131));
-        auto road7_id = db.create_road("Piazza Duomo", std::make_unique<coco::location>(16.611154282508345, 40.66679155634107));
-        auto road8_id = db.create_road("Piazzetta Pascoli", std::make_unique<coco::location>(16.610178297849036, 40.663425300341075));
-        auto road9_id = db.create_road("Piazza del Sedile", std::make_unique<coco::location>(16.60974561148296, 40.6660429407916));
-        auto road10_id = db.create_road("Via San Potito", std::make_unique<coco::location>(16.61219574017874, 40.666770004486914));
-        auto road11_id = db.create_road("Via del Castello", std::make_unique<coco::location>(16.60025755551943, 40.662020781572956));
-        auto road12_id = db.create_road("Via T. Stigliani", std::make_unique<coco::location>(16.60734906901401, 40.669571057618185));
+        auto road0_id = db.create_road("Via XX Settembre", 0, std::make_unique<coco::location>(16.606201033431592, 40.66886987440025));
+        auto road1_id = db.create_road("Via Lucana", 0, std::make_unique<coco::location>(16.610004133290108, 40.66184045053739));
+        auto road2_id = db.create_road("Via Roma", 0, std::make_unique<coco::location>(16.604441555519582, 40.667417126550916));
+        auto road3_id = db.create_road("Via San Biagio", 0, std::make_unique<coco::location>(16.608006069013957, 40.667882003624854));
+        auto road4_id = db.create_road("Piazza Vittorio Veneto", 0, std::make_unique<coco::location>(16.606513082508386, 40.6669187521497));
+        auto road5_id = db.create_road("Vico Conservatorio", 0, std::make_unique<coco::location>(16.611608001257064, 40.668147065962714));
+        auto road6_id = db.create_road("Via Duomo", 0, std::make_unique<coco::location>(16.61030855551953, 40.66624791599131));
+        auto road7_id = db.create_road("Piazza Duomo", 0, std::make_unique<coco::location>(16.611154282508345, 40.66679155634107));
+        auto road8_id = db.create_road("Piazzetta Pascoli", 0, std::make_unique<coco::location>(16.610178297849036, 40.663425300341075));
+        auto road9_id = db.create_road("Piazza del Sedile", 0, std::make_unique<coco::location>(16.60974561148296, 40.6660429407916));
+        auto road10_id = db.create_road("Via San Potito", 0, std::make_unique<coco::location>(16.61219574017874, 40.666770004486914));
+        auto road11_id = db.create_road("Via del Castello", 0, std::make_unique<coco::location>(16.60025755551943, 40.662020781572956));
+        auto road12_id = db.create_road("Via T. Stigliani", 0, std::make_unique<coco::location>(16.60734906901401, 40.669571057618185));
 
         LOG("Creating CTE-MT buildings..");
-        auto building0_id = db.create_building("Palazzo dell'Annunziata", db.get_road(road4_id), "Piazza Vittorio Veneto", std::make_unique<coco::location>(16.606513082508386, 40.6669187521497));
-        auto building1_id = db.create_building("Palazzo Bernardini", db.get_road(road5_id), "Via Conservatorio", std::make_unique<coco::location>(16.608006069013957, 40.667882003624854));
-        auto building2_id = db.create_building("Palazzo Bronzini", db.get_road(road6_id), "Via Duomo, 2", std::make_unique<coco::location>(16.61030855551953, 40.66624791599131));
-        auto building3_id = db.create_building("Palazzo Gattini", db.get_road(road7_id), "Piazza Duomo, 13", std::make_unique<coco::location>(16.611154282508345, 40.66679155634107));
-        auto building4_id = db.create_building("Palazzo Lanfranchi", db.get_road(road8_id), "Piazzetta Pascoli, 1", std::make_unique<coco::location>(16.610178297849036, 40.663425300341075));
-        auto building5_id = db.create_building("Palazzo Malvinni-Malvezzi", db.get_road(road7_id), "Piazza Duomo, 14", std::make_unique<coco::location>(16.60974561148296, 40.6660429407916));
-        auto building6_id = db.create_building("Palazzo Ridola", db.get_road(road10_id), "Piazza Duomo", std::make_unique<coco::location>(16.61219574017874, 40.666770004486914));
-        auto building7_id = db.create_building("Palazzo del Sedile", db.get_road(road9_id), "Piazza del Sedile", std::make_unique<coco::location>(16.60025755551943, 40.662020781572956));
-        auto building8_id = db.create_building("Palazzo Venusio", db.get_road(road10_id), "Via San Potito", std::make_unique<coco::location>(16.60734906901401, 40.669571057618185));
+        auto building0_id = db.create_building("Palazzo dell'Annunziata", db.get_road(road4_id), "Piazza Vittorio Veneto", 0, std::make_unique<coco::location>(16.606513082508386, 40.6669187521497));
+        auto building1_id = db.create_building("Palazzo Bernardini", db.get_road(road5_id), "Via Conservatorio", 0, std::make_unique<coco::location>(16.608006069013957, 40.667882003624854));
+        auto building2_id = db.create_building("Palazzo Bronzini", db.get_road(road6_id), "Via Duomo, 2", 0, std::make_unique<coco::location>(16.61030855551953, 40.66624791599131));
+        auto building3_id = db.create_building("Palazzo Gattini", db.get_road(road7_id), "Piazza Duomo, 13", 0, std::make_unique<coco::location>(16.611154282508345, 40.66679155634107));
+        auto building4_id = db.create_building("Palazzo Lanfranchi", db.get_road(road8_id), "Piazzetta Pascoli, 1", 0, std::make_unique<coco::location>(16.610178297849036, 40.663425300341075));
+        auto building5_id = db.create_building("Palazzo Malvinni-Malvezzi", db.get_road(road7_id), "Piazza Duomo, 14", 0, std::make_unique<coco::location>(16.60974561148296, 40.6660429407916));
+        auto building6_id = db.create_building("Palazzo Ridola", db.get_road(road10_id), "Piazza Duomo", 0, std::make_unique<coco::location>(16.61219574017874, 40.666770004486914));
+        auto building7_id = db.create_building("Palazzo del Sedile", db.get_road(road9_id), "Piazza del Sedile", 0, std::make_unique<coco::location>(16.60025755551943, 40.662020781572956));
+        auto building8_id = db.create_building("Palazzo Venusio", db.get_road(road10_id), "Via San Potito", 0, std::make_unique<coco::location>(16.60734906901401, 40.669571057618185));
     }
 }
 

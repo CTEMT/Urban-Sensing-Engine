@@ -123,13 +123,15 @@ namespace use
     void delete_user(user &u);
     void delete_user(const std::string &id) { delete_user(*users.at(id)); }
 
-    std::string create_road(const std::string &name, coco::location_ptr l);
+    std::string create_road(const std::string &name, const double &state, coco::location_ptr l);
     road &get_road(const std::string &id) { return *roads.at(id); }
+    void set_road_state(road &r, const double &state);
 
     std::vector<std::reference_wrapper<road>> get_roads(const std::string &filter = "", const unsigned int limit = -1) const;
 
-    std::string create_building(const std::string &name, const road &r, const std::string &address, coco::location_ptr l);
+    std::string create_building(const std::string &name, const road &r, const std::string &address, const double &state, coco::location_ptr l);
     building &get_building(const std::string &id) { return *buildings.at(id); }
+    void set_building_state(building &b, const double &state);
 
     std::vector<std::reference_wrapper<building>> get_buildings(const std::string &filter = "", const unsigned int limit = -1) const;
 

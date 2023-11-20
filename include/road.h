@@ -14,17 +14,21 @@ namespace use
     friend class urban_sensing_engine_db;
 
   public:
-    road(const std::string &id, const std::string &name, coco::location_ptr l) : id(id), name(name), loc(std::move(l)) {}
+    road(const std::string &id, const std::string &name, double state, coco::location_ptr l) : id(id), name(name), state(state), loc(std::move(l)) {}
 
     std::string get_id() const { return id; }
     std::string get_name() const { return name; }
+    double get_state() const { return state; }
     const coco::location_ptr &get_location() const { return loc; }
 
     Fact *get_fact() const { return fact; }
 
+    friend void update_road_state(Environment *env, UDFContext *udfc, UDFValue *out);
+
   private:
     const std::string id;
     std::string name;
+    double state;
     coco::location_ptr loc;
     Fact *fact = nullptr;
   };

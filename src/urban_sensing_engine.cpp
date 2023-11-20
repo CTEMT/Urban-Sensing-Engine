@@ -18,7 +18,11 @@ namespace use
             return;
 
         LOG_DEBUG("Road '" + static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_road(road_id.lexemeValue->contents).get_name() + "' state is now " + std::to_string(state.floatValue->contents));
-        e.road_state[road_id.lexemeValue->contents] = state.floatValue->contents;
+        static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_road(road_id.lexemeValue->contents).state = state.floatValue->contents;
+        if (state.floatValue->contents == 0)
+            e.road_state.erase(road_id.lexemeValue->contents);
+        else
+            e.road_state.insert(road_id.lexemeValue->contents);
         e.fire_new_road_state(road_id.lexemeValue->contents, state.floatValue->contents);
     }
     void update_building_state(Environment *, UDFContext *udfc, UDFValue *)
@@ -34,7 +38,11 @@ namespace use
             return;
 
         LOG_DEBUG("Building '" + static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_building(building_id.lexemeValue->contents).get_name() + "' state is now " + std::to_string(state.floatValue->contents));
-        e.building_state[building_id.lexemeValue->contents] = state.floatValue->contents;
+        static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_building(building_id.lexemeValue->contents).state = state.floatValue->contents;
+        if (state.floatValue->contents == 0)
+            e.building_state.erase(building_id.lexemeValue->contents);
+        else
+            e.building_state.insert(building_id.lexemeValue->contents);
         e.fire_new_building_state(building_id.lexemeValue->contents, state.floatValue->contents);
     }
 
@@ -197,6 +205,9 @@ namespace use
             fact_str = "(road (road_id " + r.get().get_id() + ") (name \"" + r.get().get_name() + "\") (coordinates " + std::to_string(r.get().get_location()->y) + " " + std::to_string(r.get().get_location()->x) + "))";
             LOG_DEBUG("Asserting fact: " << fact_str);
             r.get().fact = AssertString(env, fact_str.c_str());
+
+            if (r.get().get_state() > 0)
+                road_state.insert(r.get().get_id());
         }
 
         // we assert the building facts..
@@ -205,6 +216,9 @@ namespace use
             fact_str = "(building (building_id " + b.get().get_id() + ") (name \"" + b.get().get_name() + "\") (coordinates " + std::to_string(b.get().get_location()->y) + " " + std::to_string(b.get().get_location()->x) + "))";
             LOG_DEBUG("Asserting fact: " << fact_str);
             b.get().fact = AssertString(env, fact_str.c_str());
+
+            if (b.get().get_state() > 0)
+                building_state.insert(b.get().get_id());
         }
 
         // we assert the vehicle type facts..
