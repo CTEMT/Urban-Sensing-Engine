@@ -31,7 +31,10 @@ namespace use
 
   private:
     friend void update_road_state(Environment *env, UDFContext *udfc, UDFValue *out);
+    friend void generate_riddle_roads(Environment *env, UDFContext *udfc, UDFValue *out);
+
     friend void update_building_state(Environment *env, UDFContext *udfc, UDFValue *out);
+    friend void generate_riddle_buildings(Environment *env, UDFContext *udfc, UDFValue *out);
 
     friend void send_message(Environment *env, UDFContext *udfc, UDFValue *out);
     friend void send_question(Environment *env, UDFContext *udfc, UDFValue *out);
@@ -48,8 +51,8 @@ namespace use
     void fire_new_bus_data(const std::string &bus_id, const long &time, const double &lat, const double &lng, const long &passengers);
 
   private:
-    std::unordered_set<std::string> road_state;     // the road state..
-    std::unordered_set<std::string> building_state; // the building state..
+    std::unordered_set<std::string> road_state;             // the road state..
+    std::unordered_set<std::string> building_state;         // the building state..
     std::vector<urban_sensing_engine_listener *> listeners; // the urban sensing engine listeners..
   };
 } // namespace use

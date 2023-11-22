@@ -25,6 +25,18 @@ namespace use
             e.road_state.insert(road_id.lexemeValue->contents);
         e.fire_new_road_state(road_id.lexemeValue->contents, state.floatValue->contents);
     }
+    void generate_riddle_roads(Environment *env, UDFContext *udfc, UDFValue *out)
+    {
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
+
+        std::string roads_rddle;
+        size_t i = 0;
+        for (auto &r : static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_roads())
+            roads_rddle += "Road r" + std::to_string(i++) + " = new Road(\"" + r.get().get_id() + "\");\n";
+
+        out->lexemeValue = CreateString(env, roads_rddle.c_str());
+    }
+
     void update_building_state(Environment *, UDFContext *udfc, UDFValue *)
     {
         auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
@@ -44,6 +56,17 @@ namespace use
         else
             e.building_state.insert(building_id.lexemeValue->contents);
         e.fire_new_building_state(building_id.lexemeValue->contents, state.floatValue->contents);
+    }
+    void generate_riddle_buildings(Environment *env, UDFContext *udfc, UDFValue *out)
+    {
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
+
+        std::string buildings_rddle;
+        size_t i = 0;
+        for (auto &b : static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_buildings())
+            buildings_rddle += "Building b" + std::to_string(i++) + " = new Building(\"" + b.get().get_id() + "\");\n";
+
+        out->lexemeValue = CreateString(env, buildings_rddle.c_str());
     }
 
     void send_message([[maybe_unused]] Environment *, UDFContext *udfc, [[maybe_unused]] UDFValue *)
@@ -146,7 +169,10 @@ namespace use
     urban_sensing_engine::urban_sensing_engine(urban_sensing_engine_db &db) : coco_core(db)
     {
         AddUDF(env, "update_road_state", "v", 2, 2, "yd", update_road_state, "update_road_state", this);
+        AddUDF(env, "generate_riddle_roads", "s", 0, 0, "", generate_riddle_roads, "generate_riddle_roads", this);
+
         AddUDF(env, "update_building_state", "v", 2, 2, "yd", update_building_state, "update_building_state", this);
+        AddUDF(env, "generate_riddle_buildings", "s", 0, 0, "", generate_riddle_buildings, "generate_riddle_buildings", this);
 
         AddUDF(env, "send_message", "v", 2, 2, "ys", send_message, "send_message", this);
         AddUDF(env, "send_question", "v", 3, 3, "ysm", send_question, "send_question", this);

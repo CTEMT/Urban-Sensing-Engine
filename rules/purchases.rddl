@@ -1,54 +1,57 @@
-predicate Purchase(real id) : Interval {
-    duration >= 1.0;
+class PurchasingOffice : Agent {
 
-    goal b = new Billing(id: id); b.end <= start;
-    goal d = new Delivery(id: id); d.end <= start;
-    goal c = new ContractRepertoire(id: id, end: d.start);
-    goal o = new Order(id: id, end: c.start); o.start <= d.start;
+    predicate Purchase(real id) : Interval {
+        duration >= 1.0;
 
-    b.end - o.start <= 30.0;
-}
+        goal b = new Billing(id: id); b.end <= start;
+        goal d = new Delivery(id: id); d.end <= start;
+        goal c = new ContractRepertoire(id: id, end: d.start);
+        goal o = new Order(id: id, end: c.start); o.start <= d.start;
 
-predicate Billing(real id) : Interval {
-    duration >= 1.0;
-}
+        b.end - o.start <= 30.0;
+    }
 
-predicate ContractRepertoire(real id) : Interval {
-    duration >= 1.0;
-}
+    predicate Billing(real id) : Interval {
+        duration >= 1.0;
+    }
 
-predicate Delivery(real id) : Interval {
-    duration >= 1.0;
-}
+    predicate ContractRepertoire(real id) : Interval {
+        duration >= 1.0;
+    }
 
-predicate Order(real id) : Interval {
-    duration >= 1.0;
+    predicate Delivery(real id) : Interval {
+        duration >= 1.0;
+    }
 
-    goal fa = new FinalAssignment(id: id); fa.end <= start;
-    goal pa = new ProvisionalAssignment(id: id, end: fa.start);
-    goal rfd = new RequestForDocuments(id: id); rfd.start <= pa.start;
-}
+    predicate Order(real id) : Interval {
+        duration >= 1.0;
 
-predicate FinalAssignment(real id) : Interval {
-    duration >= 1.0;
-}
+        goal fa = new FinalAssignment(id: id); fa.end <= start;
+        goal pa = new ProvisionalAssignment(id: id, end: fa.start);
+        goal rfd = new RequestForDocuments(id: id); rfd.start <= pa.start;
+    }
 
-predicate ProvisionalAssignment(real id) : Interval {
-    duration >= 1.0;
-}
+    predicate FinalAssignment(real id) : Interval {
+        duration >= 1.0;
+    }
 
-predicate RequestForDocuments(real id) : Interval {
-    duration >= 1.0;
+    predicate ProvisionalAssignment(real id) : Interval {
+        duration >= 1.0;
+    }
 
-    goal dtn = new DecisionToNegotiate(id: id, end: start);
-}
+    predicate RequestForDocuments(real id) : Interval {
+        duration >= 1.0;
 
-predicate DecisionToNegotiate(real id) : Interval {
-    duration >= 1.0;
+        goal dtn = new DecisionToNegotiate(id: id, end: start);
+    }
 
-    goal rf = new RequestForm(id: id, end: start);
-}
+    predicate DecisionToNegotiate(real id) : Interval {
+        duration >= 1.0;
 
-predicate RequestForm(real id) : Interval {
-    duration >= 1.0;
+        goal rf = new RequestForm(id: id, end: start);
+    }
+
+    predicate RequestForm(real id) : Interval {
+        duration >= 1.0;
+    }
 }
