@@ -19,14 +19,14 @@ void create_users(use::urban_sensing_engine_db &db)
     db.create_user("DecisionMaker2", "DecisionMaker2", "dm2@cnr.it", "dm", use::user_role::USER_ROLE_DECISION_MAKER);
 
     LOG("Creating technicians..");
-    json::json tch1_skills(json::json_type::array);
-    tch1_skills.push_back("construction");
+    std::vector<std::string> tch1_skills;
+    tch1_skills.push_back("building_maintanance");
     tch1_skills.push_back("road_maintenance");
-    db.create_user("Technician1", "Technician1", "tch1@cnr.it", "tcn", use::user_role::USER_ROLE_TECHNICIAN, {{"skills", tch1_skills}});
-    json::json tch2_skills(json::json_type::array);
+    db.create_user("Technician1", "Technician1", "tch1@cnr.it", "tcn", use::user_role::USER_ROLE_TECHNICIAN, tch1_skills);
+    std::vector<std::string> tch2_skills;
     tch2_skills.push_back("road_maintenance");
-    tch2_skills.push_back("public_green");
-    db.create_user("Technician2", "Technician2", "tch2@ncr.it", "tcn", use::user_role::USER_ROLE_TECHNICIAN, {{"skills", tch2_skills}});
+    tch2_skills.push_back("green_space_maintenance");
+    db.create_user("Technician2", "Technician2", "tch2@ncr.it", "tcn", use::user_role::USER_ROLE_TECHNICIAN, tch2_skills);
 
     LOG("Creating citizens..");
     db.create_user("Mario", "Rossi", "mario.rossi@test.it", "psw_01", use::user_role::USER_ROLE_CITIZEN);

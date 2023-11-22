@@ -1,0 +1,119 @@
+class User {
+
+    string id;
+
+    User(string id) : id(id) {}
+}
+
+class Admin : User {
+
+    Admin(string id) : User(id) {}
+}
+
+class DecisionMaker {
+
+    string id;
+
+    DecisionMaker(string id) : id(id) {}
+}
+
+class Citizen : User {
+
+    Citizen(string id) : User(id) {}
+}
+
+class Technician : User {
+
+    ReusableResource activity = new ReusableResource(2.0);
+
+    Technician(string id) : User(id) {}
+}
+
+class Skill {
+
+    string name;
+
+    Skill(string name) : name(name) {}
+}
+
+
+predicate HasSkill(User u, Skill s) {
+    false;
+}
+
+
+class Road {
+
+    string id;
+
+    Road(string id) : id(id) {}
+}
+
+class Building {
+
+    string id;
+
+    Building(string id) : id(id) {}
+}
+
+class GreenSpace {
+
+    string id;
+
+    GreenSpace(string id) : id(id) {}
+}
+
+
+class MaintenanceOffice : Agent {
+
+    predicate RoadMaintenanceDocuments(Road r, Technician t) : Interval {
+        duration >= 10.0;
+        fact t_activity = new t.activity.Use(start: start, duration: duration, end: end, amount: 1.0);
+    }
+
+    predicate RoadMaintenanceTender(Road r, Technician t) : Interval {
+        duration >= 15.0;
+        goal rmd = new RoadMaintenanceDocuments(r: r, t: t, end: start);
+    }
+
+    predicate RoadMaintenance(Road r, Technician t) : Interval {
+        duration >= 20.0;
+        goal rm = new HasSkill(u: t, s: s_road_maintenance);
+        fact t_activity = new t.activity.Use(start: start, duration: duration, end: end, amount: 1.0);
+        goal rmd = new RoadMaintenanceTender(r: r, t: t, end: start);
+    }
+
+    predicate BuildingMaintenanceDocuments(Building b, Technician t) : Interval {
+        duration >= 10.0;
+        fact t_activity = new t.activity.Use(start: start, duration: duration, end: end, amount: 1.0);
+    }
+
+    predicate BuildingMaintenanceTender(Building b, Technician t) : Interval {
+        duration >= 15.0;
+        goal rmd = new BuildingMaintenanceDocuments(b: b, t: t, end: start);
+    }
+
+    predicate BuildingMaintenance(Building b, Technician t) : Interval {
+        duration >= 30.0;
+        goal bm = new HasSkill(u: t, s: s_building_maintenance);
+        fact t_activity = new t.activity.Use(start: start, duration: duration, end: end, amount: 1.0);
+        goal rmd = new BuildingMaintenanceTender(b: b, t: t, end: start);
+    }
+
+    predicate GreenSpacesMaintenanceDocuments(GreenSpace gs, Technician t) : Interval {
+        duration >= 10.0;
+        fact t_activity = new t.activity.Use(start: start, duration: duration, end: end, amount: 1.0);
+    }
+
+    predicate GreenSpacesMaintenanceTender(GreenSpace gs, Technician t) : Interval {
+        duration >= 15.0;
+        goal rmd = new GreenSpacesMaintenanceDocuments(gs: gs, t: t, end: start);
+    }
+
+    predicate GreenSpacesMaintenance(GreenSpace gs, Technician t) : Interval {
+        duration >= 20.0;
+        goal gm = new HasSkill(u: t, s: s_green_space_maintenance);
+        fact t_activity = new t.activity.Use(start: start, duration: duration, end: end, amount: 1.0);
+        goal rmd = new GreenSpacesMaintenanceTender(gs: gs, t: t, end: start);
+    }
+}

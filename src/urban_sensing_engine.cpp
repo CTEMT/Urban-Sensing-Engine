@@ -5,6 +5,45 @@
 
 namespace use
 {
+    void generate_riddle_users(Environment *env, UDFContext *udfc, UDFValue *out)
+    {
+        auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
+
+        std::set<std::string> skills;
+        std::string users_rddle;
+        for (auto &u : static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_users())
+        {
+            switch (u.get().get_role())
+            {
+            case user_role::USER_ROLE_ADMIN:
+                users_rddle += "Admin u_" + u.get().get_id() + " = new Admin(\"" + u.get().get_id() + "\");\n";
+                break;
+            case user_role::USER_ROLE_DECISION_MAKER:
+                users_rddle += "DecisionMaker u_" + u.get().get_id() + " = new DecisionMaker(\"" + u.get().get_id() + "\");\n";
+                break;
+            case user_role::USER_ROLE_TECHNICIAN:
+                users_rddle += "Technician u_" + u.get().get_id() + " = new Technician(\"" + u.get().get_id() + "\");\n";
+                break;
+            case user_role::USER_ROLE_CITIZEN:
+                users_rddle += "Citizen u_" + u.get().get_id() + " = new Citizen(\"" + u.get().get_id() + "\");\n";
+                break;
+            default:
+                break;
+            }
+            for (auto &s : u.get().get_skills())
+                skills.insert(s);
+        }
+
+        for (auto &s : skills)
+            users_rddle += "Skill s_" + s + " = new Skill(\"" + s + "\");\n";
+
+        for (auto &u : static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_users())
+            for (auto &s : u.get().get_skills())
+                users_rddle += "fact u_" + u.get().get_id() + "_s_" + s + " = new HasSkill(u: u_" + u.get().get_id() + ", s: s_" + s + ");\n";
+
+        out->lexemeValue = CreateString(env, users_rddle.c_str());
+    }
+
     void update_road_state(Environment *, UDFContext *udfc, UDFValue *)
     {
         auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
@@ -30,9 +69,8 @@ namespace use
         auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
 
         std::string roads_rddle;
-        size_t i = 0;
         for (auto &r : static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_roads())
-            roads_rddle += "Road r" + std::to_string(i++) + " = new Road(\"" + r.get().get_id() + "\");\n";
+            roads_rddle += "Road r_" + r.get().get_id() + " = new Road(\"" + r.get().get_id() + "\");\n";
 
         out->lexemeValue = CreateString(env, roads_rddle.c_str());
     }
@@ -62,9 +100,8 @@ namespace use
         auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
 
         std::string buildings_rddle;
-        size_t i = 0;
         for (auto &b : static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_buildings())
-            buildings_rddle += "Building b" + std::to_string(i++) + " = new Building(\"" + b.get().get_id() + "\");\n";
+            buildings_rddle += "Building b_" + b.get().get_id() + " = new Building(\"" + b.get().get_id() + "\");\n";
 
         out->lexemeValue = CreateString(env, buildings_rddle.c_str());
     }
@@ -168,6 +205,8 @@ namespace use
 
     urban_sensing_engine::urban_sensing_engine(urban_sensing_engine_db &db) : coco_core(db)
     {
+        AddUDF(env, "generate_riddle_users", "s", 0, 0, "", generate_riddle_users, "generate_riddle_users", this);
+
         AddUDF(env, "update_road_state", "v", 2, 2, "yd", update_road_state, "update_road_state", this);
         AddUDF(env, "generate_riddle_roads", "s", 0, 0, "", generate_riddle_roads, "generate_riddle_roads", this);
 
@@ -228,7 +267,7 @@ namespace use
         // we assert the road facts..
         for (auto &r : db.get_roads())
         {
-            fact_str = "(road (road_id " + r.get().get_id() + ") (name \"" + r.get().get_name() + "\") (coordinates " + std::to_string(r.get().get_location()->y) + " " + std::to_string(r.get().get_location()->x) + "))";
+            fact_str = "(road (road_id " + r.get().get_id() + ") (name \"" + r.get().get_name() + "\") (coordinates " + std::to_string(r.get().get_location()->y) + " " + std::to_string(r.get().get_location()->x) + ") (road_state " + std::to_string(r.get().get_state()) + "))";
             LOG_DEBUG("Asserting fact: " << fact_str);
             r.get().fact = AssertString(env, fact_str.c_str());
 
@@ -239,7 +278,7 @@ namespace use
         // we assert the building facts..
         for (auto &b : db.get_buildings())
         {
-            fact_str = "(building (building_id " + b.get().get_id() + ") (name \"" + b.get().get_name() + "\") (coordinates " + std::to_string(b.get().get_location()->y) + " " + std::to_string(b.get().get_location()->x) + "))";
+            fact_str = "(building (building_id " + b.get().get_id() + ") (name \"" + b.get().get_name() + "\") (coordinates " + std::to_string(b.get().get_location()->y) + " " + std::to_string(b.get().get_location()->x) + ") (building_state " + std::to_string(b.get().get_state()) + "))";
             LOG_DEBUG("Asserting fact: " << fact_str);
             b.get().fact = AssertString(env, fact_str.c_str());
 

@@ -30,6 +30,8 @@ namespace use
     void delete_user(const std::string &id);
 
   private:
+    friend void generate_riddle_users(Environment *env, UDFContext *udfc, UDFValue *out);
+
     friend void update_road_state(Environment *env, UDFContext *udfc, UDFValue *out);
     friend void generate_riddle_roads(Environment *env, UDFContext *udfc, UDFValue *out);
 
