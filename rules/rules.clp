@@ -1,6 +1,7 @@
 (deftemplate user (slot user_id (type SYMBOL)) (slot user_role (type SYMBOL)) (slot first_name (type STRING)) (slot last_name (type STRING)) (slot email (type STRING)))
 (deftemplate skill (slot user_id (type SYMBOL)) (slot name (type SYMBOL)))
-(deftemplate road (slot road_id (type SYMBOL)) (slot name (type STRING)) (multislot coordinates (type FLOAT)) (slot s0 (default 0)) (slot s1 (default 0)) (slot s2 (default 0)) (slot s3 (default 0)) (slot road_state (default 0)) (slot road_avg_state (default 0)) (slot flow (default 0)) (slot congestion (default FALSE)) (slot probability (default 0)) (slot samples (default 0)))
+(deftemplate intersection (slot intersection_id (type SYMBOL)) (multislot coordinates (type FLOAT)))
+(deftemplate road (slot road_id (type SYMBOL)) (slot name (type STRING)) (slot source (type SYMBOL)) (slot target (type SYMBOL)) (slot s0 (default 0)) (slot s1 (default 0)) (slot s2 (default 0)) (slot s3 (default 0)) (slot road_state (default 0)) (slot road_avg_state (default 0)) (slot flow (default 0)) (slot congestion (default FALSE)) (slot probability (default 0)) (slot samples (default 0)))
 (deftemplate building (slot building_id (type SYMBOL)) (slot name (type STRING)) (multislot coordinates (type FLOAT)) (slot s0 (default 0)) (slot s1 (default 0)) (slot s2 (default 0)) (slot s3 (default 0)) (slot building_state (default 0)) (slot building_avg_state (default 0)))
 (deftemplate vehicle_type (slot vehicle_type_id (type SYMBOL)) (slot name (type STRING)) (slot description (type STRING)) (slot manufacturer (type STRING)))
 (deftemplate vehicle (slot vehicle_id (type SYMBOL)) (slot vehicle_type_id (type SYMBOL)) (multislot coordinates (type FLOAT)))

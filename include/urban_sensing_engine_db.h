@@ -123,7 +123,19 @@ namespace use
     void delete_user(user &u);
     void delete_user(const std::string &id) { delete_user(*users.at(id)); }
 
-    std::string create_road(const std::string &name, const double &state, coco::location_ptr l);
+    std::string create_intersection(const std::string &osm_id, coco::location_ptr l);
+    intersection &get_intersection(const std::string &id) { return *intersections.at(id); }
+
+    std::vector<std::reference_wrapper<intersection>> get_intersections() const
+    {
+      std::vector<std::reference_wrapper<intersection>> intersections_vector;
+      intersections_vector.reserve(intersections.size());
+      for (auto &i : intersections)
+        intersections_vector.push_back(std::ref(*i.second));
+      return intersections_vector;
+    }
+
+    std::string create_road(const std::string &osm_id, const std::string &name, const intersection &from, const intersection &to, double length, double state);
     road &get_road(const std::string &id) { return *roads.at(id); }
     void set_road_state(road &r, const double &state);
 
@@ -141,6 +153,7 @@ namespace use
     std::vector<std::reference_wrapper<vehicle_type>> get_vehicle_types() const
     {
       std::vector<std::reference_wrapper<vehicle_type>> vehicle_types_vector;
+      vehicle_types_vector.reserve(vehicle_types.size());
       for (auto &vt : vehicle_types)
         vehicle_types_vector.push_back(std::ref(*vt.second));
       return vehicle_types_vector;
@@ -152,6 +165,7 @@ namespace use
     std::vector<std::reference_wrapper<vehicle>> get_vehicles() const
     {
       std::vector<std::reference_wrapper<vehicle>> vehicles_vector;
+      vehicles_vector.reserve(vehicles.size());
       for (auto &v : vehicles)
         vehicles_vector.push_back(std::ref(*v.second));
       return vehicles_vector;
@@ -161,11 +175,13 @@ namespace use
 
   private:
     mongocxx::v_noabi::collection users_collection;
+    mongocxx::v_noabi::collection intersections_collection;
     mongocxx::v_noabi::collection roads_collection;
     mongocxx::v_noabi::collection buildings_collection;
     mongocxx::v_noabi::collection vehicle_types_collection;
     mongocxx::v_noabi::collection vehicles_collection;
     std::unordered_map<std::string, user_ptr> users; // The users of the current instance.
+    std::unordered_map<std::string, intersection_ptr> intersections;
     std::unordered_map<std::string, road_ptr> roads;
     std::unordered_map<std::string, building_ptr> buildings;
     std::unordered_map<std::string, vehicle_type_ptr> vehicle_types;

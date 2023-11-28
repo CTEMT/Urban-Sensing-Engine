@@ -221,6 +221,7 @@ namespace use
 
     void urban_sensing_engine::init()
     {
+        const std::lock_guard<std::recursive_mutex> lock(get_mutex());
         coco_core::init();
 
         urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
@@ -264,11 +265,19 @@ namespace use
             }
         }
 
+        // we assert the intersection facts..
+        for (auto &i : db.get_intersections())
+        {
+            fact_str = "(intersection (intersection_id " + i.get().get_id() + ") (coordinates " + std::to_string(i.get().get_location()->y) + " " + std::to_string(i.get().get_location()->x) + "))";
+            // LOG_DEBUG("Asserting fact: " << fact_str);
+            i.get().fact = AssertString(env, fact_str.c_str());
+        }
+
         // we assert the road facts..
         for (auto &r : db.get_roads())
         {
-            fact_str = "(road (road_id " + r.get().get_id() + ") (name \"" + r.get().get_name() + "\") (coordinates " + std::to_string(r.get().get_location()->y) + " " + std::to_string(r.get().get_location()->x) + ") (road_state " + std::to_string(r.get().get_state()) + "))";
-            LOG_DEBUG("Asserting fact: " << fact_str);
+            fact_str = "(road (road_id " + r.get().get_id() + ") (name \"" + r.get().get_name() + "\") (source " + r.get().get_from().get_id() + ") (target " + r.get().get_to().get_id() + ") (road_state " + std::to_string(r.get().get_state()) + "))";
+            // LOG_DEBUG("Asserting fact: " << fact_str);
             r.get().fact = AssertString(env, fact_str.c_str());
 
             if (r.get().get_state() > 0)
@@ -279,7 +288,7 @@ namespace use
         for (auto &b : db.get_buildings())
         {
             fact_str = "(building (building_id " + b.get().get_id() + ") (name \"" + b.get().get_name() + "\") (coordinates " + std::to_string(b.get().get_location()->y) + " " + std::to_string(b.get().get_location()->x) + ") (building_state " + std::to_string(b.get().get_state()) + "))";
-            LOG_DEBUG("Asserting fact: " << fact_str);
+            // LOG_DEBUG("Asserting fact: " << fact_str);
             b.get().fact = AssertString(env, fact_str.c_str());
 
             if (b.get().get_state() > 0)
@@ -290,7 +299,7 @@ namespace use
         for (auto &vt : db.get_vehicle_types())
         {
             fact_str = "(vehicle_type (vehicle_type_id " + vt.get().get_id() + ") (name \"" + vt.get().get_name() + "\") (description \"" + vt.get().get_description() + "\") (manufacturer \"" + vt.get().get_manufacturer() + "\"))";
-            LOG_DEBUG("Asserting fact: " << fact_str);
+            // LOG_DEBUG("Asserting fact: " << fact_str);
             vt.get().fact = AssertString(env, fact_str.c_str());
         }
 
@@ -301,7 +310,7 @@ namespace use
             if (v.get().get_location())
                 fact_str += " (coordinates " + std::to_string(v.get().get_location()->y) + " " + std::to_string(v.get().get_location()->x) + ")";
             fact_str += ")";
-            LOG_DEBUG("Asserting fact: " << fact_str);
+            // LOG_DEBUG("Asserting fact: " << fact_str);
             v.get().fact = AssertString(env, fact_str.c_str());
         }
 

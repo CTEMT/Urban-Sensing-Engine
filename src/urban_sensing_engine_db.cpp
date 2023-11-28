@@ -2,10 +2,11 @@
 #include "logging.h"
 #include <bsoncxx/json.hpp>
 #include <bsoncxx/builder/stream/document.hpp>
+#include <unordered_set>
 
 namespace use
 {
-    urban_sensing_engine_db::urban_sensing_engine_db(const std::string &root, const std::string &mongodb_uri) : mongo_db(root, mongodb_uri), users_collection(db["users"]), roads_collection(db["roads"]), buildings_collection(db["buildings"]), vehicle_types_collection(db["vehicle_types"]), vehicles_collection(db["vehicles"]) {}
+    urban_sensing_engine_db::urban_sensing_engine_db(const std::string &root, const std::string &mongodb_uri) : mongo_db(root, mongodb_uri), users_collection(db["users"]), intersections_collection(db["intersections"]), roads_collection(db["roads"]), buildings_collection(db["buildings"]), vehicle_types_collection(db["vehicle_types"]), vehicles_collection(db["vehicles"]) {}
 
     void urban_sensing_engine_db::init()
     {
@@ -37,10 +38,15 @@ namespace use
         }
         LOG("Retrieved " << users.size() << " users..");
 
+        intersections.clear();
+        LOG("Retrieving all intersections..");
+        for (const auto &doc : intersections_collection.find({}))
+            intersections.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<intersection>(doc["_id"].get_oid().value.to_string(), doc["osm_id"].get_string().value.to_string(), std::make_unique<coco::location>(doc["coordinates"]["x"].get_double().value, doc["coordinates"]["y"].get_double().value)));
+
         roads.clear();
         LOG("Retrieving all roads..");
         for (const auto &doc : roads_collection.find({}))
-            roads.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<road>(doc["_id"].get_oid().value.to_string(), doc["name"].get_string().value.to_string(), doc["state"].get_double().value, std::make_unique<coco::location>(doc["coordinates"]["x"].get_double().value, doc["coordinates"]["y"].get_double().value)));
+            roads.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<road>(doc["_id"].get_oid().value.to_string(), doc["osm_id"].get_string().value.to_string(), doc["name"].get_string().value.to_string(), get_intersection(doc["from"].get_oid().value.to_string()), get_intersection(doc["to"].get_oid().value.to_string()), doc["length"].get_double().value, doc["state"].get_double().value));
         LOG("Retrieved " << roads.size() << " roads..");
 
         buildings.clear();
@@ -166,13 +172,26 @@ namespace use
             users.erase(u.id);
     }
 
-    std::string urban_sensing_engine_db::create_road(const std::string &name, const double &state, coco::location_ptr l)
+    std::string urban_sensing_engine_db::create_intersection(const std::string &osm_id, coco::location_ptr l)
     {
-        auto result = roads_collection.insert_one(bsoncxx::builder::stream::document{} << "name" << name << "state" << state << "coordinates" << bsoncxx::builder::stream::open_document << "x" << l->x << "y" << l->y << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize);
+        auto result = intersections_collection.insert_one(bsoncxx::builder::stream::document{} << "osm_id" << osm_id << "coordinates" << bsoncxx::builder::stream::open_document << "x" << l->x << "y" << l->y << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize);
         if (result)
         {
             auto id = result->inserted_id().get_oid().value.to_string();
-            roads.emplace(id, std::make_unique<road>(id, name, state, std::move(l)));
+            intersections.emplace(id, std::make_unique<intersection>(id, osm_id, std::move(l)));
+            return id;
+        }
+        else
+            return {};
+    }
+
+    std::string urban_sensing_engine_db::create_road(const std::string &osm_id, const std::string &name, const intersection &from, const intersection &to, double length, double state)
+    {
+        auto result = roads_collection.insert_one(bsoncxx::builder::stream::document{} << "osm_id" << osm_id << "name" << name << "from" << bsoncxx::oid{bsoncxx::stdx::string_view{from.get_id()}} << "to" << bsoncxx::oid{bsoncxx::stdx::string_view{to.get_id()}} << "length" << length << "state" << state << bsoncxx::builder::stream::finalize);
+        if (result)
+        {
+            auto id = result->inserted_id().get_oid().value.to_string();
+            roads.emplace(id, std::make_unique<road>(id, osm_id, name, std::move(from), std::move(to), length, state));
             return id;
         }
         else
@@ -187,6 +206,7 @@ namespace use
 
     std::vector<std::reference_wrapper<road>> urban_sensing_engine_db::get_roads(const std::string &filter, const unsigned int limit) const
     {
+        std::unordered_set<std::string> names;
         std::vector<std::reference_wrapper<road>> result;
         std::string filter_lower = filter;
         for (auto &&c : filter_lower)
@@ -196,7 +216,7 @@ namespace use
             std::string name = road.second->get_name();
             for (auto &&c : name)
                 c = std::tolower(c);
-            if (name.find(filter_lower) != std::string::npos)
+            if (name.find(filter_lower) != std::string::npos && names.insert(name).second)
                 result.push_back(*road.second);
             if (result.size() == limit)
                 break;
