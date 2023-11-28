@@ -56,8 +56,9 @@ namespace use
         if (!UDFNextArgument(udfc, FLOAT_BIT, &state))
             return;
 
-        LOG_DEBUG("Road '" + static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_road(road_id.lexemeValue->contents).get_name() + "' state is now " + std::to_string(state.floatValue->contents));
-        static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_road(road_id.lexemeValue->contents).state = state.floatValue->contents;
+        auto &r = static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_road(road_id.lexemeValue->contents);
+        LOG_DEBUG("Road '" + r.get_name() + "' state is now " + std::to_string(state.floatValue->contents));
+        static_cast<use::urban_sensing_engine_db &>(e.get_database()).set_road_state(r, state.floatValue->contents);
         if (state.floatValue->contents == 0)
             e.road_state.erase(road_id.lexemeValue->contents);
         else
@@ -87,8 +88,9 @@ namespace use
         if (!UDFNextArgument(udfc, FLOAT_BIT, &state))
             return;
 
-        LOG_DEBUG("Building '" + static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_building(building_id.lexemeValue->contents).get_name() + "' state is now " + std::to_string(state.floatValue->contents));
-        static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_building(building_id.lexemeValue->contents).state = state.floatValue->contents;
+        auto &b = static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_building(building_id.lexemeValue->contents);
+        LOG_DEBUG("Building '" + b.get_name() + "' state is now " + std::to_string(state.floatValue->contents));
+        static_cast<use::urban_sensing_engine_db &>(e.get_database()).set_building_state(b, state.floatValue->contents);
         if (state.floatValue->contents == 0)
             e.building_state.erase(building_id.lexemeValue->contents);
         else
