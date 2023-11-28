@@ -282,6 +282,9 @@ int main(int argc, char const *argv[])
     {
         db.drop(); // Warning!! We are here deleting all the current data!!
 
+        if (std::strcmp(COCO_NAME, "CTE-MT") == 0)
+            db.create_instance(db.get_name(), {{"lat", 40.666379}, {"lng", 16.604320}});
+
         db.init();
 
         create_users(db);
