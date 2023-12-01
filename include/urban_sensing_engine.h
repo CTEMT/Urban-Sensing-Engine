@@ -22,7 +22,9 @@ namespace use
     const std::unordered_set<std::string> &get_road_state() const { return road_state; }
     const std::unordered_set<std::string> &get_building_state() const { return building_state; }
 
-    void create_user(const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role = user_role::USER_ROLE_CITIZEN, const std::vector<std::string> &skills = {});
+    std::string create_user(const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role = user_role::USER_ROLE_CITIZEN, const std::vector<std::string> &skills = {});
+    void set_user_first_name(const std::string &id, const std::string &first_name);
+    void set_user_last_name(const std::string &id, const std::string &last_name);
     void set_user_email(const std::string &id, const std::string &email);
     void set_user_password(const std::string &id, const std::string &password);
     void set_user_role(const std::string &id, const user_role &role);
@@ -44,6 +46,10 @@ namespace use
     friend void send_bus_message(Environment *env, UDFContext *udfc, UDFValue *out);
 
   private:
+    void fire_new_user(const use::user &u);
+    void fire_updated_user(const use::user &u);
+    void fire_removed_user(const std::string &id);
+
     void fire_new_road_state(const std::string &road_id, const float &state);
     void fire_new_building_state(const std::string &building_id, const float &state);
 

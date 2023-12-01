@@ -17,6 +17,37 @@ namespace use
     USER_ROLE_CITIZEN = 3
   };
 
+  inline user_role to_user_role(const std::string &role)
+  {
+    if (role == "admin")
+      return USER_ROLE_ADMIN;
+    else if (role == "decision_maker")
+      return USER_ROLE_DECISION_MAKER;
+    else if (role == "technician")
+      return USER_ROLE_TECHNICIAN;
+    else if (role == "citizen")
+      return USER_ROLE_CITIZEN;
+    else
+      throw std::runtime_error("Unknown user role: " + role);
+  }
+
+  inline std::string to_string(const user_role &role)
+  {
+    switch (role)
+    {
+    case USER_ROLE_ADMIN:
+      return "admin";
+    case USER_ROLE_DECISION_MAKER:
+      return "decision_maker";
+    case USER_ROLE_TECHNICIAN:
+      return "technician";
+    case USER_ROLE_CITIZEN:
+      return "citizen";
+    default:
+      throw std::runtime_error("Unknown user role");
+    }
+  }
+
   /**
    * @brief The user class.
    *

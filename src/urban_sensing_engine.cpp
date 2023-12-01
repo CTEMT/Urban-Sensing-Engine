@@ -233,26 +233,7 @@ namespace use
         // we assert the user facts..
         for (auto &u : db.get_users())
         {
-            fact_str = "(user (user_id " + u.get().get_id() + ") (user_role ";
-            switch (u.get().get_role())
-            {
-            case user_role::USER_ROLE_ADMIN:
-                fact_str += "admin";
-                break;
-            case user_role::USER_ROLE_DECISION_MAKER:
-                fact_str += "decision_maker";
-                break;
-            case user_role::USER_ROLE_TECHNICIAN:
-                fact_str += "technician";
-                break;
-            case user_role::USER_ROLE_CITIZEN:
-                fact_str += "citizen";
-                break;
-            default:
-                LOG_ERR("Unknown user role: " << u.get().get_role());
-                break;
-            }
-            fact_str += ") (first_name \"" + u.get().get_first_name() + "\") (last_name \"" + u.get().get_last_name() + "\") (email \"" + u.get().get_email() + "\")";
+            fact_str = "(user (user_id " + u.get().get_id() + ") (user_role " + to_string(u.get().get_role()) + ") (first_name \"" + u.get().get_first_name() + "\") (last_name \"" + u.get().get_last_name() + "\") (email \"" + u.get().get_email() + "\")";
             if (u.get().get_location())
                 fact_str += " (coordinates " + std::to_string(u.get().get_location()->y) + " " + std::to_string(u.get().get_location()->x) + ")";
             fact_str += ")";
@@ -320,37 +301,17 @@ namespace use
         Run(env, -1);
     }
 
-    void urban_sensing_engine::create_user(const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role, const std::vector<std::string> &skills)
+    std::string urban_sensing_engine::create_user(const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role, const std::vector<std::string> &skills)
     {
         const std::lock_guard<std::recursive_mutex> lock(get_mutex());
 
         urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
-        db.create_user(first_name, last_name, email, password, role, skills);
+        auto user_id = db.create_user(first_name, last_name, email, password, role, skills);
 
-        std::string fact_str = "(user (user_id " + email + ") (role ";
-        switch (role)
-        {
-        case user_role::USER_ROLE_ADMIN:
-            fact_str += "admin";
-            break;
-        case user_role::USER_ROLE_DECISION_MAKER:
-            fact_str += "decision_maker";
-            break;
-        case user_role::USER_ROLE_TECHNICIAN:
-            fact_str += "technician";
-            break;
-        case user_role::USER_ROLE_CITIZEN:
-            fact_str += "citizen";
-            break;
-        default:
-            LOG_ERR("Unknown user role: " << role);
-            break;
-        }
-        fact_str += ") (first_name " + first_name + ") (last_name " + last_name + ") (email " + email + ")";
-        fact_str += ")";
+        std::string fact_str = "(user (user_id " + user_id + ") (user_role " + to_string(role) + ") (first_name \"" + first_name + "\") (last_name \"" + last_name + "\") (email \"" + email + "\"))";
         LOG_DEBUG("Asserting fact: " << fact_str);
 
-        AssertString(env, fact_str.c_str());
+        db.get_user(user_id).fact = AssertString(env, fact_str.c_str());
 
         for (auto &s : skills)
         {
@@ -361,6 +322,45 @@ namespace use
 
         // we run the rules engine to update the policy..
         Run(env, -1);
+
+        fire_new_user(db.get_user(user_id));
+        return user_id;
+    }
+
+    void urban_sensing_engine::set_user_first_name(const std::string &id, const std::string &first_name)
+    {
+        const std::lock_guard<std::recursive_mutex> lock(get_mutex());
+
+        urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
+        if (!db.has_user(id))
+            throw std::runtime_error("User '" + id + "' does not exist.");
+
+        db.set_user_first_name(id, first_name);
+
+        FMPutSlotString(CreateFactModifier(env, db.get_user(id).fact), "first_name", ("\"" + first_name + "\"").c_str());
+
+        // we run the rules engine to update the policy..
+        Run(env, -1);
+
+        fire_updated_user(db.get_user(id));
+    }
+
+    void urban_sensing_engine::set_user_last_name(const std::string &id, const std::string &last_name)
+    {
+        const std::lock_guard<std::recursive_mutex> lock(get_mutex());
+
+        urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
+        if (!db.has_user(id))
+            throw std::runtime_error("User '" + id + "' does not exist.");
+
+        db.set_user_last_name(id, last_name);
+
+        FMPutSlotString(CreateFactModifier(env, db.get_user(id).fact), "last_name", ("\"" + last_name + "\"").c_str());
+
+        // we run the rules engine to update the policy..
+        Run(env, -1);
+
+        fire_updated_user(db.get_user(id));
     }
 
     void urban_sensing_engine::set_user_email(const std::string &id, const std::string &email)
@@ -368,12 +368,17 @@ namespace use
         const std::lock_guard<std::recursive_mutex> lock(get_mutex());
 
         urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
+        if (!db.has_user(id))
+            throw std::runtime_error("User '" + id + "' does not exist.");
+
         db.set_user_email(id, email);
 
-        FMPutSlotString(CreateFactModifier(env, db.get_user(id).fact), "email", email.c_str());
+        FMPutSlotString(CreateFactModifier(env, db.get_user(id).fact), "email", ("\"" + email + "\"").c_str());
 
         // we run the rules engine to update the policy..
         Run(env, -1);
+
+        fire_updated_user(db.get_user(id));
     }
 
     void urban_sensing_engine::set_user_password(const std::string &id, const std::string &password)
@@ -381,12 +386,15 @@ namespace use
         const std::lock_guard<std::recursive_mutex> lock(get_mutex());
 
         urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
-        db.set_user_password(id, password);
+        if (!db.has_user(id))
+            throw std::runtime_error("User '" + id + "' does not exist.");
 
-        FMPutSlotString(CreateFactModifier(env, db.get_user(id).fact), "password", password.c_str());
+        db.set_user_password(id, password);
 
         // we run the rules engine to update the policy..
         Run(env, -1);
+
+        fire_updated_user(db.get_user(id));
     }
 
     void urban_sensing_engine::set_user_role(const std::string &id, const user_role &role)
@@ -394,34 +402,20 @@ namespace use
         const std::lock_guard<std::recursive_mutex> lock(get_mutex());
 
         urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
+        if (!db.has_user(id))
+            throw std::runtime_error("User '" + id + "' does not exist.");
+
         db.set_user_role(id, role);
 
-        std::string fact_str = "(user (user_id " + id + ") (role ";
-        switch (role)
-        {
-        case user_role::USER_ROLE_ADMIN:
-            fact_str += "admin";
-            break;
-        case user_role::USER_ROLE_DECISION_MAKER:
-            fact_str += "decision_maker";
-            break;
-        case user_role::USER_ROLE_TECHNICIAN:
-            fact_str += "technician";
-            break;
-        case user_role::USER_ROLE_CITIZEN:
-            fact_str += "citizen";
-            break;
-        default:
-            LOG_ERR("Unknown user role: " << role);
-            break;
-        }
-        fact_str += "))";
+        std::string fact_str = "(user (user_id " + id + ") (user_role " + to_string(role) + "))";
         LOG_DEBUG("Asserting fact: " << fact_str);
 
         FMPutSlotSymbol(CreateFactModifier(env, db.get_user(id).fact), "role", fact_str.c_str());
 
         // we run the rules engine to update the policy..
         Run(env, -1);
+
+        fire_updated_user(db.get_user(id));
     }
 
     void urban_sensing_engine::set_user_skills(const std::string &id, const std::vector<std::string> &skills)
@@ -429,6 +423,9 @@ namespace use
         const std::lock_guard<std::recursive_mutex> lock(get_mutex());
 
         urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
+        if (!db.has_user(id))
+            throw std::runtime_error("User '" + id + "' does not exist.");
+
         db.set_user_skills(id, skills);
 
         // we retract the old skills..
@@ -444,6 +441,8 @@ namespace use
 
         // we run the rules engine to update the policy..
         Run(env, -1);
+
+        fire_updated_user(db.get_user(id));
     }
 
     void urban_sensing_engine::delete_user(const std::string &id)
@@ -451,16 +450,24 @@ namespace use
         const std::lock_guard<std::recursive_mutex> lock(get_mutex());
 
         urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
+        if (!db.has_user(id))
+            throw std::runtime_error("User '" + id + "' does not exist.");
+
+        auto &u = db.get_user(id);
+        delete_sensor(db.get_sensor(u.get_participatory_id()));
+        auto f = u.fact;
         db.delete_user(id);
 
         // we retract the user..
-        Retract(db.get_user(id).fact);
+        Retract(f);
 
         // we retract the skills..
         Eval(env, ("(do-for-all-facts ((?s skill)) (eq ?s:user_id \"" + id + "\") (retract ?s))").c_str(), NULL);
 
         // we run the rules engine to update the policy..
         Run(env, -1);
+
+        fire_removed_user(id);
     }
 
     void urban_sensing_engine::answer_question(const long long id, const std::string &answer)
@@ -479,6 +486,22 @@ namespace use
         Retract(sv_f);
         // we run the rules engine to update the policy..
         Run(env, -1);
+    }
+
+    void urban_sensing_engine::fire_new_user(const use::user &u)
+    {
+        for (auto &l : listeners)
+            l->new_user(u);
+    }
+    void urban_sensing_engine::fire_updated_user(const use::user &u)
+    {
+        for (auto &l : listeners)
+            l->updated_user(u);
+    }
+    void urban_sensing_engine::fire_removed_user(const std::string &id)
+    {
+        for (auto &l : listeners)
+            l->removed_user(id);
     }
 
     void urban_sensing_engine::fire_new_road_state(const std::string &road_id, const float &state)
