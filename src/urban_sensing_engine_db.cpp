@@ -42,6 +42,7 @@ namespace use
         LOG("Retrieving all intersections..");
         for (const auto &doc : intersections_collection.find({}))
             intersections.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<intersection>(doc["_id"].get_oid().value.to_string(), doc["osm_id"].get_string().value.to_string(), std::make_unique<coco::location>(doc["coordinates"]["x"].get_double().value, doc["coordinates"]["y"].get_double().value)));
+        LOG("Retrieved " << intersections.size() << " intersections..");
 
         roads.clear();
         LOG("Retrieving all roads..");
