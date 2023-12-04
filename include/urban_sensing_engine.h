@@ -15,7 +15,7 @@ namespace use
   public:
     urban_sensing_engine(urban_sensing_engine_db &db);
 
-    void answer_question(const long long id, const std::string &answer);
+    void answer_question(const std::string id, const int answer);
 
     void init() override;
 
@@ -54,7 +54,7 @@ namespace use
     void fire_new_building_state(const std::string &building_id, const float &state);
 
     void fire_new_message(const std::string &level, const std::string &content);
-    void fire_new_question(const std::string &level, const long long id, const std::string &content, const std::vector<std::string> &answers);
+    void fire_new_question(const std::string id, const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers);
     void fire_new_map_message(const std::string &level, const double &lat, const double &lng, const std::string &content);
     void fire_new_bus_data(const std::string &bus_id, const long &time, const double &lat, const double &lng, const long &passengers);
 

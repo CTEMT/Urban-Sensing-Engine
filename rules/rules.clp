@@ -7,6 +7,7 @@
 (deftemplate vehicle (slot vehicle_id (type SYMBOL)) (slot vehicle_type_id (type SYMBOL)) (multislot coordinates (type FLOAT)))
 
 (deftemplate maintaining (slot subject_id (type SYMBOL)))
+(deftemplate question (slot task_id (type SYMBOL)) (slot question_id (type SYMBOL)) (slot answer (type INTEGER) (default -1)))
 
 (defrule r0
     ?strada_predizione <- (road (road_id ss114))
@@ -41,8 +42,11 @@
     ?t <- (task (task_type RoadMaintenanceDocuments) (since 0))
     =>
     (bind ?r_id (str-replace (nth$ 3 (fact-slot-value ?t vals)) "r_" ""))
+    (bind ?t_id (str-replace (nth$ 5 (fact-slot-value ?t vals)) "u_" ""))
     (do-for-fact ((?r road)) (eq ?r:road_id ?r_id)
         (println "Road " ?r:name " is in critical state, preparing maintenance documents")
+        (bind ?q_id (send_question info ?t_id (str-cat "La strada " ?r:name " è in uno stato critico. Hai preparato i documenti per la manutenzione?") (create$ "Sì" "No")))
+        (assert (question (task_id ?t_id) (question_id ?q_id)))
     )
 )
 
@@ -50,8 +54,11 @@
     ?t <- (task (task_type BuildingMaintenanceDocuments) (since 0))
     =>
     (bind ?b_id (str-replace (nth$ 1 (fact-slot-value ?t vals)) "b_" ""))
+    (bind ?t_id (str-replace (nth$ 5 (fact-slot-value ?t vals)) "u_" ""))
     (do-for-fact ((?b building)) (eq ?b:building_id ?b_id)
         (println "Building " ?b:name " is in critical state, preparing maintenance documents")
+        (bind ?q_id (send_question info ?t_id (str-cat "L'edificio " ?b:name " è in uno stato critico. Hai preparato i documenti per la manutenzione?") (create$ "Sì" "No")))
+        (assert (question (task_id ?t_id) (question_id ?q_id)))
     )
 )
 
@@ -118,6 +125,16 @@
     )
 )
 
+(deffunction ending (?solver_ptr ?id)
+    (do-for-fact ((?q question)) (eq ?q:task_id ?id)
+        (if (or (eq ?q:answer -1) (eq ?q:answer 1))
+            then
+            (return FALSE)
+        )
+    )
+    (return TRUE)
+)
+
 (deffunction end (?solver_ptr ?id)
     (do-for-fact ((?t task)) (and (eq ?t:task_type RoadMaintenance) (eq ?t:id ?id))
         (bind ?r_id (str-replace (nth$ 3 ?t:vals) "r_" ""))
@@ -140,4 +157,10 @@
         (do-for-fact ((?tf maintaining)) (eq ?tf:subject_id ?r_id) (retract ?tf))
     )
     (remove_task ?solver_ptr ?id)
+)
+
+(deffunction answer_question (?q_id ?answer)
+    (do-for-fact ((?q question)) (eq ?q:question_id ?q_id)
+        (modify ?q (answer ?answer))
+    )
 )

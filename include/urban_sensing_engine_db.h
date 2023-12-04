@@ -2,6 +2,7 @@
 
 #include "mongo_db.h"
 #include "user.h"
+#include "question.h"
 #include "road.h"
 #include "building.h"
 #include "vehicle_type.h"
@@ -123,6 +124,11 @@ namespace use
     void delete_user(user &u);
     void delete_user(const std::string &id) { delete_user(*users.at(id)); }
 
+    std::string create_question(const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers);
+    question &get_question(const std::string &id) { return *questions.at(id); }
+    std::vector<std::reference_wrapper<question>> get_ununswered_questions(const user &u) const;
+    void set_question_answer(question &q, const int &answer);
+
     std::string create_intersection(const std::string &osm_id, coco::location_ptr l);
     intersection &get_intersection(const std::string &id) { return *intersections.at(id); }
 
@@ -175,16 +181,18 @@ namespace use
 
   private:
     mongocxx::v_noabi::collection users_collection;
+    mongocxx::v_noabi::collection questions_collection;
     mongocxx::v_noabi::collection intersections_collection;
     mongocxx::v_noabi::collection roads_collection;
     mongocxx::v_noabi::collection buildings_collection;
     mongocxx::v_noabi::collection vehicle_types_collection;
     mongocxx::v_noabi::collection vehicles_collection;
-    std::unordered_map<std::string, user_ptr> users; // The users of the current instance.
-    std::unordered_map<std::string, intersection_ptr> intersections;
-    std::unordered_map<std::string, road_ptr> roads;
-    std::unordered_map<std::string, building_ptr> buildings;
-    std::unordered_map<std::string, vehicle_type_ptr> vehicle_types;
-    std::unordered_map<std::string, vehicle_ptr> vehicles;
+    std::unordered_map<std::string, user_ptr> users;                 // The users of the current instance.
+    std::unordered_map<std::string, question_ptr> questions;         // The questions of the current instance.
+    std::unordered_map<std::string, intersection_ptr> intersections; // The intersections of the current instance.
+    std::unordered_map<std::string, road_ptr> roads;                 // The roads of the current instance.
+    std::unordered_map<std::string, building_ptr> buildings;         // The buildings of the current instance.
+    std::unordered_map<std::string, vehicle_type_ptr> vehicle_types; // The vehicle types of the current instance.
+    std::unordered_map<std::string, vehicle_ptr> vehicles;           // The vehicles of the current instance.
   };
 } // namespace use

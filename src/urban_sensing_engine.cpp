@@ -123,7 +123,7 @@ namespace use
         e.fire_new_message(level.lexemeValue->contents, content.lexemeValue->contents);
     }
 
-    void send_question([[maybe_unused]] Environment *, UDFContext *udfc, [[maybe_unused]] UDFValue *)
+    void send_question(Environment *env, UDFContext *udfc, UDFValue *out)
     {
         auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
 
@@ -131,8 +131,8 @@ namespace use
         if (!UDFFirstArgument(udfc, SYMBOL_BIT, &level))
             return;
 
-        UDFValue id;
-        if (!UDFNextArgument(udfc, INTEGER_BIT, &id))
+        UDFValue recipient;
+        if (!UDFNextArgument(udfc, SYMBOL_BIT, &recipient))
             return;
 
         UDFValue content;
@@ -152,7 +152,11 @@ namespace use
             as.push_back(answer.lexemeValue->contents);
         }
 
-        e.fire_new_question(level.lexemeValue->contents, id.integerValue->contents, content.lexemeValue->contents, as);
+        std::string question_id = static_cast<use::urban_sensing_engine_db &>(e.get_database()).create_question(level.lexemeValue->contents, static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_user(recipient.lexemeValue->contents), content.lexemeValue->contents, as);
+
+        e.fire_new_question(question_id, level.lexemeValue->contents, static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_user(recipient.lexemeValue->contents), content.lexemeValue->contents, as);
+
+        out->lexemeValue = CreateString(env, question_id.c_str());
     }
 
     void send_map_message([[maybe_unused]] Environment *, UDFContext *udfc, [[maybe_unused]] UDFValue *)
@@ -216,7 +220,7 @@ namespace use
         AddUDF(env, "generate_riddle_buildings", "s", 0, 0, "", generate_riddle_buildings, "generate_riddle_buildings", this);
 
         AddUDF(env, "send_message", "v", 2, 2, "ys", send_message, "send_message", this);
-        AddUDF(env, "send_question", "v", 3, 3, "ysm", send_question, "send_question", this);
+        AddUDF(env, "send_question", "y", 4, 4, "yysm", send_question, "send_question", this);
         AddUDF(env, "send_map_message", "v", 4, 4, "ydds", send_map_message, "send_map_message", this);
         AddUDF(env, "send_bus_message", "v", 5, 5, "ylddl", send_bus_message, "send_bus_message", this);
     }
@@ -470,20 +474,17 @@ namespace use
         fire_removed_user(id);
     }
 
-    void urban_sensing_engine::answer_question(const long long id, const std::string &answer)
+    void urban_sensing_engine::answer_question(const std::string id, const int answer)
     {
-        LOG_DEBUG("Answering question " << id << " with " << answer);
         const std::lock_guard<std::recursive_mutex> lock(get_mutex());
+        auto &question = dynamic_cast<use::urban_sensing_engine_db &>(get_database()).get_question(id);
+        LOG_DEBUG("Answering question \"" << question.get_content() << " with \"" << question.get_answers()[answer] << "\"");
 
-        std::string fact_str = "(answer (question_id " + std::to_string(id) + ") (answer " + answer + "))";
-        LOG_DEBUG("Asserting fact: " << fact_str);
+        Eval(env, ("(answer_question " + id + " " + std::to_string(answer) + ")").c_str(), NULL);
 
-        Fact *sv_f = AssertString(env, fact_str.c_str());
         // we run the rules engine to update the policy..
         Run(env, -1);
 
-        // we retract the sensor value fact..
-        Retract(sv_f);
         // we run the rules engine to update the policy..
         Run(env, -1);
     }
@@ -521,10 +522,10 @@ namespace use
             l->new_message(level, content);
     }
 
-    void urban_sensing_engine::fire_new_question(const std::string &level, const long long id, const std::string &content, const std::vector<std::string> &answers)
+    void urban_sensing_engine::fire_new_question(const std::string id, const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers)
     {
         for (auto &l : listeners)
-            l->new_question(level, id, content, answers);
+            l->new_question(id, level, recipient, content, answers);
     }
 
     void urban_sensing_engine::fire_new_map_message(const std::string &level, const double &lat, const double &lng, const std::string &content)
