@@ -6,9 +6,6 @@
 (deftemplate vehicle_type (slot vehicle_type_id (type SYMBOL)) (slot name (type STRING)) (slot description (type STRING)) (slot manufacturer (type STRING)))
 (deftemplate vehicle (slot vehicle_id (type SYMBOL)) (slot vehicle_type_id (type SYMBOL)) (multislot coordinates (type FLOAT)))
 
-(deftemplate maintaining (slot subject_id (type SYMBOL)))
-(deftemplate maintenance_task (slot task_id (type SYMBOL)) (slot subject_id (type SYMBOL)))
-
 (defrule r0
     ?strada_predizione <- (road (road_id ss114))
     (road (road_id 3O) (flow ?f3O))
@@ -38,6 +35,42 @@
     (delete_solver ?sp)
 )
 
+(defrule start_road_maintenance_documents
+    ?t <- (task (task_type RoadMaintenanceDocuments) (since 0))
+    =>
+    (bind ?r_id (str-replace (nth$ 3 (fact-slot-value ?t vals)) "r_" ""))
+    (do-for-fact ((?r road)) (eq ?r:road_id ?r_id)
+        (println "Road " ?r:name " is in critical state, preparing maintenance documents")
+    )
+)
+
+(defrule start_building_maintenance_documents
+    ?t <- (task (task_type BuildingMaintenanceDocuments) (since 0))
+    =>
+    (bind ?b_id (str-replace (nth$ 1 (fact-slot-value ?t vals)) "b_" ""))
+    (do-for-fact ((?b building)) (eq ?b:building_id ?b_id)
+        (println "Building " ?b:name " is in critical state, preparing maintenance documents")
+    )
+)
+
+(defrule start_road_maintenance
+    ?t <- (task (task_type RoadMaintenance) (since 0))
+    =>
+    (bind ?r_id (str-replace (nth$ 3 (fact-slot-value ?t vals)) "r_" ""))
+    (do-for-fact ((?r road)) (eq ?r:road_id ?r_id)
+        (println "Starting road maintenance on road " ?r:name)
+    )
+)
+
+(defrule start_building_maintenance
+    ?t <- (task (task_type BuildingMaintenance) (since 0))
+    =>
+    (bind ?b_id (str-replace (nth$ 1 (fact-slot-value ?t vals)) "b_" ""))
+    (do-for-fact ((?b building)) (eq ?b:building_id ?b_id)
+        (println "Starting building maintenance on building " ?b:name)
+    )
+)
+
 (deffunction get_maintenance_solver ()
     (if (any-factp ((?slv solver)) (eq ?slv:solver_type maintenance))
         then
@@ -62,62 +95,42 @@
         (do-for-fact ((?r road)) (eq ?r:road_id ?subject_id)
             (modify ?r (s0 ?r:s1) (s1 ?r:s2) (s2 ?r:s3) (s3 ?r:road_state) (road_state ?status) (road_avg_state (/ (+ ?r:s1 ?r:s2 ?r:s3 ?r:road_state ?status) 5)))
             (update_road_state ?r:road_id ?r:road_avg_state)
-            (if (and (not (any-factp ((?tf maintaining)) (eq ?tf:subject_id ?subject_id))) (>= ?r:road_avg_state 4))
+            (if (and (not (any-factp ((?t task)) (eq (str-replace (nth$ 3 ?t:vals) "r_" "") ?subject_id))) (>= ?r:road_avg_state 4))
                 then
                 (println "Road " ?subject_id " is in critical state, requesting maintenance")
                 (adapt_script (get_maintenance_solver) (str-cat "goal rm = new maintenance_office.RoadMaintenance(r: r_" ?subject_id ");"))
-                (assert (maintaining (subject_id ?subject_id)))
             )
         )
         (do-for-fact ((?b building)) (eq ?b:building_id ?subject_id)
             (modify ?b (s0 ?b:s1) (s1 ?b:s2) (s2 ?b:s3) (s3 ?b:building_state) (building_state ?status) (building_avg_state (/ (+ ?b:s1 ?b:s2 ?b:s3 ?b:building_state ?status) 5)))
             (update_building_state ?b:building_id ?b:building_avg_state)
-            (if (and (not (any-factp ((?tf maintaining)) (eq ?tf:subject_id ?subject_id))) (>= ?b:building_avg_state 4))
+            (if (and (not (any-factp ((?t task)) (eq (str-replace (nth$ 1 ?t:vals) "b_" "") ?subject_id))) (>= ?b:building_avg_state 4))
                 then
                 (println "Building " ?subject_id " is in critical state, requesting maintenance")
                 (adapt_script (get_maintenance_solver) (str-cat "goal bm = new maintenance_office.BuildingMaintenance(b: b_" ?subject_id ");"))
-                (assert (maintaining (subject_id ?subject_id)))
             )
         )
     )
 )
 
-(deffunction start (?solver_ptr ?id ?task_type ?pars ?vals)
-    (if (eq ?task_type RoadMaintenance)
-        then
-        (bind ?duration (nth$ 1 ?vals))
-        (bind ?end (nth$ 2 ?vals))
-        (bind ?r (str-replace (nth$ 3 ?vals) "r_" ""))
-        (bind ?start (nth$ 4 ?vals))
-        (bind ?t (nth$ 5 ?vals))
-        (println "Road maintenance task " ?id " started on road " ?r)
-        (assert (maintenance_task (task_id ?id) (subject_id ?r)))
-    )
-    (if (eq ?task_type BuildingMaintenance)
-        then
-        (bind ?b (str-replace (nth$ 1 ?vals) "b_" ""))
-        (bind ?duration (nth$ 2 ?vals))
-        (bind ?end (nth$ 3 ?vals))
-        (bind ?start (nth$ 4 ?vals))
-        (bind ?t (nth$ 5 ?vals))
-        (println "Building maintenance task " ?id " started on building " ?b)
-        (assert (maintenance_task (task_id ?id) (subject_id ?b)))
-    )
-)
-
 (deffunction end (?solver_ptr ?id)
-    (do-for-fact ((?mt maintenance_task)) (eq ?mt:task_id ?id)
-        (do-for-fact ((?r road)) (eq ?r:road_id ?mt:subject_id)
-            (println "Road maintenance task " ?id " ended on road " ?mt:subject_id)
+    (do-for-fact ((?t task)) (and (eq ?t:task_type RoadMaintenance) (eq ?t:id ?id))
+        (bind ?r_id (str-replace (nth$ 3 ?t:vals) "r_" ""))
+        (println "Road maintenance task " ?t:id " ended on road " ?r_id)
+        (do-for-fact ((?r road)) (eq ?r:road_id ?r_id)
+            (println "Road " ?r:name " is now in good state")
             (modify ?r (s0 0) (s1 0) (s2 0) (s3 0) (road_state 0) (road_avg_state 0.0))
-            (update_road_state ?r:road_id ?r:road_avg_state)
+            (update_road_state ?r_id ?r:road_avg_state)
         )
-        (do-for-fact ((?b building)) (eq ?b:building_id ?mt:subject_id)
-            (println "Building maintenance task " ?id " ended on building " ?mt:subject_id)
-            (modify ?b (s0 0) (s1 0) (s2 0) (s3 0) (building_state 0) (building_avg_state 0.0))
-            (update_building_state ?b:building_id ?b:building_avg_state)
-        )
-        (do-for-fact ((?m maintaining)) (eq ?m:subject_id ?mt:subject_id) (retract ?m))
-        (retract ?mt)
     )
+    (do-for-fact ((?t task)) (and (eq ?t:task_type BuildingMaintenance) (eq ?t:id ?id))
+        (bind ?b_id (str-replace (nth$ 1 ?t:vals) "b_" ""))
+        (println "Building maintenance task " ?t:id " ended on building " ?b_id)
+        (do-for-fact ((?b building)) (eq ?b:building_id ?b_id)
+            (println "Building " ?b:name " is now in good state")
+            (modify ?b (s0 0) (s1 0) (s2 0) (s3 0) (building_state 0) (building_avg_state 0.0))
+            (update_building_state ?b_id ?b:building_avg_state)
+        )
+    )
+    (remove_task ?solver_ptr ?id)
 )
