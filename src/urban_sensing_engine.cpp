@@ -156,7 +156,7 @@ namespace use
 
         e.fire_new_question(question_id, level.lexemeValue->contents, static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_user(recipient.lexemeValue->contents), content.lexemeValue->contents, as);
 
-        out->lexemeValue = CreateString(env, question_id.c_str());
+        out->lexemeValue = CreateSymbol(env, question_id.c_str());
     }
 
     void send_map_message([[maybe_unused]] Environment *, UDFContext *udfc, [[maybe_unused]] UDFValue *)
@@ -474,16 +474,13 @@ namespace use
         fire_removed_user(id);
     }
 
-    void urban_sensing_engine::answer_question(const std::string id, const int answer)
+    void urban_sensing_engine::answer_question(const std::string &id, const std::string &answer)
     {
         const std::lock_guard<std::recursive_mutex> lock(get_mutex());
         auto &question = dynamic_cast<use::urban_sensing_engine_db &>(get_database()).get_question(id);
-        LOG_DEBUG("Answering question \"" << question.get_content() << " with \"" << question.get_answers()[answer] << "\"");
+        LOG_DEBUG("Answering question \"" << question.get_content() << "\" with \"" << answer << "\"");
 
-        Eval(env, ("(answer_question " + id + " " + std::to_string(answer) + ")").c_str(), NULL);
-
-        // we run the rules engine to update the policy..
-        Run(env, -1);
+        Eval(env, ("(answer_question " + id + " \"" + answer + "\")").c_str(), NULL);
 
         // we run the rules engine to update the policy..
         Run(env, -1);

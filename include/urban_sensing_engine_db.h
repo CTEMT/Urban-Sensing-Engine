@@ -125,9 +125,25 @@ namespace use
     void delete_user(const std::string &id) { delete_user(*users.at(id)); }
 
     std::string create_question(const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers);
+    bool has_question(const std::string &id) const { return questions.find(id) != questions.end(); }
     question &get_question(const std::string &id) { return *questions.at(id); }
-    std::vector<std::reference_wrapper<question>> get_ununswered_questions(const user &u) const;
-    void set_question_answer(question &q, const int &answer);
+    std::vector<std::reference_wrapper<question>> get_questions() const
+    {
+      std::vector<std::reference_wrapper<question>> questions_vector;
+      questions_vector.reserve(questions.size());
+      for (auto &q : questions)
+        questions_vector.push_back(std::ref(*q.second));
+      return questions_vector;
+    }
+    std::vector<std::reference_wrapper<question>> get_questions_for_user(const user &u) const
+    {
+      std::vector<std::reference_wrapper<question>> questions_vector;
+      for (auto &q : questions)
+        if (q.second->get_recipient().get_id() == u.get_id())
+          questions_vector.push_back(std::ref(*q.second));
+      return questions_vector;
+    }
+    void set_question_answer(question &q, const std::string &answer);
 
     std::string create_intersection(const std::string &osm_id, coco::location_ptr l);
     intersection &get_intersection(const std::string &id) { return *intersections.at(id); }

@@ -15,7 +15,7 @@ namespace use
   public:
     urban_sensing_engine(urban_sensing_engine_db &db);
 
-    void answer_question(const std::string id, const int answer);
+    void answer_question(const std::string &id, const std::string &answer);
 
     void init() override;
 
