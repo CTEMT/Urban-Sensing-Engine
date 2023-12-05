@@ -2,6 +2,9 @@
 
 #include "coco_core.h"
 #include "user.h"
+#include "question.h"
+#include "road.h"
+#include "building.h"
 
 namespace use
 {
@@ -40,23 +43,18 @@ namespace use
     friend void update_building_state(Environment *env, UDFContext *udfc, UDFValue *out);
     friend void generate_riddle_buildings(Environment *env, UDFContext *udfc, UDFValue *out);
 
-    friend void send_message(Environment *env, UDFContext *udfc, UDFValue *out);
     friend void send_question(Environment *env, UDFContext *udfc, UDFValue *out);
-    friend void send_map_message(Environment *env, UDFContext *udfc, UDFValue *out);
-    friend void send_bus_message(Environment *env, UDFContext *udfc, UDFValue *out);
 
   private:
     void fire_new_user(const use::user &u);
     void fire_updated_user(const use::user &u);
     void fire_removed_user(const std::string &id);
 
-    void fire_new_road_state(const std::string &road_id, const float &state);
-    void fire_new_building_state(const std::string &building_id, const float &state);
+    void fire_new_road_state(const road &r, const float &state);
+    void fire_new_building_state(const building &b, const float &state);
 
-    void fire_new_message(const std::string &level, const std::string &content);
-    void fire_new_question(const std::string id, const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers);
-    void fire_new_map_message(const std::string &level, const double &lat, const double &lng, const std::string &content);
-    void fire_new_bus_data(const std::string &bus_id, const long &time, const double &lat, const double &lng, const long &passengers);
+    void fire_new_question(const question &q);
+    void fire_new_answer(const question &q, const std::string &answer);
 
   private:
     std::unordered_set<std::string> road_state;             // the road state..

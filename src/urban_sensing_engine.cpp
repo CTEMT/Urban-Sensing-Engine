@@ -63,7 +63,7 @@ namespace use
             e.road_state.erase(road_id.lexemeValue->contents);
         else
             e.road_state.insert(road_id.lexemeValue->contents);
-        e.fire_new_road_state(road_id.lexemeValue->contents, state.floatValue->contents);
+        e.fire_new_road_state(r, state.floatValue->contents);
     }
     void generate_riddle_roads(Environment *env, UDFContext *udfc, UDFValue *out)
     {
@@ -95,7 +95,7 @@ namespace use
             e.building_state.erase(building_id.lexemeValue->contents);
         else
             e.building_state.insert(building_id.lexemeValue->contents);
-        e.fire_new_building_state(building_id.lexemeValue->contents, state.floatValue->contents);
+        e.fire_new_building_state(b, state.floatValue->contents);
     }
     void generate_riddle_buildings(Environment *env, UDFContext *udfc, UDFValue *out)
     {
@@ -106,21 +106,6 @@ namespace use
             buildings_rddle += "Building b_" + b.get().get_id() + " = new Building(\"" + b.get().get_id() + "\");\n";
 
         out->lexemeValue = CreateString(env, buildings_rddle.c_str());
-    }
-
-    void send_message([[maybe_unused]] Environment *, UDFContext *udfc, [[maybe_unused]] UDFValue *)
-    {
-        auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
-
-        UDFValue level;
-        if (!UDFFirstArgument(udfc, SYMBOL_BIT, &level))
-            return;
-
-        UDFValue content;
-        if (!UDFNextArgument(udfc, STRING_BIT, &content))
-            return;
-
-        e.fire_new_message(level.lexemeValue->contents, content.lexemeValue->contents);
     }
 
     void send_question(Environment *env, UDFContext *udfc, UDFValue *out)
@@ -152,61 +137,12 @@ namespace use
             as.push_back(answer.lexemeValue->contents);
         }
 
-        std::string question_id = static_cast<use::urban_sensing_engine_db &>(e.get_database()).create_question(level.lexemeValue->contents, static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_user(recipient.lexemeValue->contents), content.lexemeValue->contents, as);
+        use::urban_sensing_engine_db &db = static_cast<use::urban_sensing_engine_db &>(e.get_database());
+        std::string question_id = db.create_question(level.lexemeValue->contents, static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_user(recipient.lexemeValue->contents), content.lexemeValue->contents, as);
 
-        e.fire_new_question(question_id, level.lexemeValue->contents, static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_user(recipient.lexemeValue->contents), content.lexemeValue->contents, as);
+        e.fire_new_question(db.get_question(question_id));
 
         out->lexemeValue = CreateSymbol(env, question_id.c_str());
-    }
-
-    void send_map_message([[maybe_unused]] Environment *, UDFContext *udfc, [[maybe_unused]] UDFValue *)
-    {
-        auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
-
-        UDFValue level;
-        if (!UDFFirstArgument(udfc, SYMBOL_BIT, &level))
-            return;
-
-        UDFValue lat;
-        if (!UDFNextArgument(udfc, FLOAT_BIT, &lat))
-            return;
-
-        UDFValue lng;
-        if (!UDFNextArgument(udfc, FLOAT_BIT, &lng))
-            return;
-
-        UDFValue content;
-        if (!UDFNextArgument(udfc, STRING_BIT, &content))
-            return;
-
-        e.fire_new_map_message(level.lexemeValue->contents, lat.floatValue->contents, lng.floatValue->contents, content.lexemeValue->contents);
-    }
-
-    void send_bus_message([[maybe_unused]] Environment *, UDFContext *udfc, [[maybe_unused]] UDFValue *)
-    {
-        auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
-
-        UDFValue bus_id;
-        if (!UDFFirstArgument(udfc, SYMBOL_BIT, &bus_id))
-            return;
-
-        UDFValue time;
-        if (!UDFNextArgument(udfc, INTEGER_BIT, &time))
-            return;
-
-        UDFValue lat;
-        if (!UDFNextArgument(udfc, FLOAT_BIT, &lat))
-            return;
-
-        UDFValue lng;
-        if (!UDFNextArgument(udfc, FLOAT_BIT, &lng))
-            return;
-
-        UDFValue passengers;
-        if (!UDFNextArgument(udfc, INTEGER_BIT, &passengers))
-            return;
-
-        e.fire_new_bus_data(bus_id.lexemeValue->contents, time.integerValue->contents, lat.floatValue->contents, lng.floatValue->contents, passengers.integerValue->contents);
     }
 
     urban_sensing_engine::urban_sensing_engine(urban_sensing_engine_db &db) : coco_core(db)
@@ -219,10 +155,7 @@ namespace use
         AddUDF(env, "update_building_state", "v", 2, 2, "yd", update_building_state, "update_building_state", this);
         AddUDF(env, "generate_riddle_buildings", "s", 0, 0, "", generate_riddle_buildings, "generate_riddle_buildings", this);
 
-        AddUDF(env, "send_message", "v", 2, 2, "ys", send_message, "send_message", this);
         AddUDF(env, "send_question", "y", 4, 4, "yysm", send_question, "send_question", this);
-        AddUDF(env, "send_map_message", "v", 4, 4, "ydds", send_map_message, "send_map_message", this);
-        AddUDF(env, "send_bus_message", "v", 5, 5, "ylddl", send_bus_message, "send_bus_message", this);
     }
 
     void urban_sensing_engine::init()
@@ -480,10 +413,15 @@ namespace use
         auto &question = dynamic_cast<use::urban_sensing_engine_db &>(get_database()).get_question(id);
         LOG_DEBUG("Answering question \"" << question.get_content() << "\" with \"" << answer << "\"");
 
+        urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
+        db.set_question_answer(question, answer);
+
         Eval(env, ("(answer_question " + id + " \"" + answer + "\")").c_str(), NULL);
 
         // we run the rules engine to update the policy..
         Run(env, -1);
+
+        fire_new_answer(question, answer);
     }
 
     void urban_sensing_engine::fire_new_user(const use::user &u)
@@ -502,38 +440,26 @@ namespace use
             l->removed_user(id);
     }
 
-    void urban_sensing_engine::fire_new_road_state(const std::string &road_id, const float &state)
+    void urban_sensing_engine::fire_new_road_state(const road &r, const float &state)
     {
         for (auto &l : listeners)
-            l->new_road_state(road_id, state);
+            l->new_road_state(r, state);
     }
-    void urban_sensing_engine::fire_new_building_state(const std::string &building_id, const float &state)
+    void urban_sensing_engine::fire_new_building_state(const building &b, const float &state)
     {
         for (auto &l : listeners)
-            l->new_building_state(building_id, state);
-    }
-
-    void urban_sensing_engine::fire_new_message(const std::string &level, const std::string &content)
-    {
-        for (auto &l : listeners)
-            l->new_message(level, content);
+            l->new_building_state(b, state);
     }
 
-    void urban_sensing_engine::fire_new_question(const std::string id, const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers)
+    void urban_sensing_engine::fire_new_question(const question &q)
     {
         for (auto &l : listeners)
-            l->new_question(id, level, recipient, content, answers);
+            l->new_question(q);
     }
 
-    void urban_sensing_engine::fire_new_map_message(const std::string &level, const double &lat, const double &lng, const std::string &content)
+    void urban_sensing_engine::fire_new_answer(const question &q, const std::string &answer)
     {
         for (auto &l : listeners)
-            l->new_map_message(level, lat, lng, content);
-    }
-
-    void urban_sensing_engine::fire_new_bus_data(const std::string &bus_id, const long &time, const double &lat, const double &lng, const long &passengers)
-    {
-        for (auto &l : listeners)
-            l->new_bus_data(bus_id, time, lat, lng, passengers);
+            l->new_answer(q, answer);
     }
 } // namespace use

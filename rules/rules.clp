@@ -7,7 +7,7 @@
 (deftemplate vehicle (slot vehicle_id (type SYMBOL)) (slot vehicle_type_id (type SYMBOL)) (multislot coordinates (type FLOAT)))
 
 (deftemplate maintaining (slot subject_id (type SYMBOL)))
-(deftemplate question (slot task_id (type SYMBOL)) (slot question_id (type SYMBOL)) (slot answer (type STRING)))
+(deftemplate question (slot task_id (type INTEGER)) (slot question_id (type SYMBOL)) (slot answer (type STRING)))
 
 (defrule r0
     ?strada_predizione <- (road (road_id ss114))
