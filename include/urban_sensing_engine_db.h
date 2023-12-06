@@ -146,6 +146,7 @@ namespace use
     void set_question_answer(question &q, const std::string &answer);
 
     std::string create_intersection(const std::string &osm_id, coco::location_ptr l);
+    bool has_intersection(const std::string &id) const { return intersections.find(id) != intersections.end(); }
     intersection &get_intersection(const std::string &id) { return *intersections.at(id); }
 
     std::vector<std::reference_wrapper<intersection>> get_intersections() const

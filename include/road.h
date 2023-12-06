@@ -60,6 +60,6 @@ namespace use
   };
   using road_ptr = std::unique_ptr<road>;
 
-  inline json::json to_json(const intersection &i) { return {{"id", i.get_id()}, {"osm_id", i.get_osm_id()}, {"location", {"x", i.get_location()->x, "y", i.get_location()->y}}}; }
+  inline json::json to_json(const intersection &i) { return {{"id", i.get_id()}, {"osm_id", i.get_osm_id()}, {"location", {{"x", i.get_location()->x}, {"y", i.get_location()->y}}}}; }
   inline json::json to_json(const road &r) { return {{"id", r.get_id()}, {"osm_id", r.get_osm_id()}, {"name", r.get_name()}, {"from", r.get_from().get_id()}, {"to", r.get_to().get_id()}, {"length", r.get_length()}, {"state", r.get_state()}}; }
 } // namespace use
