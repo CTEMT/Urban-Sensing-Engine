@@ -7,6 +7,7 @@
 #include <random>
 #include <fstream>
 #include <filesystem>
+#include <bsoncxx/json.hpp>
 
 #define MQTT_URI(host, port) host ":" port
 
@@ -283,7 +284,57 @@ int main(int argc, char const *argv[])
         db.drop(); // Warning!! We are here deleting all the current data!!
 
         if (std::strcmp(COCO_NAME, "CTE-MT") == 0)
+        {
             db.create_instance(db.get_name(), {{"lat", 40.666379}, {"lng", 16.604320}});
+
+            LOG("Getting CTE-MT sensors from ICAR store..");
+            mongocxx::client conn{mongocxx::uri{"mongodb+srv://matera:matera@cluster0.aiesj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"}};
+            mongocxx::v_noabi::database icar_db = conn["Sensori_ambientali"];
+            mongocxx::v_noabi::collection sensor_types_collection = icar_db["Sensor_type"];
+
+            std::unordered_map<std::string, std::string> sensor_type_id_to_id;
+
+            auto sensor_types = sensor_types_collection.find({});
+            for (const auto &sensor_type : sensor_types)
+            {
+                auto id = sensor_type["_id"].get_oid().value.to_string();
+                auto name = sensor_type["name"].get_string().value.to_string();
+                auto description = sensor_type["description"].get_string().value.to_string();
+                std::vector<coco::parameter_ptr> parameters;
+                for (const auto &parameter : sensor_type["parameters"].get_array().value)
+                    parameters.push_back(coco::mongo_db::to_par(parameter.get_document().value));
+
+                sensor_type_id_to_id[id] = db.create_sensor_type(name, description, std::move(parameters));
+            }
+
+            mongocxx::v_noabi::collection sensors_collection = icar_db["Sensor"];
+            auto sensors = sensors_collection.find({});
+            for (const auto &sensor : sensors)
+            {
+                auto name = sensor["name"].get_string().value.to_string();
+                auto type_id = sensor["type_id"].get_oid().value.to_string();
+                coco::location_ptr l = nullptr;
+                if (sensor.find("location") != sensor.end())
+                {
+                    auto location = sensor["location"].get_document().value;
+                    auto lat = location["y"].get_double().value;
+                    auto lng = location["x"].get_double().value;
+                    l = std::make_unique<coco::location>(lat, lng);
+                }
+                db.create_sensor(name, db.get_sensor_type(sensor_type_id_to_id[type_id]), std::move(l));
+            }
+
+            mongocxx::v_noabi::collection sensor_data_collection = icar_db["SensorData_STAT"];
+            auto sensor_data = sensor_data_collection.find({});
+            for (const auto &data : sensor_data)
+            {
+                auto sensor_id = data["sensor_id"].get_oid().value.to_string();
+                auto time = data["timestamp"].get_date().value;
+                auto value = data["value"].get_document().value;
+
+                db.set_sensor_data(db.get_sensor(sensor_id), std::chrono::system_clock::time_point{time}, json::load(bsoncxx::to_json(value)));
+            }
+        }
 
         db.init();
 
