@@ -293,6 +293,7 @@ int main(int argc, char const *argv[])
             mongocxx::v_noabi::collection sensor_types_collection = icar_db["Sensor_type"];
 
             std::unordered_map<std::string, std::string> sensor_type_id_to_id;
+            std::unordered_map<std::string, std::string> sensor_id_to_id;
 
             auto sensor_types = sensor_types_collection.find({});
             for (const auto &sensor_type : sensor_types)
@@ -311,6 +312,7 @@ int main(int argc, char const *argv[])
             auto sensors = sensors_collection.find({});
             for (const auto &sensor : sensors)
             {
+                auto id = sensor["_id"].get_oid().value.to_string();
                 auto name = sensor["name"].get_string().value.to_string();
                 auto type_id = sensor["type_id"].get_oid().value.to_string();
                 coco::location_ptr l = nullptr;
@@ -321,7 +323,8 @@ int main(int argc, char const *argv[])
                     auto lng = location["x"].get_double().value;
                     l = std::make_unique<coco::location>(lat, lng);
                 }
-                db.create_sensor(name, db.get_sensor_type(sensor_type_id_to_id[type_id]), std::move(l));
+
+                sensor_id_to_id[id] = db.create_sensor(name, db.get_sensor_type(sensor_type_id_to_id.at(type_id)), std::move(l));
             }
 
             mongocxx::v_noabi::collection sensor_data_collection = icar_db["SensorData_STAT"];
@@ -332,7 +335,8 @@ int main(int argc, char const *argv[])
                 auto time = data["timestamp"].get_date().value;
                 auto value = data["value"].get_document().value;
 
-                db.set_sensor_data(db.get_sensor(sensor_id), std::chrono::system_clock::time_point{time}, json::load(bsoncxx::to_json(value)));
+                LOG_DEBUG("Sensor id: " << sensor_id << ", value: " << bsoncxx::to_json(value));
+                db.set_sensor_data(db.get_sensor(sensor_id_to_id.at(sensor_id)), std::chrono::system_clock::time_point{time}, json::load(bsoncxx::to_json(value)));
             }
         }
 
