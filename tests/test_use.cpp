@@ -335,7 +335,6 @@ int main(int argc, char const *argv[])
                 auto time = data["timestamp"].get_date().value;
                 auto value = data["value"].get_document().value;
 
-                LOG_DEBUG("Sensor id: " << sensor_id << ", value: " << bsoncxx::to_json(value));
                 db.set_sensor_data(db.get_sensor(sensor_id_to_id.at(sensor_id)), std::chrono::system_clock::time_point{time}, json::load(bsoncxx::to_json(value)));
             }
         }
