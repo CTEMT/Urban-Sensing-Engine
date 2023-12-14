@@ -1,6 +1,5 @@
 #include "urban_sensing_engine.h"
 #include "urban_sensing_engine_db.h"
-#include "mqtt/async_client.h"
 #include <thread>
 #include <chrono>
 #include <future>
@@ -8,8 +7,6 @@
 #include <fstream>
 #include <filesystem>
 #include <bsoncxx/json.hpp>
-
-#define MQTT_URI(host, port) host ":" port
 
 void create_users(use::urban_sensing_engine_db &db)
 {
@@ -142,135 +139,6 @@ void create_data(use::urban_sensing_engine_db &db)
     }
 }
 
-void update_temperature(mqtt::async_client &mqtt_client, const std::string &root, const std::string &temp_id, double temp)
-{
-    std::random_device rnd_dev;
-    std::mt19937 generator(rnd_dev());
-    std::uniform_real_distribution<double> distr(-1.0, 1.0);
-
-    while (true)
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-        temp += distr(generator);
-
-        json::json temp_val;
-        temp_val["temperature"] = temp;
-
-        mqtt_client.publish(mqtt::make_message(root + "/sensor/" + temp_id, temp_val.to_string(), 1, true));
-    }
-}
-
-void update_bus(mqtt::async_client &mqtt_client, const std::string &root, const std::string &bus_id, double lat, double lng, long passengers)
-{
-    std::random_device rnd_dev;
-    std::mt19937 generator(rnd_dev());
-    std::uniform_real_distribution<double> real_distr(-0.01, 0.01);
-    std::uniform_int_distribution<int> int_distr(-1, 1);
-
-    while (true)
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(4000));
-        lat += real_distr(generator);
-        lng += real_distr(generator);
-        do
-        {
-            passengers += int_distr(generator);
-        } while (passengers < 0);
-
-        json::json bus_val{{"lat", lat}, {"lng", lng}, {"passengers", passengers}};
-        mqtt_client.publish(mqtt::make_message(root + "/sensor/" + bus_id, bus_val.to_string(), 1, true));
-    }
-}
-
-void update_gate(mqtt::async_client &mqtt_client, const std::string &root, const std::string &gate_id, long pedestrian, long vehicle, long other)
-{
-    std::random_device rnd_dev;
-    std::mt19937 generator(rnd_dev());
-    std::uniform_int_distribution<int> distr(-1, 1);
-
-    while (true)
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
-        do
-        {
-            pedestrian += distr(generator);
-            vehicle += distr(generator);
-            other += distr(generator);
-        } while (pedestrian < 0);
-
-        json::json gate_val{{"pedestrian", pedestrian}, {"vehicle", vehicle}, {"other", other}};
-        mqtt_client.publish(mqtt::make_message(root + "/sensor/" + gate_id, gate_val.to_string(), 1, true));
-    }
-}
-
-void update_air_monitoring(mqtt::async_client &mqtt_client, const std::string &root, const std::string &air_monitoring_id, double pm10, double pm2_5, double co2, double co, double no2, double o3, double so2)
-{
-    std::random_device rnd_dev;
-    std::mt19937 generator(rnd_dev());
-    std::uniform_real_distribution<double> distr(-1.0, 1.0);
-
-    while (true)
-    {
-        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-        pm10 += distr(generator);
-        pm2_5 += distr(generator);
-        co2 += distr(generator);
-        co += distr(generator);
-        no2 += distr(generator);
-        o3 += distr(generator);
-        so2 += distr(generator);
-
-        json::json air_monitoring_val{{"pm10", pm10}, {"pm2.5", pm2_5}, {"co2", co2}, {"co", co}, {"no2", no2}, {"o3", o3}, {"so2", so2}};
-        mqtt_client.publish(mqtt::make_message(root + "/sensor/" + air_monitoring_id, air_monitoring_val.to_string(), 1, true));
-    }
-}
-
-void dynamic_set_sensor_data(use::urban_sensing_engine_db &db)
-{
-    auto sensors = db.get_sensors();
-
-    std::string temp0_id;
-    std::string bus0_id;
-    std::string bus1_id;
-    std::string gate0_id;
-    std::string air_monitoring0_id;
-
-    for (const auto &sensor : sensors)
-    {
-        if (sensor.get().get_type().get_name() == "temperature")
-            temp0_id = sensor.get().get_id();
-        else if (sensor.get().get_type().get_name() == "gate")
-            gate0_id = sensor.get().get_id();
-        else if (sensor.get().get_type().get_name() == "bus")
-        {
-            if (sensor.get().get_name() == "Bus0")
-                bus0_id = sensor.get().get_id();
-            else if (sensor.get().get_name() == "Bus1")
-                bus1_id = sensor.get().get_id();
-        }
-        else if (sensor.get().get_type().get_name() == "air_monitoring")
-            air_monitoring0_id = sensor.get().get_id();
-    }
-
-    std::string root = COCO_NAME;
-    mqtt::async_client mqtt_client(MQTT_URI(MQTT_HOST, MQTT_PORT), root + "-test-client");
-    mqtt::connect_options options;
-    options.set_clean_session(true);
-    options.set_keep_alive_interval(20);
-    mqtt_client.connect(options)->wait();
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(300));
-    auto temp0_ftr = std::async(std::launch::async, update_temperature, std::ref(mqtt_client), std::ref(root), std::ref(temp0_id), 20.0);
-    std::this_thread::sleep_for(std::chrono::milliseconds(300));
-    auto bus0_ftr = std::async(std::launch::async, update_bus, std::ref(mqtt_client), std::ref(root), std::ref(bus0_id), 40.669, 16.609, 10);
-    std::this_thread::sleep_for(std::chrono::milliseconds(300));
-    auto bus1_ftr = std::async(std::launch::async, update_bus, std::ref(mqtt_client), std::ref(root), std::ref(bus1_id), 40.659, 16.599, 15);
-    std::this_thread::sleep_for(std::chrono::milliseconds(300));
-    auto gate0_ftr = std::async(std::launch::async, update_gate, std::ref(mqtt_client), std::ref(root), std::ref(gate0_id), 15, 10, 2);
-    std::this_thread::sleep_for(std::chrono::milliseconds(300));
-    auto air_monitoring0_ftr = std::async(std::launch::async, update_air_monitoring, std::ref(mqtt_client), std::ref(root), std::ref(air_monitoring0_id), 10.0, 5.0, 1000.0, 100.0, 200.0, 300.0, 400.0);
-}
-
 int main(int argc, char const *argv[])
 {
     mongocxx::instance inst{}; // This should be done only once.
@@ -348,9 +216,6 @@ int main(int argc, char const *argv[])
     }
     else
         db.init();
-
-    // we dynamically set the values of the sensors..
-    dynamic_set_sensor_data(db);
 
     return 0;
 }

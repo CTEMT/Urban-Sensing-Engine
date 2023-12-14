@@ -158,10 +158,9 @@ namespace use
         AddUDF(env, "send_question", "y", 4, 4, "yysm", send_question, "send_question", this);
     }
 
-    void urban_sensing_engine::init()
+    void urban_sensing_engine::init(const std::vector<std::string> &files)
     {
-        const std::lock_guard<std::recursive_mutex> lock(get_mutex());
-        coco_core::init();
+        load_rules(files);
 
         urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
 
@@ -236,6 +235,9 @@ namespace use
 
         // we run the rules engine to update the policy..
         Run(env, -1);
+
+        // we start the coco core..
+        start();
     }
 
     std::string urban_sensing_engine::create_user(const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role, const std::vector<std::string> &skills)

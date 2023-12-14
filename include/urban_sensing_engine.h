@@ -20,7 +20,12 @@ namespace use
 
     void answer_question(const std::string &id, const std::string &answer);
 
-    void init() override;
+    /**
+     * @brief Initializes the urban sensing engine.
+     * 
+     * @param files The files to load.
+    */
+    void init(const std::vector<std::string> &files);
 
     const std::unordered_set<std::string> &get_road_state() const { return road_state; }
     const std::unordered_set<std::string> &get_building_state() const { return building_state; }
