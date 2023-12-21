@@ -1,0 +1,1627 @@
+{
+    "type": "FeatureCollection",
+    "poitypes": [
+        "church",
+        "hotel",
+        "museum",
+        "historical site",
+        "palace",
+        "facility",
+        "square",
+        "monastery",
+        "convent",
+        "terrace",
+        "park",
+        "library",
+        "castle",
+        "tower",
+        "mall",
+        "abandoned populated place",
+        "restaurant",
+        "Cafe",
+        "Fast food",
+        "cultural site"
+    ],
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 1,
+                "osm_id": 7214385726,
+                "osm_id_graph": 7214385726,
+                "name": "Belvedere Luigi Guerricchio (Sassi / Sasso Barisano)",
+                "longitude": "16.60675208869708",
+                "latitude": "40.66682141222402",
+                "elevation": "401.0",
+                "rating": 4.8,
+                "poitype": "historical site",
+                "opening": "00:00:00",
+                "opening_min": 0,
+                "closing": "24:00:00",
+                "closing_min": 1440,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.606752088697078,
+                            40.666821412224017,
+                            401.0
+                        ],
+                        [
+                            16.606842088697078,
+                            40.666821412224017,
+                            401.0
+                        ],
+                        [
+                            16.606752088697078,
+                            40.666821412224017,
+                            401.0
+                        ],
+                        [
+                            16.606752088697078,
+                            40.666821412224017,
+                            401.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 2,
+                "osm_id": 2504751092,
+                "osm_id_graph": 2504751092,
+                "name": "Belvedere Piazzetta Pascoli (Belevedere duomo)",
+                "longitude": "16.6102928350268",
+                "latitude": "40.66325012790288",
+                "elevation": "402.0",
+                "rating": 4.7,
+                "poitype": "square",
+                "opening": "00:00:00",
+                "opening_min": 0,
+                "closing": "24:00:00",
+                "closing_min": 1440,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.610292835026801,
+                            40.663250127902877,
+                            402.0
+                        ],
+                        [
+                            16.610382835026801,
+                            40.663250127902877,
+                            402.0
+                        ],
+                        [
+                            16.610292835026801,
+                            40.663250127902877,
+                            402.0
+                        ],
+                        [
+                            16.610292835026801,
+                            40.663250127902877,
+                            402.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 3,
+                "osm_id": 2508771315,
+                "osm_id_graph": 2508771315,
+                "name": "Parco Lanera   PARCO",
+                "longitude": "16.6032731810525",
+                "latitude": "40.6605660668627",
+                "elevation": "439.0",
+                "rating": 4.0,
+                "poitype": "park",
+                "opening": "00:00:00",
+                "opening_min": 0,
+                "closing": "24:00:00",
+                "closing_min": 1440,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 0
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.603273181052501,
+                            40.6605660668627,
+                            439.0
+                        ],
+                        [
+                            16.603363181052501,
+                            40.6605660668627,
+                            439.0
+                        ],
+                        [
+                            16.603273181052501,
+                            40.6605660668627,
+                            439.0
+                        ],
+                        [
+                            16.603273181052501,
+                            40.6605660668627,
+                            439.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 4,
+                "osm_id": 2482426635,
+                "osm_id_graph": 2482426635,
+                "name": "Parco Giovanni Paolo II  - PARCO GIOCHI - CAMPO SPORTIVO",
+                "longitude": "16.6060562906098",
+                "latitude": "40.6650143075753",
+                "elevation": "360.0",
+                "rating": 4.2,
+                "poitype": "park",
+                "opening": "09:30:00",
+                "opening_min": 570,
+                "closing": "23:30:00",
+                "closing_min": 1410,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 0
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.6060562906098,
+                            40.665014307575298,
+                            360.0
+                        ],
+                        [
+                            16.6061462906098,
+                            40.665014307575298,
+                            360.0
+                        ],
+                        [
+                            16.6060562906098,
+                            40.665014307575298,
+                            360.0
+                        ],
+                        [
+                            16.6060562906098,
+                            40.665014307575298,
+                            360.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 5,
+                "osm_id": 2498166934,
+                "osm_id_graph": 2498166934,
+                "name": "Villa dell'Unita d'Italia",
+                "longitude": "16.6067029914497",
+                "latitude": "40.6695453264598",
+                "elevation": "406.0",
+                "rating": 3.8,
+                "poitype": "park",
+                "opening": "00:00:00",
+                "opening_min": 0,
+                "closing": "24:00:00",
+                "closing_min": 1440,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.606702991449701,
+                            40.669545326459797,
+                            406.0
+                        ],
+                        [
+                            16.606792991449701,
+                            40.669545326459797,
+                            406.0
+                        ],
+                        [
+                            16.606702991449701,
+                            40.669545326459797,
+                            406.0
+                        ],
+                        [
+                            16.606702991449701,
+                            40.669545326459797,
+                            406.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 6,
+                "osm_id": 848727126,
+                "osm_id_graph": 848727126,
+                "name": "Chiesa del Purgatorio",
+                "longitude": "16.6089018936526",
+                "latitude": "40.6643896976266",
+                "elevation": "402.0",
+                "rating": 4.5,
+                "poitype": "church",
+                "opening": "8:00:00",
+                "opening_min": 540,
+                "closing": "19:00:00",
+                "closing_min": 1140,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.6089018936526,
+                            40.664389697626603,
+                            402.0
+                        ],
+                        [
+                            16.6089918936526,
+                            40.664389697626603,
+                            402.0
+                        ],
+                        [
+                            16.6089018936526,
+                            40.664389697626603,
+                            402.0
+                        ],
+                        [
+                            16.6089018936526,
+                            40.664389697626603,
+                            402.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 7,
+                "osm_id": 2525471091,
+                "osm_id_graph": 2525471091,
+                "name": "Chiesa rupestre Santa Maria de Armenis",
+                "longitude": "16.6110256481656",
+                "latitude": "40.6626882914779",
+                "elevation": "390.0",
+                "rating": 4.5,
+                "poitype": "church",
+                "opening": "8:00:00",
+                "opening_min": 540,
+                "closing": "19:00:00",
+                "closing_min": 1140,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.611025648165601,
+                            40.662688291477899,
+                            390.0
+                        ],
+                        [
+                            16.611115648165601,
+                            40.662688291477899,
+                            390.0
+                        ],
+                        [
+                            16.611025648165601,
+                            40.662688291477899,
+                            390.0
+                        ],
+                        [
+                            16.611025648165601,
+                            40.662688291477899,
+                            390.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 8,
+                "osm_id": 2504659440,
+                "osm_id_graph": 2504659440,
+                "name": "Chiesa di San Biagio",
+                "longitude": "16.6084152648014",
+                "latitude": "40.6683649681811",
+                "elevation": "399.0",
+                "rating": 4.4,
+                "poitype": "church",
+                "opening": "8:00:00",
+                "opening_min": 540,
+                "closing": "19:00:00",
+                "closing_min": 1140,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.608415264801401,
+                            40.668364968181102,
+                            399.0
+                        ],
+                        [
+                            16.608505264801401,
+                            40.668364968181102,
+                            399.0
+                        ],
+                        [
+                            16.608415264801401,
+                            40.668364968181102,
+                            399.0
+                        ],
+                        [
+                            16.608415264801401,
+                            40.668364968181102,
+                            399.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 9,
+                "osm_id": 5707922479,
+                "osm_id_graph": 5707922479,
+                "name": "Chiesa San Francesco da Paola",
+                "longitude": "16.6058152390016",
+                "latitude": "40.6678515829343",
+                "elevation": "402.0",
+                "rating": 4.7,
+                "poitype": "church",
+                "opening": "8:00:00",
+                "opening_min": 540,
+                "closing": "19:00:00",
+                "closing_min": 1140,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.605815239001601,
+                            40.667851582934297,
+                            402.0
+                        ],
+                        [
+                            16.605905239001601,
+                            40.667851582934297,
+                            402.0
+                        ],
+                        [
+                            16.605815239001601,
+                            40.667851582934297,
+                            402.0
+                        ],
+                        [
+                            16.605815239001601,
+                            40.667851582934297,
+                            402.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 10,
+                "osm_id": 7214385726,
+                "osm_id_graph": 7214385726,
+                "name": "Chiesa della Mater Domini",
+                "longitude": "16.6067682312402",
+                "latitude": "40.6668805148352",
+                "elevation": "100.0",
+                "rating": 3.8,
+                "poitype": "church",
+                "opening": "8:00:00",
+                "opening_min": 540,
+                "closing": "19:00:00",
+                "closing_min": 1140,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.606768231240199,
+                            40.666880514835199,
+                            100.0
+                        ],
+                        [
+                            16.606858231240199,
+                            40.666880514835199,
+                            100.0
+                        ],
+                        [
+                            16.606768231240199,
+                            40.666880514835199,
+                            100.0
+                        ],
+                        [
+                            16.606768231240199,
+                            40.666880514835199,
+                            100.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 11,
+                "osm_id": 2667364242,
+                "osm_id_graph": 2667364242,
+                "name": "Basilica Pontificia Cattedrale di Maria Santissima della Bruna e Sant'Eustachio",
+                "longitude": "16.61126990801698",
+                "latitude": "40.66680901484015",
+                "elevation": "379.0",
+                "rating": 4.6,
+                "poitype": "church",
+                "opening": "8:00:00",
+                "opening_min": 540,
+                "closing": "19:00:00",
+                "closing_min": 1140,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.611269908016979,
+                            40.666809014840148,
+                            379.0
+                        ],
+                        [
+                            16.611359908016979,
+                            40.666809014840148,
+                            379.0
+                        ],
+                        [
+                            16.611269908016979,
+                            40.666809014840148,
+                            379.0
+                        ],
+                        [
+                            16.611269908016979,
+                            40.666809014840148,
+                            379.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 12,
+                "osm_id": 2506015787,
+                "osm_id_graph": 2506015787,
+                "name": "Museo Nazionale d'Arte Medievale e Moderna della Basilicata",
+                "longitude": "16.6101848408124",
+                "latitude": "40.6630444034664",
+                "elevation": "387.0",
+                "rating": 4.0,
+                "poitype": "museum",
+                "opening": "9:00:00",
+                "opening_min": 540,
+                "closing": "20:00:00",
+                "closing_min": 1200,
+                "waiting_time": 0,
+                "visiting_time": 120,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.610184840812401,
+                            40.663044403466401,
+                            387.0
+                        ],
+                        [
+                            16.610274840812401,
+                            40.663044403466401,
+                            387.0
+                        ],
+                        [
+                            16.610184840812401,
+                            40.663044403466401,
+                            387.0
+                        ],
+                        [
+                            16.610184840812401,
+                            40.663044403466401,
+                            387.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 13,
+                "osm_id": 4191643420,
+                "osm_id_graph": 4191643420,
+                "name": "Musma",
+                "longitude": "16.61228290635202",
+                "latitude": "40.6661031139343",
+                "elevation": "365.0",
+                "rating": 4.4,
+                "poitype": "museum",
+                "opening": "10:00:00",
+                "opening_min": 600,
+                "closing": "18:00:00",
+                "closing_min": 1080,
+                "waiting_time": 0,
+                "visiting_time": 120,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.612282906352021,
+                            40.666103113934298,
+                            365.0
+                        ],
+                        [
+                            16.612372906352022,
+                            40.666103113934298,
+                            365.0
+                        ],
+                        [
+                            16.612282906352021,
+                            40.666103113934298,
+                            365.0
+                        ],
+                        [
+                            16.612282906352021,
+                            40.666103113934298,
+                            365.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 14,
+                "osm_id": 1895006033,
+                "osm_id_graph": 1895006033,
+                "name": "Chiesa di San Francesco d'Assisi",
+                "longitude": "16.6093035990044",
+                "latitude": "40.6654480489865",
+                "elevation": "390.0",
+                "rating": 4.6,
+                "poitype": "church",
+                "opening": "10:00:00",
+                "opening_min": 600,
+                "closing": "17:00:00",
+                "closing_min": 1020,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.609303599004399,
+                            40.665448048986498,
+                            390.0
+                        ],
+                        [
+                            16.609393599004399,
+                            40.665448048986498,
+                            390.0
+                        ],
+                        [
+                            16.609303599004399,
+                            40.665448048986498,
+                            390.0
+                        ],
+                        [
+                            16.609303599004399,
+                            40.665448048986498,
+                            390.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 15,
+                "osm_id": 2503850621,
+                "osm_id_graph": 2503850621,
+                "name": "Piazza San Francesco",
+                "longitude": "16.6092141065847",
+                "latitude": "40.6651784517207",
+                "elevation": "392.0",
+                "rating": 4.6,
+                "poitype": "square",
+                "opening": "00:00:00",
+                "opening_min": 0,
+                "closing": "24:00:00",
+                "closing_min": 1440,
+                "waiting_time": 0,
+                "visiting_time": 15,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.609214106584702,
+                            40.665178451720699,
+                            392.0
+                        ],
+                        [
+                            16.609304106584702,
+                            40.665178451720699,
+                            392.0
+                        ],
+                        [
+                            16.609214106584702,
+                            40.665178451720699,
+                            392.0
+                        ],
+                        [
+                            16.609214106584702,
+                            40.665178451720699,
+                            392.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 16,
+                "osm_id": 2423941859,
+                "osm_id_graph": 2423941859,
+                "name": "Parrocchia San Giovanni Battista",
+                "longitude": "16.6079550521898",
+                "latitude": "40.6677239945868",
+                "elevation": "393.0",
+                "rating": 4.7,
+                "poitype": "church",
+                "opening": "10:00:00",
+                "opening_min": 600,
+                "closing": "17:00:00",
+                "closing_min": 1020,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.607955052189801,
+                            40.667723994586801,
+                            393.0
+                        ],
+                        [
+                            16.608045052189802,
+                            40.667723994586801,
+                            393.0
+                        ],
+                        [
+                            16.607955052189801,
+                            40.667723994586801,
+                            393.0
+                        ],
+                        [
+                            16.607955052189801,
+                            40.667723994586801,
+                            393.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 17,
+                "osm_id": 2407292429,
+                "osm_id_graph": 2407292429,
+                "name": "Santa Maria de Idris e San Giovanni in Monterrone",
+                "longitude": "16.6120871863855",
+                "latitude": "40.6641002378937",
+                "elevation": "356.0",
+                "rating": 4.5,
+                "poitype": "church",
+                "opening": "10:00:00",
+                "opening_min": 600,
+                "closing": "17:00:00",
+                "closing_min": 1020,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.612087186385502,
+                            40.664100237893699,
+                            356.0
+                        ],
+                        [
+                            16.612177186385502,
+                            40.664100237893699,
+                            356.0
+                        ],
+                        [
+                            16.612087186385502,
+                            40.664100237893699,
+                            356.0
+                        ],
+                        [
+                            16.612087186385502,
+                            40.664100237893699,
+                            356.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 18,
+                "osm_id": 1588507537,
+                "osm_id_graph": 1588507537,
+                "name": "Fontana Ferdinandea",
+                "longitude": "16.6064726281835",
+                "latitude": "40.6661894838187",
+                "elevation": "396.0",
+                "rating": 4.0,
+                "poitype": "historical site",
+                "opening": "00:00:00",
+                "opening_min": 0,
+                "closing": "24:00:00",
+                "closing_min": 1440,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.6064726281835,
+                            40.666189483818698,
+                            396.0
+                        ],
+                        [
+                            16.6065626281835,
+                            40.666189483818698,
+                            396.0
+                        ],
+                        [
+                            16.6064726281835,
+                            40.666189483818698,
+                            396.0
+                        ],
+                        [
+                            16.6064726281835,
+                            40.666189483818698,
+                            396.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 19,
+                "osm_id": 2423941859,
+                "osm_id_graph": 2423941859,
+                "name": "Piazza San Giovanni",
+                "longitude": "16.6080641502788",
+                "latitude": "40.6675639100981",
+                "elevation": "401.0",
+                "rating": 3.0,
+                "poitype": "square",
+                "opening": "00:00:00",
+                "opening_min": 0,
+                "closing": "24:00:00",
+                "closing_min": 1440,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.6080641502788,
+                            40.667563910098103,
+                            401.0
+                        ],
+                        [
+                            16.6081541502788,
+                            40.667563910098103,
+                            401.0
+                        ],
+                        [
+                            16.6080641502788,
+                            40.667563910098103,
+                            401.0
+                        ],
+                        [
+                            16.6080641502788,
+                            40.667563910098103,
+                            401.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 20,
+                "osm_id": 2520206451,
+                "osm_id_graph": 2520206451,
+                "name": "Piazza del Sedile",
+                "longitude": "16.6097690280054",
+                "latitude": "40.6655614955668",
+                "elevation": "398.0",
+                "rating": 3.0,
+                "poitype": "square",
+                "opening": "00:00:00",
+                "opening_min": 0,
+                "closing": "24:00:00",
+                "closing_min": 1440,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.609769028005399,
+                            40.665561495566799,
+                            398.0
+                        ],
+                        [
+                            16.609859028005399,
+                            40.665561495566799,
+                            398.0
+                        ],
+                        [
+                            16.609769028005399,
+                            40.665561495566799,
+                            398.0
+                        ],
+                        [
+                            16.609769028005399,
+                            40.665561495566799,
+                            398.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 21,
+                "osm_id": 7214385726,
+                "osm_id_graph": 7214385726,
+                "name": "Palombaro lungo           IPOGEI",
+                "longitude": "16.6065106719154",
+                "latitude": "40.6668805637405",
+                "elevation": "401.0",
+                "rating": 3.0,
+                "poitype": "historical site",
+                "opening": "00:00:00",
+                "opening_min": 0,
+                "closing": "24:00:00",
+                "closing_min": 1440,
+                "waiting_time": 0,
+                "visiting_time": 30,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.606510671915402,
+                            40.666880563740499,
+                            401.0
+                        ],
+                        [
+                            16.606600671915402,
+                            40.666880563740499,
+                            401.0
+                        ],
+                        [
+                            16.606510671915402,
+                            40.666880563740499,
+                            401.0
+                        ],
+                        [
+                            16.606510671915402,
+                            40.666880563740499,
+                            401.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 22,
+                "osm_id": 7214385719,
+                "osm_id_graph": 7214385719,
+                "name": "CineTeatro Comunale Gerardo Guerrieri",
+                "longitude": "16.6059646123347",
+                "latitude": "40.6670142077364",
+                "elevation": "402.0",
+                "rating": 3.8,
+                "poitype": "cultural site",
+                "opening": "10:00:00",
+                "opening_min": 600,
+                "closing": "22:00:00",
+                "closing_min": 1320,
+                "waiting_time": 0,
+                "visiting_time": 120,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.605964612334699,
+                            40.667014207736401,
+                            402.0
+                        ],
+                        [
+                            16.606054612334699,
+                            40.667014207736401,
+                            402.0
+                        ],
+                        [
+                            16.605964612334699,
+                            40.667014207736401,
+                            402.0
+                        ],
+                        [
+                            16.605964612334699,
+                            40.667014207736401,
+                            402.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 23,
+                "osm_id": 5707922479,
+                "osm_id_graph": 5707922479,
+                "name": "Cinema Il Piccolo Matera",
+                "longitude": "16.6063000111056",
+                "latitude": "40.6678990314093",
+                "elevation": "402.0",
+                "rating": 4.1,
+                "poitype": "cultural site",
+                "opening": "10:00:00",
+                "opening_min": 600,
+                "closing": "22:00:00",
+                "closing_min": 1320,
+                "waiting_time": 0,
+                "visiting_time": 120,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.606300011105599,
+                            40.667899031409299,
+                            402.0
+                        ],
+                        [
+                            16.606390011105599,
+                            40.667899031409299,
+                            402.0
+                        ],
+                        [
+                            16.606300011105599,
+                            40.667899031409299,
+                            402.0
+                        ],
+                        [
+                            16.606300011105599,
+                            40.667899031409299,
+                            402.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 24,
+                "osm_id": 2498448077,
+                "osm_id_graph": 2498448077,
+                "name": "Teatro Duni",
+                "longitude": "16.6053730014408",
+                "latitude": "40.6676566591721",
+                "elevation": "402.0",
+                "rating": 5.0,
+                "poitype": "cultural site",
+                "opening": "10:00:00",
+                "opening_min": 600,
+                "closing": "22:00:00",
+                "closing_min": 1320,
+                "waiting_time": 0,
+                "visiting_time": 120,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.6053730014408,
+                            40.667656659172103,
+                            402.0
+                        ],
+                        [
+                            16.6054630014408,
+                            40.667656659172103,
+                            402.0
+                        ],
+                        [
+                            16.6053730014408,
+                            40.667656659172103,
+                            402.0
+                        ],
+                        [
+                            16.6053730014408,
+                            40.667656659172103,
+                            402.0
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "id": 25,
+                "osm_id": 2506027922,
+                "osm_id_graph": 2506027922,
+                "name": "Museo Nazionale di Matera",
+                "longitude": "16.6092369433059",
+                "latitude": "40.6638729327591",
+                "elevation": "402.0",
+                "rating": 4.6,
+                "poitype": "museum",
+                "opening": "09:00:00",
+                "opening_min": 540,
+                "closing": "20:00:00",
+                "closing_min": 1200,
+                "waiting_time": 0,
+                "visiting_time": 120,
+                "mtw": [],
+                "waiting_time_mean": 0,
+                "waiting_time_forecast": [],
+                "n_waiting_time": 0,
+                "n_inside": 0,
+                "n_max": 100,
+                "peaks": [],
+                "area": 0.0,
+                "map": "null",
+                "comfort_rating": 1,
+                "accessibility": [],
+                "accessibility_profiles": [],
+                "alerts": [],
+                "temporary": "no",
+                "edges": [],
+                "nodes": [],
+                "CTEMT": 1
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            16.609236943305898,
+                            40.663872932759098,
+                            402.0
+                        ],
+                        [
+                            16.609326943305899,
+                            40.663872932759098,
+                            402.0
+                        ],
+                        [
+                            16.609236943305898,
+                            40.663872932759098,
+                            402.0
+                        ],
+                        [
+                            16.609236943305898,
+                            40.663872932759098,
+                            402.0
+                        ]
+                    ]
+                ]
+            }
+        }
+    ]
+}
