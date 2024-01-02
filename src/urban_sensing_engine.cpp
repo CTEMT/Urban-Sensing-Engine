@@ -439,7 +439,7 @@ namespace use
     void urban_sensing_engine::fire_removed_user(const std::string &id)
     {
         for (auto &l : listeners)
-            l->removed_user(id);
+            l->deleted_user(id);
     }
 
     void urban_sensing_engine::fire_new_road_state(const road &r, const float &state)

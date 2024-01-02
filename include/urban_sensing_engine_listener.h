@@ -18,7 +18,7 @@ namespace use
   private:
     virtual void new_user([[maybe_unused]] const use::user &u) {}
     virtual void updated_user([[maybe_unused]] const use::user &u) {}
-    virtual void removed_user([[maybe_unused]] const std::string &id) {}
+    virtual void deleted_user([[maybe_unused]] const std::string &id) {}
 
     virtual void new_road_state([[maybe_unused]] const road &r, [[maybe_unused]] const float &state) {}
     virtual void new_building_state([[maybe_unused]] const building &b, [[maybe_unused]] const float &state) {}
