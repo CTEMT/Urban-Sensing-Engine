@@ -38,6 +38,20 @@ namespace use
         }
         LOG("Retrieved " << users.size() << " users..");
 
+        messages.clear();
+        LOG("Retrieving all messages..");
+        for (const auto &doc : messages_collection.find({}))
+        {
+            std::vector<std::string> answers;
+            if (doc.find("answers") != doc.end())
+            {
+                auto answers_array = doc["answers"].get_array().value;
+                for (auto &&a : answers_array)
+                    answers.push_back(a.get_string().value.to_string());
+            }
+            messages.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<message>(doc["_id"].get_oid().value.to_string(), std::chrono::system_clock::from_time_t(doc["timestamp"].get_date().value.count()), doc["level"].get_string().value.to_string(), get_user(doc["recipient_id"].get_oid().value.to_string()), doc["content"].get_string().value.to_string(), answers, doc["answer"].get_string().value.to_string()));
+        }
+
         intersections.clear();
         LOG("Retrieving all intersections..");
         for (const auto &doc : intersections_collection.find({}))
@@ -173,9 +187,10 @@ namespace use
             users.erase(u.id);
     }
 
-    std::string urban_sensing_engine_db::create_message(const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers)
+    std::string urban_sensing_engine_db::create_message(const std::chrono::system_clock::time_point &timestamp, const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers)
     {
         auto s_doc = bsoncxx::builder::basic::document{};
+        s_doc.append(bsoncxx::builder::basic::kvp("timestamp", bsoncxx::types::b_date{timestamp}));
         s_doc.append(bsoncxx::builder::basic::kvp("level", level));
         s_doc.append(bsoncxx::builder::basic::kvp("recipient_id", bsoncxx::oid{bsoncxx::stdx::string_view{recipient.get_id()}}));
         s_doc.append(bsoncxx::builder::basic::kvp("content", content));
@@ -191,7 +206,7 @@ namespace use
         if (result)
         {
             auto id = result->inserted_id().get_oid().value.to_string();
-            messages.emplace(id, std::make_unique<message>(id, level, recipient, content, answers));
+            messages.emplace(id, std::make_unique<message>(id, timestamp, level, recipient, content, answers));
             return id;
         }
         else

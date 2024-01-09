@@ -138,7 +138,7 @@ namespace use
         }
 
         use::urban_sensing_engine_db &db = static_cast<use::urban_sensing_engine_db &>(e.get_database());
-        std::string message_id = db.create_message(level.lexemeValue->contents, static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_user(recipient.lexemeValue->contents), content.lexemeValue->contents, as);
+        std::string message_id = db.create_message(std::chrono::system_clock::now(), level.lexemeValue->contents, static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_user(recipient.lexemeValue->contents), content.lexemeValue->contents, as);
 
         e.fire_new_message(db.get_message(message_id));
 

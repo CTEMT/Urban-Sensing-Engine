@@ -16,9 +16,10 @@ namespace use
     friend class urban_sensing_engine_db;
 
   public:
-    message(const std::string &id, const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers, const std::string &answer = "") : id(id), level(level), recipient(recipient), content(content), answers(answers), answer(answer) {}
+    message(const std::string &id, const std::chrono::system_clock::time_point &timestamp, const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers, const std::string &answer = "") : id(id), timestamp(timestamp), level(level), recipient(recipient), content(content), answers(answers), answer(answer) {}
 
     std::string get_id() const { return id; }
+    std::chrono::system_clock::time_point get_timestamp() const { return timestamp; }
     std::string get_level() const { return level; }
     const user &get_recipient() const { return recipient; }
     std::string get_content() const { return content; }
@@ -29,6 +30,7 @@ namespace use
 
   private:
     std::string id;
+    std::chrono::system_clock::time_point timestamp;
     std::string level;
     const user &recipient;
     std::string content;
@@ -40,7 +42,7 @@ namespace use
 
   inline json::json to_json(const message &q)
   {
-    json::json j{{"id", q.get_id()}, {"level", q.get_level()}, {"recipient", q.get_recipient().get_id()}, {"content", q.get_content()}};
+    json::json j{{"id", q.get_id()}, {"timestamp", std::chrono::system_clock::to_time_t(q.get_timestamp())}, {"level", q.get_level()}, {"recipient", q.get_recipient().get_id()}, {"content", q.get_content()}};
     if (!q.get_answers().empty())
     {
       json::json j_answers(json::json_type::array);
