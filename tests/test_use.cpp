@@ -153,7 +153,7 @@ int main(int argc, char const *argv[])
 
         if (std::strcmp(COCO_NAME, "CTE-MT") == 0)
         {
-            db.create_instance(db.get_name(), {{"lat", 40.666379}, {"lng", 16.604320}});
+            db.create_instance(db.get_name(), {{"name", COCO_NAME}, {"logo", "ctemt.png"}, {"lat", 40.666379}, {"lng", 16.604320}});
 
             LOG("Getting CTE-MT sensors from ICAR store..");
             mongocxx::client conn{mongocxx::uri{"mongodb+srv://matera:matera@cluster0.aiesj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"}};
