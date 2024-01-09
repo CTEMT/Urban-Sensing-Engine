@@ -23,8 +23,8 @@ namespace use
     virtual void new_road_state([[maybe_unused]] const road &r, [[maybe_unused]] const float &state) {}
     virtual void new_building_state([[maybe_unused]] const building &b, [[maybe_unused]] const float &state) {}
 
-    virtual void new_question([[maybe_unused]] const question &q) {}
-    virtual void new_answer([[maybe_unused]] const question &q, [[maybe_unused]] const std::string &answer) {}
+    virtual void new_message([[maybe_unused]] const message &q) {}
+    virtual void new_answer([[maybe_unused]] const message &q, [[maybe_unused]] const std::string &answer) {}
 
   protected:
     urban_sensing_engine &use;

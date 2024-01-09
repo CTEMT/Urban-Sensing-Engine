@@ -7,7 +7,7 @@
 (deftemplate vehicle (slot vehicle_id (type SYMBOL)) (slot vehicle_type_id (type SYMBOL)) (multislot coordinates (type FLOAT)))
 
 (deftemplate maintaining (slot subject_id (type SYMBOL)))
-(deftemplate question (slot task_id (type INTEGER)) (slot question_id (type SYMBOL)) (slot answer (type STRING)))
+(deftemplate message (slot task_id (type INTEGER)) (slot message_id (type SYMBOL)) (slot answer (type STRING)))
 
 (defrule r0
     ?strada_predizione <- (road (road_id ss114))
@@ -46,9 +46,9 @@
     (bind ?tech_id (str-replace (nth$ 5 (fact-slot-value ?t vals)) "u_" ""))
     (do-for-fact ((?r road)) (eq ?r:road_id ?road_id)
         (println "Road " ?r:name " is in critical state, preparing maintenance documents")
-        (bind ?q_id (send_question info ?tech_id (str-cat "La strada " ?r:name " è in uno stato critico. Hai preparato i documenti per la manutenzione?") (create$ "Sì" "No")))
-        (println "Asserting question " ?q_id " for task " ?task_id)
-        (assert (question (task_id ?task_id) (question_id ?q_id)))
+        (bind ?m_id (send_message info ?tech_id (str-cat "La strada " ?r:name " è in uno stato critico. Hai preparato i documenti per la manutenzione?") (create$ "Sì" "No")))
+        (println "Asserting message " ?m_id " for task " ?task_id)
+        (assert (message (task_id ?task_id) (message_id ?m_id)))
     )
 )
 
@@ -60,9 +60,9 @@
     (bind ?tech_id (str-replace (nth$ 5 (fact-slot-value ?t vals)) "u_" ""))
     (do-for-fact ((?b building)) (eq ?b:building_id ?building_id)
         (println "Building " ?b:name " is in critical state, preparing maintenance documents")
-        (bind ?q_id (send_question info ?tech_id (str-cat "L'edificio " ?b:name " è in uno stato critico. Hai preparato i documenti per la manutenzione?") (create$ "Sì" "No")))
-        (println "Asserting question " ?q_id " for task " ?task_id)
-        (assert (question (task_id ?task_id) (question_id ?q_id)))
+        (bind ?m_id (send_message info ?tech_id (str-cat "L'edificio " ?b:name " è in uno stato critico. Hai preparato i documenti per la manutenzione?") (create$ "Sì" "No")))
+        (println "Asserting message " ?m_id " for task " ?task_id)
+        (assert (message (task_id ?task_id) (message_id ?m_id)))
     )
 )
 
@@ -130,7 +130,7 @@
 )
 
 (deffunction ending (?solver_ptr ?id)
-    (do-for-fact ((?q question)) (eq ?q:task_id ?id)
+    (do-for-fact ((?q message)) (eq ?q:task_id ?id)
         (if (or (eq ?q:answer "") (eq ?q:answer "No"))
             then
             (return FALSE)
@@ -163,8 +163,8 @@
     (remove_task ?solver_ptr ?id)
 )
 
-(deffunction answer_question (?q_id ?answer)
-    (do-for-fact ((?q question)) (eq ?q:question_id ?q_id)
+(deffunction answer_message (?m_id ?answer)
+    (do-for-fact ((?q message)) (eq ?q:message_id ?m_id)
         (modify ?q (answer ?answer))
     )
 )

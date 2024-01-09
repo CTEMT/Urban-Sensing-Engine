@@ -108,7 +108,7 @@ namespace use
         out->lexemeValue = CreateString(env, buildings_rddle.c_str());
     }
 
-    void send_question(Environment *env, UDFContext *udfc, UDFValue *out)
+    void send_message(Environment *env, UDFContext *udfc, UDFValue *out)
     {
         auto &e = *reinterpret_cast<urban_sensing_engine *>(udfc->context);
 
@@ -138,11 +138,11 @@ namespace use
         }
 
         use::urban_sensing_engine_db &db = static_cast<use::urban_sensing_engine_db &>(e.get_database());
-        std::string question_id = db.create_question(level.lexemeValue->contents, static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_user(recipient.lexemeValue->contents), content.lexemeValue->contents, as);
+        std::string message_id = db.create_message(level.lexemeValue->contents, static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_user(recipient.lexemeValue->contents), content.lexemeValue->contents, as);
 
-        e.fire_new_question(db.get_question(question_id));
+        e.fire_new_message(db.get_message(message_id));
 
-        out->lexemeValue = CreateSymbol(env, question_id.c_str());
+        out->lexemeValue = CreateSymbol(env, message_id.c_str());
     }
 
     urban_sensing_engine::urban_sensing_engine(urban_sensing_engine_db &db) : coco_core(db)
@@ -155,7 +155,7 @@ namespace use
         AddUDF(env, "update_building_state", "v", 2, 2, "yd", update_building_state, "update_building_state", this);
         AddUDF(env, "generate_riddle_buildings", "s", 0, 0, "", generate_riddle_buildings, "generate_riddle_buildings", this);
 
-        AddUDF(env, "send_question", "y", 4, 4, "yysm", send_question, "send_question", this);
+        AddUDF(env, "send_message", "y", 4, 4, "yysm", send_message, "send_message", this);
     }
 
     void urban_sensing_engine::init(const std::vector<std::string> &files)
@@ -409,21 +409,21 @@ namespace use
         fire_removed_user(id);
     }
 
-    void urban_sensing_engine::answer_question(const std::string &id, const std::string &answer)
+    void urban_sensing_engine::answer_message(const std::string &id, const std::string &answer)
     {
         const std::lock_guard<std::recursive_mutex> lock(get_mutex());
-        auto &question = dynamic_cast<use::urban_sensing_engine_db &>(get_database()).get_question(id);
-        LOG_DEBUG("Answering question \"" << question.get_content() << "\" with \"" << answer << "\"");
+        auto &message = dynamic_cast<use::urban_sensing_engine_db &>(get_database()).get_message(id);
+        LOG_DEBUG("Answering message \"" << message.get_content() << "\" with \"" << answer << "\"");
 
         urban_sensing_engine_db &db = dynamic_cast<urban_sensing_engine_db &>(get_database());
-        db.set_question_answer(question, answer);
+        db.set_message_answer(message, answer);
 
-        Eval(env, ("(answer_question " + id + " \"" + answer + "\")").c_str(), NULL);
+        Eval(env, ("(answer_message " + id + " \"" + answer + "\")").c_str(), NULL);
 
         // we run the rules engine to update the policy..
         Run(env, -1);
 
-        fire_new_answer(question, answer);
+        fire_new_answer(message, answer);
     }
 
     void urban_sensing_engine::fire_new_user(const use::user &u)
@@ -453,13 +453,13 @@ namespace use
             l->new_building_state(b, state);
     }
 
-    void urban_sensing_engine::fire_new_question(const question &q)
+    void urban_sensing_engine::fire_new_message(const message &q)
     {
         for (auto &l : listeners)
-            l->new_question(q);
+            l->new_message(q);
     }
 
-    void urban_sensing_engine::fire_new_answer(const question &q, const std::string &answer)
+    void urban_sensing_engine::fire_new_answer(const message &q, const std::string &answer)
     {
         for (auto &l : listeners)
             l->new_answer(q, answer);

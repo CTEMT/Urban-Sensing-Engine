@@ -2,7 +2,7 @@
 
 #include "mongo_db.h"
 #include "user.h"
-#include "question.h"
+#include "message.h"
 #include "road.h"
 #include "building.h"
 #include "vehicle_type.h"
@@ -124,26 +124,26 @@ namespace use
     void delete_user(user &u);
     void delete_user(const std::string &id) { delete_user(*users.at(id)); }
 
-    std::string create_question(const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers);
-    bool has_question(const std::string &id) const { return questions.find(id) != questions.end(); }
-    question &get_question(const std::string &id) { return *questions.at(id); }
-    std::vector<std::reference_wrapper<question>> get_questions() const
+    std::string create_message(const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers);
+    bool has_message(const std::string &id) const { return messages.find(id) != messages.end(); }
+    message &get_message(const std::string &id) { return *messages.at(id); }
+    std::vector<std::reference_wrapper<message>> get_messages() const
     {
-      std::vector<std::reference_wrapper<question>> questions_vector;
-      questions_vector.reserve(questions.size());
-      for (auto &q : questions)
-        questions_vector.push_back(std::ref(*q.second));
-      return questions_vector;
+      std::vector<std::reference_wrapper<message>> messages_vector;
+      messages_vector.reserve(messages.size());
+      for (auto &q : messages)
+        messages_vector.push_back(std::ref(*q.second));
+      return messages_vector;
     }
-    std::vector<std::reference_wrapper<question>> get_questions_for_user(const user &u) const
+    std::vector<std::reference_wrapper<message>> get_messages_for_user(const user &u) const
     {
-      std::vector<std::reference_wrapper<question>> questions_vector;
-      for (auto &q : questions)
+      std::vector<std::reference_wrapper<message>> messages_vector;
+      for (auto &q : messages)
         if (q.second->get_recipient().get_id() == u.get_id())
-          questions_vector.push_back(std::ref(*q.second));
-      return questions_vector;
+          messages_vector.push_back(std::ref(*q.second));
+      return messages_vector;
     }
-    void set_question_answer(question &q, const std::string &answer);
+    void set_message_answer(message &q, const std::string &answer);
 
     std::string create_intersection(const std::string &osm_id, coco::location_ptr l);
     bool has_intersection(const std::string &id) const { return intersections.find(id) != intersections.end(); }
@@ -198,14 +198,14 @@ namespace use
 
   private:
     mongocxx::v_noabi::collection users_collection;
-    mongocxx::v_noabi::collection questions_collection;
+    mongocxx::v_noabi::collection messages_collection;
     mongocxx::v_noabi::collection intersections_collection;
     mongocxx::v_noabi::collection roads_collection;
     mongocxx::v_noabi::collection buildings_collection;
     mongocxx::v_noabi::collection vehicle_types_collection;
     mongocxx::v_noabi::collection vehicles_collection;
     std::unordered_map<std::string, user_ptr> users;                 // The users of the current instance.
-    std::unordered_map<std::string, question_ptr> questions;         // The questions of the current instance.
+    std::unordered_map<std::string, message_ptr> messages;           // The messages of the current instance.
     std::unordered_map<std::string, intersection_ptr> intersections; // The intersections of the current instance.
     std::unordered_map<std::string, road_ptr> roads;                 // The roads of the current instance.
     std::unordered_map<std::string, building_ptr> buildings;         // The buildings of the current instance.

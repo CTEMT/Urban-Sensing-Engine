@@ -2,7 +2,7 @@
 
 #include "coco_core.h"
 #include "user.h"
-#include "question.h"
+#include "message.h"
 #include "road.h"
 #include "building.h"
 
@@ -18,7 +18,7 @@ namespace use
   public:
     urban_sensing_engine(urban_sensing_engine_db &db);
 
-    void answer_question(const std::string &id, const std::string &answer);
+    void answer_message(const std::string &id, const std::string &answer);
 
     /**
      * @brief Initializes the urban sensing engine.
@@ -48,7 +48,7 @@ namespace use
     friend void update_building_state(Environment *env, UDFContext *udfc, UDFValue *out);
     friend void generate_riddle_buildings(Environment *env, UDFContext *udfc, UDFValue *out);
 
-    friend void send_question(Environment *env, UDFContext *udfc, UDFValue *out);
+    friend void send_message(Environment *env, UDFContext *udfc, UDFValue *out);
 
   private:
     void fire_new_user(const use::user &u);
@@ -58,8 +58,8 @@ namespace use
     void fire_new_road_state(const road &r, const float &state);
     void fire_new_building_state(const building &b, const float &state);
 
-    void fire_new_question(const question &q);
-    void fire_new_answer(const question &q, const std::string &answer);
+    void fire_new_message(const message &q);
+    void fire_new_answer(const message &q, const std::string &answer);
 
   private:
     std::unordered_set<std::string> road_state;             // the road state..

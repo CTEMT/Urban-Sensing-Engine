@@ -6,7 +6,7 @@
 
 namespace use
 {
-    urban_sensing_engine_db::urban_sensing_engine_db(const std::string &root, const std::string &mongodb_uri) : mongo_db(root, mongodb_uri), users_collection(db["users"]), questions_collection(db["questions"]), intersections_collection(db["intersections"]), roads_collection(db["roads"]), buildings_collection(db["buildings"]), vehicle_types_collection(db["vehicle_types"]), vehicles_collection(db["vehicles"]) {}
+    urban_sensing_engine_db::urban_sensing_engine_db(const std::string &root, const std::string &mongodb_uri) : mongo_db(root, mongodb_uri), users_collection(db["users"]), messages_collection(db["messages"]), intersections_collection(db["intersections"]), roads_collection(db["roads"]), buildings_collection(db["buildings"]), vehicle_types_collection(db["vehicle_types"]), vehicles_collection(db["vehicles"]) {}
 
     void urban_sensing_engine_db::init()
     {
@@ -173,31 +173,34 @@ namespace use
             users.erase(u.id);
     }
 
-    std::string urban_sensing_engine_db::create_question(const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers)
+    std::string urban_sensing_engine_db::create_message(const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers)
     {
         auto s_doc = bsoncxx::builder::basic::document{};
         s_doc.append(bsoncxx::builder::basic::kvp("level", level));
         s_doc.append(bsoncxx::builder::basic::kvp("recipient_id", bsoncxx::oid{bsoncxx::stdx::string_view{recipient.get_id()}}));
         s_doc.append(bsoncxx::builder::basic::kvp("content", content));
-        auto answers_array = bsoncxx::builder::basic::array{};
-        for (auto &&a : answers)
-            answers_array.append(a);
-        s_doc.append(bsoncxx::builder::basic::kvp("answers", answers_array));
+        if (!answers.empty())
+        {
+            auto answers_array = bsoncxx::builder::basic::array{};
+            for (auto &&a : answers)
+                answers_array.append(a);
+            s_doc.append(bsoncxx::builder::basic::kvp("answers", answers_array));
+        }
 
-        auto result = questions_collection.insert_one(s_doc.view());
+        auto result = messages_collection.insert_one(s_doc.view());
         if (result)
         {
             auto id = result->inserted_id().get_oid().value.to_string();
-            questions.emplace(id, std::make_unique<question>(id, level, recipient, content, answers));
+            messages.emplace(id, std::make_unique<message>(id, level, recipient, content, answers));
             return id;
         }
         else
             return {};
     }
 
-    void urban_sensing_engine_db::set_question_answer(question &q, const std::string &answer)
+    void urban_sensing_engine_db::set_message_answer(message &q, const std::string &answer)
     {
-        if (questions_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(q.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "answer" << answer << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
+        if (messages_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(q.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "answer" << answer << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
             q.answer = answer;
     }
 
