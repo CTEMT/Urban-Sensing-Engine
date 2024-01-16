@@ -206,9 +206,9 @@ namespace use
       return occupancies_vector;
     }
 
-    std::string create_occupancy(coco::location_ptr loc, long italians, long foreigners, long extraregional, long intraregional, long commuters, long residents, long total);
+    std::string create_occupancy(coco::location_ptr loc, long italians, long foreigners, long extraregional, long intraregional, long total);
     occupancy &get_occupancy(const std::string &id) { return *occupancies.at(id); }
-    void update_occupancy(occupancy &o, long italians, long foreigners, long extraregional, long intraregional, long commuters, long residents, long total);
+    void update_occupancy(occupancy &o, long italians, long foreigners, long extraregional, long intraregional, long total);
 
   private:
     mongocxx::v_noabi::collection users_collection;

@@ -14,7 +14,7 @@ namespace use
     friend class urban_sensing_engine_db;
 
   public:
-    occupancy(const std::string &id, coco::location_ptr loc, long italians, long foreigners, long extraregional, long intraregional, long commuters, long residents, long total) : id(id), loc(std::move(loc)), italians(italians), foreigners(foreigners), extraregional(extraregional), intraregional(intraregional), commuters(commuters), residents(residents), total(total) {}
+    occupancy(const std::string &id, coco::location_ptr loc, long italians, long foreigners, long extraregional, long intraregional, long total) : id(id), loc(std::move(loc)), italians(italians), foreigners(foreigners), extraregional(extraregional), intraregional(intraregional), total(total) {}
 
     std::string get_id() const { return id; }
     const coco::location_ptr &get_location() const { return loc; }
@@ -22,8 +22,6 @@ namespace use
     long get_foreigners() const { return foreigners; }
     long get_extraregional() const { return extraregional; }
     long get_intraregional() const { return intraregional; }
-    long get_commuters() const { return commuters; }
-    long get_residents() const { return residents; }
     long get_total() const { return total; }
 
     Fact *get_fact() const { return fact; }
@@ -31,7 +29,7 @@ namespace use
   private:
     const std::string id;
     coco::location_ptr loc;
-    long italians, foreigners, extraregional, intraregional, commuters, residents, total;
+    long italians, foreigners, extraregional, intraregional, total;
     Fact *fact = nullptr;
   };
   using occupancy_ptr = std::unique_ptr<occupancy>;

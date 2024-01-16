@@ -91,7 +91,7 @@ namespace use
         occupancies.clear();
         LOG("Retrieving all occupancies..");
         for (const auto &doc : occupancies_collection.find({}))
-            occupancies.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<occupancy>(doc["_id"].get_oid().value.to_string(), std::make_unique<coco::location>(doc["location"]["x"].get_double().value, doc["location"]["y"].get_double().value), doc["italians"].get_int64().value, doc["foreigners"].get_int64().value, doc["extraregional"].get_int64().value, doc["intraregional"].get_int64().value, doc["commuters"].get_int64().value, doc["residents"].get_int64().value, doc["total"].get_int64().value));
+            occupancies.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<occupancy>(doc["_id"].get_oid().value.to_string(), std::make_unique<coco::location>(doc["location"]["x"].get_double().value, doc["location"]["y"].get_double().value), doc["italians"].get_int32().value, doc["foreigners"].get_int32().value, doc["extraregionals"].get_int32().value, doc["intraregionals"].get_int32().value, doc["total"].get_int32().value));
         LOG("Retrieved " << occupancies.size() << " occupancies..");
     }
 
@@ -366,28 +366,26 @@ namespace use
         }
     }
 
-    std::string urban_sensing_engine_db::create_occupancy(coco::location_ptr loc, long italians, long foreigners, long extraregional, long intraregional, long commuters, long residents, long total)
+    std::string urban_sensing_engine_db::create_occupancy(coco::location_ptr loc, long italians, long foreigners, long extraregional, long intraregional, long total)
     {
-        auto result = occupancies_collection.insert_one(bsoncxx::builder::stream::document{} << "location" << bsoncxx::builder::stream::open_document << "x" << loc->x << "y" << loc->y << bsoncxx::builder::stream::close_document << "italians" << italians << "foreigners" << foreigners << "extraregional" << extraregional << "intraregional" << intraregional << "commuters" << commuters << "residents" << residents << "total" << total << bsoncxx::builder::stream::finalize);
+        auto result = occupancies_collection.insert_one(bsoncxx::builder::stream::document{} << "location" << bsoncxx::builder::stream::open_document << "x" << loc->x << "y" << loc->y << bsoncxx::builder::stream::close_document << "italians" << italians << "foreigners" << foreigners << "extraregional" << extraregional << "intraregional" << intraregional << "total" << total << bsoncxx::builder::stream::finalize);
         if (result)
         {
             auto id = result->inserted_id().get_oid().value.to_string();
-            occupancies.emplace(id, std::make_unique<occupancy>(id, std::move(loc), italians, foreigners, extraregional, intraregional, commuters, residents, total));
+            occupancies.emplace(id, std::make_unique<occupancy>(id, std::move(loc), italians, foreigners, extraregional, intraregional, total));
             return id;
         }
         else
             return {};
     }
-    void urban_sensing_engine_db::update_occupancy(occupancy &o, long italians, long foreigners, long extraregional, long intraregional, long commuters, long residents, long total)
+    void urban_sensing_engine_db::update_occupancy(occupancy &o, long italians, long foreigners, long extraregional, long intraregional, long total)
     {
-        if (occupancies_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(o.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "italians" << italians << "foreigners" << foreigners << "extraregional" << extraregional << "intraregional" << intraregional << "commuters" << commuters << "residents" << residents << "total" << total << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
+        if (occupancies_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(o.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "italians" << italians << "foreigners" << foreigners << "extraregional" << extraregional << "intraregional" << intraregional << "total" << total << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
         {
             o.italians = italians;
             o.foreigners = foreigners;
             o.extraregional = extraregional;
             o.intraregional = intraregional;
-            o.commuters = commuters;
-            o.residents = residents;
             o.total = total;
         }
     }
