@@ -5,6 +5,7 @@
 (deftemplate building (slot building_id (type SYMBOL)) (slot name (type STRING)) (multislot coordinates (type FLOAT)) (slot s0 (default 0)) (slot s1 (default 0)) (slot s2 (default 0)) (slot s3 (default 0)) (slot building_state (default 0)) (slot building_avg_state (default 0)))
 (deftemplate vehicle_type (slot vehicle_type_id (type SYMBOL)) (slot name (type STRING)) (slot description (type STRING)) (slot manufacturer (type STRING)))
 (deftemplate vehicle (slot vehicle_id (type SYMBOL)) (slot vehicle_type_id (type SYMBOL)) (multislot coordinates (type FLOAT)))
+(deftemplate occupancy (slot tile_id (type SYMBOL)) (slot latitude (type FLOAT)) (slot longitude (type FLOAT)) (slot italians (type INTEGER)) (slot foreigners (type INTEGER)) (slot extraregionals (type INTEGER)) (slot intraregional (type INTEGER)) (slot commuters (type INTEGER)) (slot residents (type INTEGER)) (slot total (type INTEGER)))
 
 (deftemplate maintaining (slot subject_id (type SYMBOL)))
 (deftemplate message (slot task_id (type INTEGER)) (slot message_id (type SYMBOL)) (slot answer (type STRING)))

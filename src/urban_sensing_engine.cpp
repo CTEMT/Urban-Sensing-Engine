@@ -233,6 +233,14 @@ namespace use
             v.get().fact = AssertString(env, fact_str.c_str());
         }
 
+        // we assert the occupancy facts..
+        for (auto &o : db.get_occupancies())
+        {
+            fact_str = "(occupancy (tile_id " + o.get().get_id() + ") (latitude " + std::to_string(o.get().get_location()->y) + ") (longitude " + std::to_string(o.get().get_location()->x) + ") (italians " + std::to_string(o.get().get_italians()) + ") (foreigners " + std::to_string(o.get().get_foreigners()) + ") (extraregional " + std::to_string(o.get().get_extraregional()) + ") (intraregional " + std::to_string(o.get().get_intraregional()) + ") (commuters " + std::to_string(o.get().get_commuters()) + ") (residents " + std::to_string(o.get().get_residents()) + ") (total " + std::to_string(o.get().get_total()) + "))";
+            // LOG_DEBUG("Asserting fact: " << fact_str);
+            o.get().fact = AssertString(env, fact_str.c_str());
+        }
+
         // we run the rules engine to update the policy..
         Run(env, -1);
 

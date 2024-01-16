@@ -7,6 +7,7 @@
 #include "building.h"
 #include "vehicle_type.h"
 #include "vehicle.h"
+#include "occupancy.h"
 
 #define PARTICIPATORY_TYPE "participatory"
 
@@ -196,6 +197,19 @@ namespace use
 
     void set_vehicle_location(vehicle &v, coco::location_ptr l);
 
+    std::vector<std::reference_wrapper<occupancy>> get_occupancies() const
+    {
+      std::vector<std::reference_wrapper<occupancy>> occupancies_vector;
+      occupancies_vector.reserve(occupancies.size());
+      for (auto &o : occupancies)
+        occupancies_vector.push_back(std::ref(*o.second));
+      return occupancies_vector;
+    }
+
+    std::string create_occupancy(coco::location_ptr loc, long italians, long foreigners, long extraregional, long intraregional, long commuters, long residents, long total);
+    occupancy &get_occupancy(const std::string &id) { return *occupancies.at(id); }
+    void update_occupancy(occupancy &o, long italians, long foreigners, long extraregional, long intraregional, long commuters, long residents, long total);
+
   private:
     mongocxx::v_noabi::collection users_collection;
     mongocxx::v_noabi::collection messages_collection;
@@ -204,6 +218,7 @@ namespace use
     mongocxx::v_noabi::collection buildings_collection;
     mongocxx::v_noabi::collection vehicle_types_collection;
     mongocxx::v_noabi::collection vehicles_collection;
+    mongocxx::v_noabi::collection occupancies_collection;
     std::unordered_map<std::string, user_ptr> users;                 // The users of the current instance.
     std::unordered_map<std::string, message_ptr> messages;           // The messages of the current instance.
     std::unordered_map<std::string, intersection_ptr> intersections; // The intersections of the current instance.
@@ -211,5 +226,6 @@ namespace use
     std::unordered_map<std::string, building_ptr> buildings;         // The buildings of the current instance.
     std::unordered_map<std::string, vehicle_type_ptr> vehicle_types; // The vehicle types of the current instance.
     std::unordered_map<std::string, vehicle_ptr> vehicles;           // The vehicles of the current instance.
+    std::unordered_map<std::string, occupancy_ptr> occupancies;      // The occupancies of the current instance.
   };
 } // namespace use

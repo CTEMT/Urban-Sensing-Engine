@@ -6,7 +6,7 @@
 
 namespace use
 {
-    urban_sensing_engine_db::urban_sensing_engine_db(const std::string &root, const std::string &mongodb_uri) : mongo_db(root, mongodb_uri), users_collection(db["users"]), messages_collection(db["messages"]), intersections_collection(db["intersections"]), roads_collection(db["roads"]), buildings_collection(db["buildings"]), vehicle_types_collection(db["vehicle_types"]), vehicles_collection(db["vehicles"]) {}
+    urban_sensing_engine_db::urban_sensing_engine_db(const std::string &root, const std::string &mongodb_uri) : mongo_db(root, mongodb_uri), users_collection(db["users"]), messages_collection(db["messages"]), intersections_collection(db["intersections"]), roads_collection(db["roads"]), buildings_collection(db["buildings"]), vehicle_types_collection(db["vehicle_types"]), vehicles_collection(db["vehicles"]), occupancies_collection(db["occupancies"]) {}
 
     void urban_sensing_engine_db::init()
     {
@@ -87,6 +87,12 @@ namespace use
             vehicles.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<vehicle>(doc["_id"].get_oid().value.to_string(), get_vehicle_type(doc["vehicle_type_id"].get_oid().value.to_string()), std::move(l)));
         }
         LOG("Retrieved " << vehicles.size() << " vehicles..");
+
+        occupancies.clear();
+        LOG("Retrieving all occupancies..");
+        for (const auto &doc : occupancies_collection.find({}))
+            occupancies.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<occupancy>(doc["_id"].get_oid().value.to_string(), std::make_unique<coco::location>(doc["location"]["x"].get_double().value, doc["location"]["y"].get_double().value), doc["italians"].get_int64().value, doc["foreigners"].get_int64().value, doc["extraregional"].get_int64().value, doc["intraregional"].get_int64().value, doc["commuters"].get_int64().value, doc["residents"].get_int64().value, doc["total"].get_int64().value));
+        LOG("Retrieved " << occupancies.size() << " occupancies..");
     }
 
     std::string urban_sensing_engine_db::create_user(const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role, const std::vector<std::string> &skills)
@@ -135,31 +141,31 @@ namespace use
     void urban_sensing_engine_db::set_user_role(user &u, const user_role &role)
     {
         if (users_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(u.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "role" << role << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
-            users.at(u.id)->role = role;
+            u.role = role;
     }
 
     void urban_sensing_engine_db::set_user_first_name(user &u, const std::string &first_name)
     {
         if (users_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(u.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "first_name" << first_name << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
-            users.at(u.id)->first_name = first_name;
+            u.first_name = first_name;
     }
 
     void urban_sensing_engine_db::set_user_last_name(user &u, const std::string &last_name)
     {
         if (users_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(u.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "last_name" << last_name << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
-            users.at(u.id)->last_name = last_name;
+            u.last_name = last_name;
     }
 
     void urban_sensing_engine_db::set_user_email(user &u, const std::string &email)
     {
         if (users_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(u.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "email" << email << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
-            users.at(u.id)->email = email;
+            u.email = email;
     }
 
     void urban_sensing_engine_db::set_user_password(user &u, const std::string &password)
     {
         if (users_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(u.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "password" << password << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
-            users.at(u.id)->password = password;
+            u.password = password;
     }
 
     void urban_sensing_engine_db::set_user_skills(user &u, const std::vector<std::string> &skills)
@@ -168,17 +174,17 @@ namespace use
         for (auto &&s : skills)
             skills_array.append(s);
         if (users_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(u.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "skills" << skills_array << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
-            users.at(u.id)->skills = skills;
+            u.skills = skills;
     }
     void urban_sensing_engine_db::add_user_skill(user &u, const std::string &skill)
     {
         if (users_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(u.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$addToSet" << bsoncxx::builder::stream::open_document << "skills" << skill << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
-            users.at(u.id)->skills.push_back(skill);
+            u.skills.push_back(skill);
     }
     void urban_sensing_engine_db::remove_user_skill(user &u, const std::string &skill)
     {
         if (users_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(u.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$pull" << bsoncxx::builder::stream::open_document << "skills" << skill << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
-            users.at(u.id)->skills.erase(std::remove(users.at(u.id)->skills.begin(), users.at(u.id)->skills.end(), skill), users.at(u.id)->skills.end());
+            u.skills.erase(std::remove(u.skills.begin(), u.skills.end(), skill), u.skills.end());
     }
 
     void urban_sensing_engine_db::delete_user(user &u)
@@ -248,7 +254,7 @@ namespace use
     void urban_sensing_engine_db::set_road_state(road &r, const double &state)
     {
         if (roads_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(r.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "state" << state << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
-            roads.at(r.id)->state = state;
+            r.state = state;
     }
 
     std::vector<std::reference_wrapper<road>> urban_sensing_engine_db::get_roads(const std::string &filter, const unsigned int limit) const
@@ -287,7 +293,7 @@ namespace use
     void urban_sensing_engine_db::set_building_state(building &b, const double &state)
     {
         if (buildings_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(b.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "state" << state << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
-            buildings.at(b.id)->state = state;
+            b.state = state;
     }
 
     std::vector<std::reference_wrapper<building>> urban_sensing_engine_db::get_buildings(const std::string &filter, const unsigned int limit) const
@@ -357,6 +363,32 @@ namespace use
                                                                                               << "" << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize);
             if (result)
                 v.loc = nullptr;
+        }
+    }
+
+    std::string urban_sensing_engine_db::create_occupancy(coco::location_ptr loc, long italians, long foreigners, long extraregional, long intraregional, long commuters, long residents, long total)
+    {
+        auto result = occupancies_collection.insert_one(bsoncxx::builder::stream::document{} << "location" << bsoncxx::builder::stream::open_document << "x" << loc->x << "y" << loc->y << bsoncxx::builder::stream::close_document << "italians" << italians << "foreigners" << foreigners << "extraregional" << extraregional << "intraregional" << intraregional << "commuters" << commuters << "residents" << residents << "total" << total << bsoncxx::builder::stream::finalize);
+        if (result)
+        {
+            auto id = result->inserted_id().get_oid().value.to_string();
+            occupancies.emplace(id, std::make_unique<occupancy>(id, std::move(loc), italians, foreigners, extraregional, intraregional, commuters, residents, total));
+            return id;
+        }
+        else
+            return {};
+    }
+    void urban_sensing_engine_db::update_occupancy(occupancy &o, long italians, long foreigners, long extraregional, long intraregional, long commuters, long residents, long total)
+    {
+        if (occupancies_collection.update_one(bsoncxx::builder::stream::document{} << "_id" << bsoncxx::oid(o.id) << bsoncxx::builder::stream::finalize, bsoncxx::builder::stream::document{} << "$set" << bsoncxx::builder::stream::open_document << "italians" << italians << "foreigners" << foreigners << "extraregional" << extraregional << "intraregional" << intraregional << "commuters" << commuters << "residents" << residents << "total" << total << bsoncxx::builder::stream::close_document << bsoncxx::builder::stream::finalize))
+        {
+            o.italians = italians;
+            o.foreigners = foreigners;
+            o.extraregional = extraregional;
+            o.intraregional = intraregional;
+            o.commuters = commuters;
+            o.residents = residents;
+            o.total = total;
         }
     }
 } // namespace use
