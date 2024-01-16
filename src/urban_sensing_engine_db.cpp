@@ -384,8 +384,8 @@ namespace use
         {
             o.italians = italians;
             o.foreigners = foreigners;
-            o.extraregional = extraregional;
-            o.intraregional = intraregional;
+            o.extraregionals = extraregional;
+            o.intraregionals = intraregional;
             o.total = total;
         }
     }
