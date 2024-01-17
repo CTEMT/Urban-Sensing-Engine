@@ -117,3 +117,9 @@ class MaintenanceOffice : Agent {
         goal rmd = new GreenSpacesMaintenanceTender(gs: gs, t: t, end: start);
     }
 }
+
+predicate Bruna() : Interval {
+    for (Technician t) {
+        fact f = new t.activity.Use(start: start, duration: duration, end: end, amount: t.activity.capacity);
+    }
+}

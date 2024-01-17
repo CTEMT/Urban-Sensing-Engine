@@ -96,6 +96,7 @@
         (adapt_script ?solver (generate_riddle_users))
         (adapt_script ?solver (generate_riddle_roads))
         (adapt_script ?solver (generate_riddle_buildings))
+        (adapt_script ?solver "goal bruna = new Bruna(start: 130.0, end: 150.0);")
         (return ?solver)
     )
 )
