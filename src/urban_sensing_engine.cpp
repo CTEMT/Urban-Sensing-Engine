@@ -128,6 +128,11 @@ namespace use
         if (!UDFNextArgument(udfc, MULTIFIELD_BIT, &answers))
             return;
 
+        coco::location_ptr l;
+        UDFValue location;
+        if (UDFNextArgument(udfc, MULTIFIELD_BIT, &location))
+            l = std::make_unique<coco::location>(location.multifieldValue->contents[0].floatValue->contents, location.multifieldValue->contents[1].floatValue->contents);
+
         std::vector<std::string> as;
         for (size_t i = 0; i < answers.multifieldValue->length; i++)
         {
@@ -138,7 +143,7 @@ namespace use
         }
 
         use::urban_sensing_engine_db &db = static_cast<use::urban_sensing_engine_db &>(e.get_database());
-        std::string message_id = db.create_message(std::chrono::system_clock::now(), level.lexemeValue->contents, static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_user(recipient.lexemeValue->contents), content.lexemeValue->contents, as);
+        std::string message_id = db.create_message(std::chrono::system_clock::now(), level.lexemeValue->contents, static_cast<use::urban_sensing_engine_db &>(e.get_database()).get_user(recipient.lexemeValue->contents), content.lexemeValue->contents, as, std::move(l));
 
         e.fire_new_message(db.get_message(message_id));
 
@@ -155,7 +160,7 @@ namespace use
         AddUDF(env, "update_building_state", "v", 2, 2, "yd", update_building_state, "update_building_state", this);
         AddUDF(env, "generate_riddle_buildings", "s", 0, 0, "", generate_riddle_buildings, "generate_riddle_buildings", this);
 
-        AddUDF(env, "send_message", "y", 4, 4, "yysm", send_message, "send_message", this);
+        AddUDF(env, "send_message", "y", 4, 5, "yysmm", send_message, "send_message", this);
     }
 
     void urban_sensing_engine::init(const std::vector<std::string> &files)

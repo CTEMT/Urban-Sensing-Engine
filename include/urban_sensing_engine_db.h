@@ -125,7 +125,7 @@ namespace use
     void delete_user(user &u);
     void delete_user(const std::string &id) { delete_user(*users.at(id)); }
 
-    std::string create_message(const std::chrono::system_clock::time_point &timestamp, const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers);
+    std::string create_message(const std::chrono::system_clock::time_point &timestamp, const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers, coco::location_ptr l = nullptr);
     bool has_message(const std::string &id) const { return messages.find(id) != messages.end(); }
     message &get_message(const std::string &id) { return *messages.at(id); }
     std::vector<std::reference_wrapper<message>> get_messages() const

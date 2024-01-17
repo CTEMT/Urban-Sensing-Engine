@@ -50,7 +50,11 @@ namespace use
                     answers.push_back(a.get_string().value.to_string());
             }
             std::string answer = doc.find("answer") != doc.end() ? doc["answer"].get_string().value.to_string() : "";
-            messages.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<message>(doc["_id"].get_oid().value.to_string(), std::chrono::system_clock::from_time_t(doc["timestamp"].get_date().value.count()), doc["level"].get_string().value.to_string(), get_user(doc["recipient_id"].get_oid().value.to_string()), doc["content"].get_string().value.to_string(), answers, answer));
+            auto loc = doc.find("location");
+            coco::location_ptr l;
+            if (loc != doc.end())
+                l = std::make_unique<coco::location>(loc->get_document().value["x"].get_double().value, loc->get_document().value["y"].get_double().value);
+            messages.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<message>(doc["_id"].get_oid().value.to_string(), std::chrono::system_clock::from_time_t(doc["timestamp"].get_date().value.count()), doc["level"].get_string().value.to_string(), get_user(doc["recipient_id"].get_oid().value.to_string()), doc["content"].get_string().value.to_string(), answers, std::move(l), answer));
         }
 
         intersections.clear();
@@ -194,7 +198,7 @@ namespace use
             users.erase(u.id);
     }
 
-    std::string urban_sensing_engine_db::create_message(const std::chrono::system_clock::time_point &timestamp, const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers)
+    std::string urban_sensing_engine_db::create_message(const std::chrono::system_clock::time_point &timestamp, const std::string &level, const user &recipient, const std::string &content, const std::vector<std::string> &answers, coco::location_ptr l)
     {
         auto s_doc = bsoncxx::builder::basic::document{};
         s_doc.append(bsoncxx::builder::basic::kvp("timestamp", bsoncxx::types::b_date{timestamp}));
@@ -208,12 +212,15 @@ namespace use
                 answers_array.append(a);
             s_doc.append(bsoncxx::builder::basic::kvp("answers", answers_array));
         }
+        if (l)
+            s_doc.append(bsoncxx::builder::basic::kvp("location", [&l](bsoncxx::builder::basic ::sub_document subdoc)
+                                                      { subdoc.append(bsoncxx::builder::basic::kvp("x", l->x), bsoncxx::builder::basic::kvp("y", l->y)); }));
 
         auto result = messages_collection.insert_one(s_doc.view());
         if (result)
         {
             auto id = result->inserted_id().get_oid().value.to_string();
-            messages.emplace(id, std::make_unique<message>(id, timestamp, level, recipient, content, answers));
+            messages.emplace(id, std::make_unique<message>(id, timestamp, level, recipient, content, answers, std::move(l)));
             return id;
         }
         else
