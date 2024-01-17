@@ -129,6 +129,26 @@
             )
         )
     )
+    (if (eq (fact-slot-value ?sensor_type name) "matera_station_type0")
+        then
+        (bind ?pm1 (nth$ 34 ?data))
+        (bind ?pm10 (nth$ 35 ?data))
+        (bind ?pm25 (nth$ 40 ?data))
+        (if (>= ?pm10 40)
+            then
+            (println "Received data from sensor " ?sensor " with PM10 value " ?pm10)
+            (do-for-all-facts ((?u user)) (eq ?u:user_role technician)
+                (send_message warning ?u:user_id (str-cat "Il sensore " (fact-slot-value ?sensor name) " ha rilevato un valore di PM10 pari a " ?pm10 ".") (create$ "Ok"))
+            )
+        )
+        (if (>= ?pm25 25)
+            then
+            (println "Received data from sensor " ?sensor " with PM2.5 value " ?pm25)
+            (do-for-all-facts ((?u user)) (eq ?u:user_role technician)
+                (send_message warning ?u:user_id (str-cat "Il sensore " (fact-slot-value ?sensor name) " ha rilevato un valore di PM2.5 pari a " ?pm25 ".") (create$ "Ok"))
+            )
+        )
+    )
 )
 
 (deffunction ending (?solver_ptr ?id)
