@@ -49,7 +49,8 @@ namespace use
                 for (auto &&a : answers_array)
                     answers.push_back(a.get_string().value.to_string());
             }
-            messages.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<message>(doc["_id"].get_oid().value.to_string(), std::chrono::system_clock::from_time_t(doc["timestamp"].get_date().value.count()), doc["level"].get_string().value.to_string(), get_user(doc["recipient_id"].get_oid().value.to_string()), doc["content"].get_string().value.to_string(), answers, doc["answer"].get_string().value.to_string()));
+            std::string answer = doc.find("answer") != doc.end() ? doc["answer"].get_string().value.to_string() : "";
+            messages.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<message>(doc["_id"].get_oid().value.to_string(), std::chrono::system_clock::from_time_t(doc["timestamp"].get_date().value.count()), doc["level"].get_string().value.to_string(), get_user(doc["recipient_id"].get_oid().value.to_string()), doc["content"].get_string().value.to_string(), answers, answer));
         }
 
         intersections.clear();
