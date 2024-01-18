@@ -40,6 +40,18 @@
     (delete_solver ?sp)
 )
 
+(defrule start_road_maintenance_inspection
+    ?t <- (task (task_type RoadMaintenanceInspection) (since 0))
+    =>
+    (bind ?task_id (fact-slot-value ?t id))
+    (bind ?road_id (str-replace (nth$ 3 (fact-slot-value ?t vals)) "r_" ""))
+    (bind ?tech_id (str-replace (nth$ 5 (fact-slot-value ?t vals)) "u_" ""))
+    (do-for-fact ((?r road)) (eq ?r:road_id ?road_id)
+        (println "Road " ?r:name " is in critical state, requesting inspection")
+        (send_message info ?tech_id (str-cat "La strada " ?r:name " è in uno stato critico. Effettuare un sopralluogo in " ?r:name) (create$ "Ok"))
+    )
+)
+
 (defrule start_road_maintenance_documents
     ?t <- (task (task_type RoadMaintenanceDocuments) (since 0))
     =>
@@ -48,7 +60,7 @@
     (bind ?tech_id (str-replace (nth$ 5 (fact-slot-value ?t vals)) "u_" ""))
     (do-for-fact ((?r road)) (eq ?r:road_id ?road_id)
         (println "Road " ?r:name " is in critical state, preparing maintenance documents")
-        (send_message info ?tech_id (str-cat "La strada " ?r:name " è in uno stato critico. Preparare i documenti per la manutenzione di " ?r:name) (create$ "Ok"))
+        (send_message info ?tech_id (str-cat "La strada " ?r:name " è in uno stato critico. Preparare i documenti per la gara d'appalto per la riparazione di " ?r:name) (create$ "Ok"))
     )
 )
 
@@ -60,7 +72,7 @@
     (bind ?tech_id (str-replace (nth$ 5 (fact-slot-value ?t vals)) "u_" ""))
     (do-for-fact ((?b building)) (eq ?b:building_id ?building_id)
         (println "Building " ?b:name " is in critical state, preparing maintenance documents")
-        (send_message info ?tech_id (str-cat "L'edificio " ?b:name " è in uno stato critico. Preparare i documenti per la manutenzione di " ?b:name) (create$ "Ok"))
+        (send_message info ?tech_id (str-cat "L'edificio " ?b:name " è in uno stato critico. Preparare i documenti per la gara d'appalto per la manutenzione di " ?b:name) (create$ "Ok"))
     )
 )
 
@@ -89,7 +101,7 @@
         (adapt_script ?solver (generate_riddle_users))
         (adapt_script ?solver (generate_riddle_roads))
         (adapt_script ?solver (generate_riddle_buildings))
-        (adapt_script ?solver "goal bruna = new Bruna(start: 160.0, end: 180.0);")
+        (adapt_script ?solver "goal bruna = new Bruna(start: 250.0, end: 270.0);")
         (return ?solver)
     )
 )
@@ -145,6 +157,20 @@
 )
 
 (deffunction ending (?solver_ptr ?id)
+    (do-for-fact ((?t task)) (and (eq ?t:task_type RoadMaintenanceInspection) (eq ?t:id ?id))
+        (do-for-fact ((?m message)) (eq ?m:task_id ?id)
+            (if (eq ?m:answer "Sì") then (retract ?m) (return TRUE))
+            (if (eq ?m:answer "No") then (retract ?m) (return FALSE))
+            (return FALSE)
+        )
+        (bind ?road_id (str-replace (nth$ 3 (fact-slot-value ?t vals)) "r_" ""))
+        (bind ?tech_id (str-replace (nth$ 5 (fact-slot-value ?t vals)) "u_" ""))
+        (bind ?r (nth$ 1 (find-fact ((?r road)) (eq ?r:road_id ?road_id))))
+        (bind ?road_name (fact-slot-value ?r name))
+        (bind ?m_id (send_message info ?tech_id (str-cat "La strada " ?road_name " è in uno stato critico. Hai effettuato il sopralluogo in " ?road_name "?") (create$ "Sì" "No")))
+        (assert (message (task_id ?id) (message_id ?m_id)))
+        (return FALSE)
+    )
     (do-for-fact ((?t task)) (and (eq ?t:task_type RoadMaintenanceDocuments) (eq ?t:id ?id))
         (do-for-fact ((?m message)) (eq ?m:task_id ?id)
             (if (eq ?m:answer "Sì") then (retract ?m) (return TRUE))
@@ -155,7 +181,7 @@
         (bind ?tech_id (str-replace (nth$ 5 (fact-slot-value ?t vals)) "u_" ""))
         (bind ?r (nth$ 1 (find-fact ((?r road)) (eq ?r:road_id ?road_id))))
         (bind ?road_name (fact-slot-value ?r name))
-        (bind ?m_id (send_message info ?tech_id (str-cat "La strada " ?road_name " è in uno stato critico. Hai preparato i documenti per la manutenzione di " ?road_name "?") (create$ "Sì" "No")))
+        (bind ?m_id (send_message info ?tech_id (str-cat "La strada " ?road_name " è in uno stato critico. Hai preparato i documenti per la gara d'appalto per la manutenzione di " ?road_name "?") (create$ "Sì" "No")))
         (assert (message (task_id ?id) (message_id ?m_id)))
         (return FALSE)
     )

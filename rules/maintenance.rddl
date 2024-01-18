@@ -66,9 +66,15 @@ class GreenSpace {
 
 class MaintenanceOffice : Agent {
 
+    predicate RoadMaintenanceInspection(Road r, Technician t) : Interval {
+        duration >= 40.0;
+        fact t_activity = new t.activity.Use(start: start, duration: duration, end: end, amount: 1.0);
+    }
+
     predicate RoadMaintenanceDocuments(Road r, Technician t) : Interval {
         duration >= 40.0;
         fact t_activity = new t.activity.Use(start: start, duration: duration, end: end, amount: 1.0);
+        goal rmi = new RoadMaintenanceInspection(r: r, t: t, end: start);
     }
 
     predicate RoadMaintenanceTender(Road r, Technician t) : Interval {
@@ -76,11 +82,27 @@ class MaintenanceOffice : Agent {
         goal rmd = new RoadMaintenanceDocuments(r: r, t: t, end: start);
     }
 
-    predicate RoadMaintenance(Road r, Technician t) : Interval {
-        duration >= 40.0;
-        goal rm = new HasSkill(u: t, s: s_road_maintenance);
+    predicate RoadMaintenanceContract(Road r, Technician t) : Interval {
+        duration >= 5.0;
         fact t_activity = new t.activity.Use(start: start, duration: duration, end: end, amount: 1.0);
         goal rmd = new RoadMaintenanceTender(r: r, t: t, end: start);
+    }
+
+    predicate RoadMaintenanceWorks(Road r, Technician t) : Interval {
+        duration >= 40.0;
+        goal rmd = new RoadMaintenanceContract(r: r, t: t, end: start);
+    }
+
+    predicate RoadMaintenanceQualityControl(Road r, Technician t) : Interval {
+        duration >= 15.0;
+        fact t_activity = new t.activity.Use(start: start, duration: duration, end: end, amount: 1.0);
+        goal rmw = new RoadMaintenanceWorks(r: r, t: t, end: start);
+    }
+
+    predicate RoadMaintenance(Road r, Technician t) : Interval {
+        duration >= 10.0;
+        goal rm = new HasSkill(u: t, s: s_road_maintenance);
+        goal rmc = new RoadMaintenanceQualityControl(r: r, t: t, end: start);
     }
 
     predicate BuildingMaintenanceDocuments(Building b, Technician t) : Interval {
