@@ -107,7 +107,7 @@ namespace use
             json::json polygon(json::json_type::array);
             for (auto &&p : doc["polygon"].get_array().value)
                 polygon.push_back({p[0].get_double().value, p[1].get_double().value, p[2].get_double().value});
-            pois.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<point_of_interest>(doc["_id"].get_oid().value.to_string(), doc["osm_id"].get_string().value.to_string(), doc["name"].get_string().value.to_string(), doc["type"].get_string().value.to_string(), doc["opening"].get_int32().value, doc["closing"].get_int32().value, std::move(l), std::move(polygon)));
+            pois.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<point_of_interest>(doc["_id"].get_oid().value.to_string(), doc["osm_id"].get_string().value.to_string(), doc["ui_id"].get_string().value.to_string(), doc["name"].get_string().value.to_string(), doc["type"].get_string().value.to_string(), doc["opening"].get_int32().value, doc["closing"].get_int32().value, std::move(l), std::move(polygon)));
         }
     }
 
@@ -409,10 +409,11 @@ namespace use
         }
     }
 
-    std::string urban_sensing_engine_db::create_point_of_interest(const std::string &osm_id, const std::string &name, const std::string &type, long opening, long closing, coco::location_ptr l, json::json polygon)
+    std::string urban_sensing_engine_db::create_point_of_interest(const std::string &osm_id, const std::string &ui_id, const std::string &name, const std::string &type, long opening, long closing, coco::location_ptr l, json::json polygon)
     {
         auto s_doc = bsoncxx::builder::basic::document{};
         s_doc.append(bsoncxx::builder::basic::kvp("osm_id", osm_id));
+        s_doc.append(bsoncxx::builder::basic::kvp("ui_id", ui_id));
         s_doc.append(bsoncxx::builder::basic::kvp("name", name));
         s_doc.append(bsoncxx::builder::basic::kvp("type", type));
         s_doc.append(bsoncxx::builder::basic::kvp("opening", opening));
@@ -434,7 +435,7 @@ namespace use
         if (result)
         {
             auto id = result->inserted_id().get_oid().value.to_string();
-            pois.emplace(id, std::make_unique<point_of_interest>(id, osm_id, name, type, opening, closing, std::move(l), std::move(polygon)));
+            pois.emplace(id, std::make_unique<point_of_interest>(id, osm_id, ui_id, name, type, opening, closing, std::move(l), std::move(polygon)));
             return id;
         }
         else

@@ -220,7 +220,7 @@ namespace use
       return pois_vector;
     }
 
-    std::string create_point_of_interest(const std::string &osm_id, const std::string &name, const std::string &type, long opening, long closing, coco::location_ptr l, json::json polygon);
+    std::string create_point_of_interest(const std::string &osm_id, const std::string &ui_id, const std::string &name, const std::string &type, long opening, long closing, coco::location_ptr l, json::json polygon);
     bool has_point_of_interest(const std::string &id) const { return pois.find(id) != pois.end(); }
     point_of_interest &get_point_of_interest(const std::string &id) { return *pois.at(id); }
 

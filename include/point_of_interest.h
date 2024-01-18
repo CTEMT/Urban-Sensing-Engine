@@ -14,10 +14,11 @@ namespace use
     friend class urban_sensing_engine_db;
 
   public:
-    point_of_interest(const std::string &id, const std::string &osm_id, const std::string &name, const std::string &type, long opening, long closing, coco::location_ptr l, json::json polygon) : id(id), osm_id(osm_id), name(name), type(type), opening(opening), closing(closing), loc(std::move(l)), polygon(std::move(polygon)) {}
+    point_of_interest(const std::string &id, const std::string &osm_id, const std::string &ui_id, const std::string &name, const std::string &type, long opening, long closing, coco::location_ptr l, json::json polygon) : id(id), osm_id(osm_id), ui_id(ui_id), name(name), type(type), opening(opening), closing(closing), loc(std::move(l)), polygon(std::move(polygon)) {}
 
     std::string get_id() const { return id; }
     std::string get_osm_id() const { return osm_id; }
+    std::string get_ui_id() const { return ui_id; }
     std::string get_name() const { return name; }
     std::string get_type() const { return type; }
     long get_opening() const { return opening; }
@@ -28,7 +29,7 @@ namespace use
     Fact *get_fact() const { return fact; }
 
   private:
-    const std::string id, osm_id;
+    const std::string id, osm_id, ui_id;
     std::string name, type;
     long opening, closing;
     coco::location_ptr loc;
@@ -42,6 +43,7 @@ namespace use
     json::json j;
     j["id"] = p.get_id();
     j["osm_id"] = p.get_osm_id();
+    j["ui_id"] = p.get_ui_id();
     j["name"] = p.get_name();
     j["type"] = p.get_type();
     j["opening"] = p.get_opening();
