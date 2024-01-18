@@ -6,6 +6,7 @@
 (deftemplate vehicle_type (slot vehicle_type_id (type SYMBOL)) (slot name (type STRING)) (slot description (type STRING)) (slot manufacturer (type STRING)))
 (deftemplate vehicle (slot vehicle_id (type SYMBOL)) (slot vehicle_type_id (type SYMBOL)) (multislot coordinates (type FLOAT)))
 (deftemplate occupancy (slot tile_id (type SYMBOL)) (slot latitude (type FLOAT)) (slot longitude (type FLOAT)) (slot italians (type INTEGER)) (slot foreigners (type INTEGER)) (slot extraregionals (type INTEGER)) (slot intraregionals (type INTEGER)) (slot total (type INTEGER)))
+(deftemplate point_of_interest (slot id (type SYMBOL)) (slot name (type STRING)) (slot poi_type (type STRING)) (slot latitude (type FLOAT)) (slot longitude (type FLOAT)))
 
 (deftemplate maintaining (slot subject_id (type SYMBOL)))
 (deftemplate message (slot task_id (type INTEGER)) (slot message_id (type SYMBOL)) (slot answer (type STRING)))

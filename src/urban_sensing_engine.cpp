@@ -246,6 +246,14 @@ namespace use
             o.get().fact = AssertString(env, fact_str.c_str());
         }
 
+        // we assert the pois facts..
+        for (auto &p : db.get_points_of_interest())
+        {
+            fact_str = "(point_of_interest (id " + p.get().get_id() + ") (name \"" + p.get().get_name() + "\") (poi_type \"" + p.get().get_type() + "\") (latitude " + std::to_string(p.get().get_location()->y) + ") (longitude " + std::to_string(p.get().get_location()->x) + "))";
+            // LOG_DEBUG("Asserting fact: " << fact_str);
+            p.get().fact = AssertString(env, fact_str.c_str());
+        }
+
         // we run the rules engine to update the policy..
         Run(env, -1);
 

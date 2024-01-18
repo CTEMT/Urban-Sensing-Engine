@@ -6,7 +6,7 @@
 
 namespace use
 {
-    urban_sensing_engine_db::urban_sensing_engine_db(const std::string &root, const std::string &mongodb_uri) : mongo_db(root, mongodb_uri), users_collection(db["users"]), messages_collection(db["messages"]), intersections_collection(db["intersections"]), roads_collection(db["roads"]), buildings_collection(db["buildings"]), vehicle_types_collection(db["vehicle_types"]), vehicles_collection(db["vehicles"]), occupancies_collection(db["occupancies"]) {}
+    urban_sensing_engine_db::urban_sensing_engine_db(const std::string &root, const std::string &mongodb_uri) : mongo_db(root, mongodb_uri), users_collection(db["users"]), messages_collection(db["messages"]), intersections_collection(db["intersections"]), roads_collection(db["roads"]), buildings_collection(db["buildings"]), vehicle_types_collection(db["vehicle_types"]), vehicles_collection(db["vehicles"]), occupancies_collection(db["occupancies"]), pois_collection(db["pois"]) { init(); }
 
     void urban_sensing_engine_db::init()
     {
@@ -98,6 +98,17 @@ namespace use
         for (const auto &doc : occupancies_collection.find({}))
             occupancies.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<occupancy>(doc["_id"].get_oid().value.to_string(), std::make_unique<coco::location>(doc["location"]["x"].get_double().value, doc["location"]["y"].get_double().value), doc["italians"].get_int32().value, doc["foreigners"].get_int32().value, doc["extraregionals"].get_int32().value, doc["intraregionals"].get_int32().value, doc["total"].get_int32().value));
         LOG("Retrieved " << occupancies.size() << " occupancies..");
+
+        pois.clear();
+        LOG("Retrieving all points of interest..");
+        for (const auto &doc : pois_collection.find({}))
+        {
+            coco::location_ptr l = std::make_unique<coco::location>(doc["location"]["y"].get_double().value, doc["location"]["x"].get_double().value);
+            json::json polygon(json::json_type::array);
+            for (auto &&p : doc["polygon"].get_array().value)
+                polygon.push_back({p[0].get_double().value, p[1].get_double().value, p[2].get_double().value});
+            pois.emplace(doc["_id"].get_oid().value.to_string(), std::make_unique<point_of_interest>(doc["_id"].get_oid().value.to_string(), doc["osm_id"].get_string().value.to_string(), doc["name"].get_string().value.to_string(), doc["type"].get_string().value.to_string(), doc["opening"].get_int32().value, doc["closing"].get_int32().value, std::move(l), std::move(polygon)));
+        }
     }
 
     std::string urban_sensing_engine_db::create_user(const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const user_role &role, const std::vector<std::string> &skills)
@@ -396,5 +407,37 @@ namespace use
             o.intraregionals = intraregional;
             o.total = total;
         }
+    }
+
+    std::string urban_sensing_engine_db::create_point_of_interest(const std::string &osm_id, const std::string &name, const std::string &type, long opening, long closing, coco::location_ptr l, json::json polygon)
+    {
+        auto s_doc = bsoncxx::builder::basic::document{};
+        s_doc.append(bsoncxx::builder::basic::kvp("osm_id", osm_id));
+        s_doc.append(bsoncxx::builder::basic::kvp("name", name));
+        s_doc.append(bsoncxx::builder::basic::kvp("type", type));
+        s_doc.append(bsoncxx::builder::basic::kvp("opening", opening));
+        s_doc.append(bsoncxx::builder::basic::kvp("closing", closing));
+        s_doc.append(bsoncxx::builder::basic::kvp("location", [&l](bsoncxx::builder::basic ::sub_document subdoc)
+                                                  { subdoc.append(bsoncxx::builder::basic::kvp("x", l->x), bsoncxx::builder::basic::kvp("y", l->y)); }));
+        auto coordinates_array = bsoncxx::builder::basic::array{};
+        for (auto &c : polygon.get_array())
+        {
+            auto point = bsoncxx::builder::basic::array{};
+            point.append(static_cast<double>(c[0]));
+            point.append(static_cast<double>(c[1]));
+            point.append(static_cast<double>(c[2]));
+            coordinates_array.append(point);
+        }
+        s_doc.append(bsoncxx::builder::basic::kvp("polygon", coordinates_array));
+
+        auto result = pois_collection.insert_one(s_doc.view());
+        if (result)
+        {
+            auto id = result->inserted_id().get_oid().value.to_string();
+            pois.emplace(id, std::make_unique<point_of_interest>(id, osm_id, name, type, opening, closing, std::move(l), std::move(polygon)));
+            return id;
+        }
+        else
+            return {};
     }
 } // namespace use
