@@ -129,9 +129,13 @@ namespace use
             return;
 
         coco::location_ptr l;
-        UDFValue location;
-        if (UDFNextArgument(udfc, MULTIFIELD_BIT, &location))
+        if (UDFHasNextArgument(udfc))
+        {
+            UDFValue location;
+            if (!UDFNextArgument(udfc, MULTIFIELD_BIT, &location))
+                return;
             l = std::make_unique<coco::location>(location.multifieldValue->contents[0].floatValue->contents, location.multifieldValue->contents[1].floatValue->contents);
+        }
 
         std::vector<std::string> as;
         for (size_t i = 0; i < answers.multifieldValue->length; i++)
