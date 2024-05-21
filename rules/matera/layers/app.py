@@ -7,11 +7,11 @@ def index():
     return render_template('index.html')
 
 @app.route('/chiese_rupestri')
-def alberature():
+def chiese_rupestri():
     return render_template('Chiese_Rupestri.geojson')
 
 @app.route('/chiese')
-def alberature():
+def chiese():
     return render_template('Chiese.geojson')
 
 if __name__ == '__main__':

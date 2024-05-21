@@ -41,12 +41,13 @@
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
 
-
+        const overlays = {};
         getGeoJson().then(data => {
-            const overlays = {
-                "Alberature": L.geoJSON(data)
-            };
-            L.control.layers(null, overlays).addTo(map);
+            for (const l of data) {
+                const layer = L.geoJSON(l);
+                overlays[l.name] = layer;
+            }
+            L.control.layers({}, overlays).addTo(map);
         });
 
         async function getGeoJson() {
