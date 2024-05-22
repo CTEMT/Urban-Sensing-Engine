@@ -6,6 +6,10 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
+@app.route('/alberature')
+def alberature():
+    return render_template('Alberature_PdV.geojson')
+
 @app.route('/Attrezzature_Ludiche_PdV')
 def attrezzature_ludiche_pdv():
     return render_template('Attrezzature_Ludiche_PdV.geojson')
