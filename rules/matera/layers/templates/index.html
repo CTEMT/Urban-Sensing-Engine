@@ -44,20 +44,35 @@
         const overlays = {};
         getGeoJson().then(data => {
             for (const l of data) {
-                const layer = L.geoJSON(l);
-                overlays[l.name] = layer;
+                switch (l.name) {
+                    case 'Attrezzature_Ludiche_PdV':
+                        overlays[l.name] = L.geoJSON(l, { pointToLayer: (feature, latlng) => L.marker(latlng, { icon: L.icon({ iconUrl: '/static/toys.png', iconSize: [16, 16] }) }) });
+                        break;
+                    case 'Chiese_Rupestri':
+                        overlays[l.name] = L.geoJSON(l, { pointToLayer: (feature, latlng) => L.marker(latlng, { icon: L.icon({ iconUrl: '/static/cave.png', iconSize: [16, 16] }) }) });
+                        break;
+                    case 'Chiese':
+                        overlays[l.name] = L.geoJSON(l, { pointToLayer: (feature, latlng) => L.marker(latlng, { icon: L.icon({ iconUrl: '/static/church.png', iconSize: [16, 16] }) }) });
+                        break;
+                    default:
+                        overlays[l.name] = L.geoJSON(l);
+                        break;
+                }
             }
             L.control.layers({}, overlays).addTo(map);
         });
 
         async function getGeoJson() {
+            console.log('Fetching toys');
+            const toys = await (await fetch('Attrezzature_Ludiche_PdV')).json();
+            console.log(toys);
             console.log('Fetching chiese_rupestri');
             const chiese_rupestri = await (await fetch('chiese_rupestri')).json();
             console.log(chiese_rupestri);
             console.log('Fetching chiese');
             const chiese = await (await fetch('chiese')).json();
             console.log(chiese);
-            return [chiese_rupestri, chiese]
+            return [toys, chiese_rupestri, chiese]
         }
     </script>
 </body>
