@@ -3,6 +3,6 @@
 int main(int argc, char const *argv[])
 {
     uspe::uspe service;
-    service.start();
+    service.network::server::start();
     return 0;
 }
