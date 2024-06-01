@@ -8,9 +8,10 @@ enable_testing()
 add_subdirectory(extern/coco)
 add_subdirectory(extern/network)
 
-add_executable(UrbanSensingAndPlanningEngine src/main.cpp)
-target_include_directories(UrbanSensingAndPlanningEngine PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/mongo> ${LIBMONGOCXX_INCLUDE_DIR} ${LIBBSONCXX_INCLUDE_DIR} ${CLIPS_INCLUDE_DIR})
+add_executable(UrbanSensingAndPlanningEngine src/main.cpp src/uspe.cpp)
+target_include_directories(UrbanSensingAndPlanningEngine PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 add_dependencies(UrbanSensingAndPlanningEngine CoCo ratioNet)
+target_link_libraries(UrbanSensingAndPlanningEngine CoCo ratioNet)
 
 if(MSVC)
     target_compile_options(CoCo PRIVATE /W4)
