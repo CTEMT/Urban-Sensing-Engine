@@ -1,3 +1,6 @@
 [submodule "extern/coco"]
 	path = extern/coco
 	url = https://github.com/ratioSolver/COCO
+[submodule "extern/network"]
+	path = extern/network
+	url = https://github.com/ratioSolver/ratioNet
