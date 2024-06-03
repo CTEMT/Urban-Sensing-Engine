@@ -1,0 +1,1325 @@
+{
+    "asyncapi": "3.0.0",
+    "channels": {
+        "coco": {
+            "address": "/"
+        }
+    },
+    "components": {
+        "messages": {
+            "causal_link_added_message": {
+                "payload": {
+                    "properties": {
+                        "flaw_id": {
+                            "description": "The ID of the flaw",
+                            "type": "integer"
+                        },
+                        "resolver_id": {
+                            "description": "The ID of the resolver",
+                            "type": "integer"
+                        },
+                        "solver_id": {
+                            "description": "The ID of the solver",
+                            "type": "integer"
+                        },
+                        "type": {
+                            "enum": [
+                                "causal_link_added"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
+            "current_flaw_message": {
+                "payload": {
+                    "properties": {
+                        "id": {
+                            "description": "The ID of the flaw",
+                            "type": "integer"
+                        },
+                        "solver_id": {
+                            "description": "The ID of the solver",
+                            "type": "integer"
+                        },
+                        "type": {
+                            "enum": [
+                                "current_flaw"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
+            "current_resolver_message": {
+                "payload": {
+                    "properties": {
+                        "id": {
+                            "description": "The ID of the resolver",
+                            "type": "integer"
+                        },
+                        "solver_id": {
+                            "description": "The ID of the solver",
+                            "type": "integer"
+                        },
+                        "type": {
+                            "enum": [
+                                "current_resolver"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
+            "executor_state_message": {
+                "payload": {
+                    "properties": {
+                        "id": {
+                            "type": "string"
+                        },
+                        "state": {
+                            "enum": [
+                                "reasoning",
+                                "adapting",
+                                "idle",
+                                "executing",
+                                "finished",
+                                "failed"
+                            ],
+                            "type": "string"
+                        },
+                        "type": {
+                            "enum": [
+                                "executor_state"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "state"
+                    ],
+                    "type": "object"
+                }
+            },
+            "flaw_cost_changed_message": {
+                "payload": {
+                    "properties": {
+                        "cost": {
+                            "$ref": "#/components/schemas/rational"
+                        },
+                        "id": {
+                            "description": "The ID of the flaw",
+                            "type": "integer"
+                        },
+                        "solver_id": {
+                            "description": "The ID of the solver",
+                            "type": "integer"
+                        },
+                        "type": {
+                            "enum": [
+                                "flaw_cost_changed"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
+            "flaw_created_message": {
+                "payload": {
+                    "allOf": [
+                        {
+                            "$ref": "#/components/schemas/flaw"
+                        }
+                    ],
+                    "properties": {
+                        "solver_id": {
+                            "description": "The ID of the solver",
+                            "type": "integer"
+                        },
+                        "type": {
+                            "enum": [
+                                "flaw_created"
+                            ],
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "flaw_position_changed_message": {
+                "payload": {
+                    "properties": {
+                        "id": {
+                            "description": "The ID of the flaw",
+                            "type": "integer"
+                        },
+                        "position": {
+                            "type": "integer"
+                        },
+                        "solver_id": {
+                            "description": "The ID of the solver",
+                            "type": "integer"
+                        },
+                        "type": {
+                            "enum": [
+                                "flaw_position_changed"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
+            "flaw_state_changed_message": {
+                "payload": {
+                    "properties": {
+                        "id": {
+                            "description": "The ID of the flaw",
+                            "type": "integer"
+                        },
+                        "solver_id": {
+                            "description": "The ID of the solver",
+                            "type": "integer"
+                        },
+                        "state": {
+                            "enum": [
+                                "active",
+                                "forbidden",
+                                "inactive"
+                            ],
+                            "type": "string"
+                        },
+                        "type": {
+                            "enum": [
+                                "flaw_state_changed"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
+            "graph_message": {
+                "payload": {
+                    "allOf": [
+                        {
+                            "$ref": "#/components/schemas/solver_graph"
+                        }
+                    ],
+                    "properties": {
+                        "id": {
+                            "description": "The ID of the solver",
+                            "type": "integer"
+                        },
+                        "type": {
+                            "enum": [
+                                "graph"
+                            ],
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "new_executor_message": {
+                "payload": {
+                    "properties": {
+                        "id": {
+                            "type": "string"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "state": {
+                            "enum": [
+                                "reasoning",
+                                "adapting",
+                                "idle",
+                                "executing",
+                                "finished",
+                                "failed"
+                            ],
+                            "type": "string"
+                        },
+                        "time": {
+                            "$ref": "#/components/schemas/rational"
+                        },
+                        "type": {
+                            "enum": [
+                                "new_executor"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "name",
+                        "state"
+                    ],
+                    "type": "object"
+                }
+            },
+            "resolver_created_message": {
+                "payload": {
+                    "allOf": [
+                        {
+                            "$ref": "#/components/schemas/resolver"
+                        }
+                    ],
+                    "properties": {
+                        "solver_id": {
+                            "description": "The ID of the solver",
+                            "type": "integer"
+                        },
+                        "type": {
+                            "enum": [
+                                "resolver_created"
+                            ],
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "resolver_state_changed_message": {
+                "payload": {
+                    "properties": {
+                        "id": {
+                            "description": "The ID of the resolver",
+                            "type": "integer"
+                        },
+                        "solver_id": {
+                            "description": "The ID of the solver",
+                            "type": "integer"
+                        },
+                        "state": {
+                            "enum": [
+                                "active",
+                                "forbidden",
+                                "inactive"
+                            ],
+                            "type": "string"
+                        },
+                        "type": {
+                            "enum": [
+                                "resolver_state_changed"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
+            "state_message": {
+                "payload": {
+                    "allOf": [
+                        {
+                            "$ref": "#/components/schemas/solver_state"
+                        }
+                    ],
+                    "properties": {
+                        "executing_atoms": {
+                            "description": "The IDs of the atoms that are currently executing.",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "type": "array"
+                        },
+                        "id": {
+                            "type": "integer"
+                        },
+                        "timelines": {
+                            "items": {
+                                "$ref": "#/components/schemas/timeline"
+                            },
+                            "type": "array"
+                        },
+                        "type": {
+                            "enum": [
+                                "solver_state"
+                            ],
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "tick_message": {
+                "payload": {
+                    "properties": {
+                        "solver_id": {
+                            "type": "string"
+                        },
+                        "time": {
+                            "$ref": "#/components/schemas/rational"
+                        },
+                        "type": {
+                            "enum": [
+                                "tick"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            }
+        },
+        "schemas": {
+            "agent_timeline": {
+                "description": "Schema representing an agent timeline",
+                "properties": {
+                    "id": {
+                        "description": "The ID of the agent",
+                        "type": "integer"
+                    },
+                    "name": {
+                        "description": "The name of the agent",
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "Agent"
+                        ],
+                        "type": "string"
+                    },
+                    "values": {
+                        "description": "Array of atom IDs",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "id",
+                    "type",
+                    "name"
+                ],
+                "type": "object"
+            },
+            "array_parameter": {
+                "properties": {
+                    "array_type": {
+                        "$ref": "#/components/schemas/parameter"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "shape": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array"
+                    },
+                    "type": {
+                        "enum": [
+                            "array"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name",
+                    "type",
+                    "array_type",
+                    "shape"
+                ],
+                "type": "object"
+            },
+            "atom": {
+                "properties": {
+                    "exprs": {
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/value"
+                        },
+                        "type": "object"
+                    },
+                    "id": {
+                        "type": "integer"
+                    },
+                    "is_fact": {
+                        "type": "boolean"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "sigma": {
+                        "type": "integer"
+                    },
+                    "status": {
+                        "enum": [
+                            "Active",
+                            "Inactive",
+                            "Unified"
+                        ],
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "is_fact",
+                    "sigma",
+                    "type",
+                    "name",
+                    "status"
+                ],
+                "type": "object"
+            },
+            "bool_value": {
+                "properties": {
+                    "lit": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "bool"
+                        ],
+                        "type": "string"
+                    },
+                    "val": {
+                        "enum": [
+                            "True",
+                            "False",
+                            "Undefined"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "type",
+                    "lit",
+                    "val"
+                ],
+                "type": "object"
+            },
+            "boolean_parameter": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "boolean"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name",
+                    "type"
+                ],
+                "type": "object"
+            },
+            "coco_item": {
+                "properties": {
+                    "id": {
+                        "format": "uuid",
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "parameters": {
+                        "type": "object"
+                    },
+                    "type": {
+                        "format": "uuid",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "coco_rule": {
+                "properties": {
+                    "content": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "format": "uuid",
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "coco_type": {
+                "properties": {
+                    "description": {
+                        "type": "string"
+                    },
+                    "dynamic_parameters": {
+                        "items": {
+                            "$ref": "#/components/schemas/parameter"
+                        },
+                        "type": "array"
+                    },
+                    "id": {
+                        "format": "uuid",
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "static_parameters": {
+                        "items": {
+                            "$ref": "#/components/schemas/parameter"
+                        },
+                        "type": "array"
+                    }
+                },
+                "type": "object"
+            },
+            "consumable_resource_timeline": {
+                "properties": {
+                    "capacity": {
+                        "$ref": "#/components/schemas/rational"
+                    },
+                    "id": {
+                        "type": "integer"
+                    },
+                    "initial_amount": {
+                        "$ref": "#/components/schemas/rational"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "ConsumableResource"
+                        ],
+                        "type": "string"
+                    },
+                    "values": {
+                        "items": {
+                            "$ref": "#/components/schemas/consumable_resource_timeline_value"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "id",
+                    "type",
+                    "name",
+                    "capacity",
+                    "initial_amount"
+                ],
+                "type": "object"
+            },
+            "consumable_resource_timeline_value": {
+                "properties": {
+                    "atoms": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array"
+                    },
+                    "end": {
+                        "$ref": "#/components/schemas/rational"
+                    },
+                    "from": {
+                        "$ref": "#/components/schemas/rational"
+                    },
+                    "start": {
+                        "$ref": "#/components/schemas/rational"
+                    },
+                    "to": {
+                        "$ref": "#/components/schemas/rational"
+                    }
+                },
+                "required": [
+                    "from",
+                    "to",
+                    "start",
+                    "end"
+                ],
+                "type": "object"
+            },
+            "data": {
+                "properties": {
+                    "data": {
+                        "type": "object"
+                    },
+                    "timestamp": {
+                        "format": "date-time",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "enum_value": {
+                "properties": {
+                    "type": {
+                        "enum": [
+                            "enum"
+                        ],
+                        "type": "string"
+                    },
+                    "vals": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array"
+                    },
+                    "var": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "type",
+                    "var",
+                    "vals"
+                ],
+                "type": "object"
+            },
+            "error": {
+                "properties": {
+                    "code": {
+                        "type": "integer"
+                    },
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "flaw": {
+                "properties": {
+                    "causes": {
+                        "description": "The resolvers that caused this flaw.",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array"
+                    },
+                    "cost": {
+                        "$ref": "#/components/schemas/rational"
+                    },
+                    "data": {
+                        "type": "object"
+                    },
+                    "id": {
+                        "type": "integer"
+                    },
+                    "phi": {
+                        "type": "string"
+                    },
+                    "pos": {
+                        "type": "integer"
+                    },
+                    "state": {
+                        "enum": [
+                            "active",
+                            "forbidden",
+                            "inactive"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "causes",
+                    "state",
+                    "pos",
+                    "phi",
+                    "cost"
+                ],
+                "type": "object"
+            },
+            "inf_rational": {
+                "properties": {
+                    "den": {
+                        "type": "integer"
+                    },
+                    "inf": {
+                        "$ref": "#/components/schemas/rational"
+                    },
+                    "num": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "num",
+                    "den"
+                ],
+                "type": "object"
+            },
+            "int_value": {
+                "properties": {
+                    "lb": {
+                        "$ref": "#/components/schemas/inf_rational"
+                    },
+                    "lin": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "int"
+                        ],
+                        "type": "string"
+                    },
+                    "ub": {
+                        "$ref": "#/components/schemas/inf_rational"
+                    },
+                    "val": {
+                        "$ref": "#/components/schemas/inf_rational"
+                    }
+                },
+                "required": [
+                    "type",
+                    "lin",
+                    "val"
+                ],
+                "type": "object"
+            },
+            "integer_parameter": {
+                "properties": {
+                    "max": {
+                        "type": "integer"
+                    },
+                    "min": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "integer"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name",
+                    "type"
+                ],
+                "type": "object"
+            },
+            "item": {
+                "properties": {
+                    "exprs": {
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/value"
+                        },
+                        "type": "object"
+                    },
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "type",
+                    "name"
+                ],
+                "type": "object"
+            },
+            "object_value": {
+                "properties": {
+                    "type": {
+                        "enum": [
+                            "object"
+                        ],
+                        "type": "string"
+                    },
+                    "val": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "type",
+                    "val"
+                ],
+                "type": "object"
+            },
+            "parameter": {
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/integer_parameter"
+                    },
+                    {
+                        "$ref": "#/components/schemas/real_parameter"
+                    },
+                    {
+                        "$ref": "#/components/schemas/boolean_parameter"
+                    },
+                    {
+                        "$ref": "#/components/schemas/symbol_parameter"
+                    },
+                    {
+                        "$ref": "#/components/schemas/string_parameter"
+                    },
+                    {
+                        "$ref": "#/components/schemas/array_parameter"
+                    }
+                ]
+            },
+            "rational": {
+                "properties": {
+                    "den": {
+                        "type": "integer"
+                    },
+                    "num": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "num",
+                    "den"
+                ],
+                "type": "object"
+            },
+            "real_parameter": {
+                "properties": {
+                    "max": {
+                        "type": "number"
+                    },
+                    "min": {
+                        "type": "number"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "real"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name",
+                    "type"
+                ],
+                "type": "object"
+            },
+            "real_value": {
+                "properties": {
+                    "lb": {
+                        "$ref": "#/components/schemas/inf_rational"
+                    },
+                    "lin": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "real"
+                        ],
+                        "type": "string"
+                    },
+                    "ub": {
+                        "$ref": "#/components/schemas/inf_rational"
+                    },
+                    "val": {
+                        "$ref": "#/components/schemas/inf_rational"
+                    }
+                },
+                "required": [
+                    "type",
+                    "lin",
+                    "val"
+                ],
+                "type": "object"
+            },
+            "resolver": {
+                "properties": {
+                    "data": {
+                        "type": "object"
+                    },
+                    "flaw": {
+                        "description": "The flaw this resolver solves.",
+                        "type": "integer"
+                    },
+                    "id": {
+                        "type": "integer"
+                    },
+                    "intrinsic_cost": {
+                        "$ref": "#/components/schemas/rational"
+                    },
+                    "pos": {
+                        "type": "integer"
+                    },
+                    "preconditions": {
+                        "description": "The preconditions that must be satisfied for this resolver to be applied.",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array"
+                    },
+                    "rho": {
+                        "type": "string"
+                    },
+                    "state": {
+                        "enum": [
+                            "active",
+                            "forbidden",
+                            "inactive"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "state",
+                    "flaw",
+                    "rho",
+                    "pos",
+                    "preconditions",
+                    "intrinsic_cost"
+                ],
+                "type": "object"
+            },
+            "reusable_resource_timeline": {
+                "properties": {
+                    "capacity": {
+                        "$ref": "#/components/schemas/rational"
+                    },
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "ReusableResource"
+                        ],
+                        "type": "string"
+                    },
+                    "values": {
+                        "items": {
+                            "$ref": "#/components/schemas/reusable_resource_timeline_value"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "id",
+                    "type",
+                    "name",
+                    "capacity"
+                ],
+                "type": "object"
+            },
+            "reusable_resource_timeline_value": {
+                "properties": {
+                    "atoms": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array"
+                    },
+                    "from": {
+                        "$ref": "#/components/schemas/rational"
+                    },
+                    "to": {
+                        "$ref": "#/components/schemas/rational"
+                    },
+                    "usage": {
+                        "$ref": "#/components/schemas/rational"
+                    }
+                },
+                "required": [
+                    "from",
+                    "to",
+                    "usage"
+                ],
+                "type": "object"
+            },
+            "solver_graph": {
+                "properties": {
+                    "current_flaw": {
+                        "type": "integer"
+                    },
+                    "current_resolver": {
+                        "type": "integer"
+                    },
+                    "flaws": {
+                        "items": {
+                            "$ref": "#/components/schemas/flaw"
+                        },
+                        "type": "array"
+                    },
+                    "resolvers": {
+                        "items": {
+                            "$ref": "#/components/schemas/resolver"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "flaws",
+                    "resolvers"
+                ],
+                "type": "object"
+            },
+            "solver_state": {
+                "properties": {
+                    "atoms": {
+                        "items": {
+                            "$ref": "#/components/schemas/atom"
+                        },
+                        "type": "array"
+                    },
+                    "exprs": {
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/value"
+                        },
+                        "type": "object"
+                    },
+                    "items": {
+                        "items": {
+                            "$ref": "#/components/schemas/item"
+                        },
+                        "type": "array"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name"
+                ],
+                "type": "object"
+            },
+            "solver_timeline": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "Solver"
+                        ],
+                        "type": "string"
+                    },
+                    "values": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "id",
+                    "type",
+                    "name"
+                ],
+                "type": "object"
+            },
+            "state_variable_timeline": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "StateVariable"
+                        ],
+                        "type": "string"
+                    },
+                    "values": {
+                        "items": {
+                            "$ref": "#/components/schemas/state_variable_timeline_value"
+                        },
+                        "type": "array"
+                    }
+                },
+                "required": [
+                    "id",
+                    "type",
+                    "name"
+                ],
+                "type": "object"
+            },
+            "state_variable_timeline_value": {
+                "properties": {
+                    "atoms": {
+                        "items": {
+                            "type": "integer"
+                        },
+                        "type": "array"
+                    },
+                    "from": {
+                        "$ref": "#/components/schemas/rational"
+                    },
+                    "to": {
+                        "$ref": "#/components/schemas/rational"
+                    }
+                },
+                "required": [
+                    "from",
+                    "to",
+                    "atoms"
+                ],
+                "type": "object"
+            },
+            "string_parameter": {
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "string"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name",
+                    "type"
+                ],
+                "type": "object"
+            },
+            "string_value": {
+                "properties": {
+                    "type": {
+                        "enum": [
+                            "string"
+                        ],
+                        "type": "string"
+                    },
+                    "val": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "type",
+                    "val"
+                ],
+                "type": "object"
+            },
+            "symbol_parameter": {
+                "properties": {
+                    "multiple": {
+                        "type": "boolean"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "symbols": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "type": {
+                        "enum": [
+                            "symbol"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name",
+                    "type",
+                    "symbols"
+                ],
+                "type": "object"
+            },
+            "time_value": {
+                "properties": {
+                    "lb": {
+                        "$ref": "#/components/schemas/inf_rational"
+                    },
+                    "lin": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "enum": [
+                            "time"
+                        ],
+                        "type": "string"
+                    },
+                    "ub": {
+                        "$ref": "#/components/schemas/inf_rational"
+                    },
+                    "val": {
+                        "$ref": "#/components/schemas/inf_rational"
+                    }
+                },
+                "required": [
+                    "type",
+                    "lin",
+                    "val"
+                ],
+                "type": "object"
+            },
+            "timeline": {
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/solver_timeline"
+                    },
+                    {
+                        "$ref": "#/components/schemas/agent_timeline"
+                    },
+                    {
+                        "$ref": "#/components/schemas/state_variable_timeline"
+                    },
+                    {
+                        "$ref": "#/components/schemas/reusable_resource_timeline"
+                    },
+                    {
+                        "$ref": "#/components/schemas/consumable_resource_timeline"
+                    }
+                ]
+            },
+            "value": {
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/bool_value"
+                    },
+                    {
+                        "$ref": "#/components/schemas/int_value"
+                    },
+                    {
+                        "$ref": "#/components/schemas/real_value"
+                    },
+                    {
+                        "$ref": "#/components/schemas/time_value"
+                    },
+                    {
+                        "$ref": "#/components/schemas/string_value"
+                    },
+                    {
+                        "$ref": "#/components/schemas/enum_value"
+                    },
+                    {
+                        "$ref": "#/components/schemas/object_value"
+                    }
+                ]
+            }
+        }
+    },
+    "info": {
+        "description": "The Urban Sensing & Planning Engine WebSocket API",
+        "title": "Urban Sensing & Planning Engine API",
+        "version": "1.0"
+    },
+    "servers": {
+        "coco": {
+            "host": "0.0.0.0:8080",
+            "pathname": "/coco",
+            "protocol": "ws"
+        }
+    }
+}
