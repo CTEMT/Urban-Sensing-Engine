@@ -8,7 +8,7 @@ enable_testing()
 add_subdirectory(extern/coco)
 add_subdirectory(extern/network)
 
-add_executable(UrbanSensingAndPlanningEngine src/main.cpp src/uspe.cpp src/uspe_db.cpp)
+add_executable(UrbanSensingAndPlanningEngine src/main.cpp src/uspe_server.cpp src/uspe_db.cpp)
 target_include_directories(UrbanSensingAndPlanningEngine PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 add_dependencies(UrbanSensingAndPlanningEngine CoCo ratioNet)
 target_link_libraries(UrbanSensingAndPlanningEngine CoCo ratioNet)

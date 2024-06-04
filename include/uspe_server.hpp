@@ -12,7 +12,7 @@ namespace uspe
    * This module provides functionality for the Urban Sensing and Planning Engine (USPE).
    * The `uspe` class represents the main interface for interacting with the USPE module.
    */
-  class uspe final : public coco::coco_core, public network::server
+  class uspe_server final : public coco::coco_core, public network::server
   {
   public:
     /**
@@ -20,7 +20,7 @@ namespace uspe
      *
      * @param db A unique pointer to the `uspe_db` object that represents the Urban Sensing and Planning Engine database.
      */
-    uspe(std::unique_ptr<uspe_db> &&db);
+    uspe_server(std::unique_ptr<uspe_db> &&db);
   };
 
   const json::json geometry_schema{{"geometry",
