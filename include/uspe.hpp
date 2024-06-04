@@ -1,15 +1,26 @@
 #pragma once
 
-#include "coco_db.hpp"
+#include "uspe_db.hpp"
 #include "coco_core.hpp"
 #include "server.hpp"
 
 namespace uspe
 {
+  /**
+   * @brief Urban Sensing and Planning Engine (USPE) module.
+   *
+   * This module provides functionality for the Urban Sensing and Planning Engine (USPE).
+   * The `uspe` class represents the main interface for interacting with the USPE module.
+   */
   class uspe final : public coco::coco_core, public network::server
   {
   public:
-    uspe();
+    /**
+     * @brief Constructs a new Urban Sensing and Planning Engine object with the given database.
+     *
+     * @param db A unique pointer to the `uspe_db` object that represents the Urban Sensing and Planning Engine database.
+     */
+    uspe(std::unique_ptr<uspe_db> &&db);
   };
 
   const json::json geometry_schema{{"geometry",

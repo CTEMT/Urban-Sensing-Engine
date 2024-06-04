@@ -1,7 +1,6 @@
 #include "uspe.hpp"
-#include "uspe_db.hpp"
 
 namespace uspe
 {
-    uspe::uspe() : coco::coco_core(std::make_unique<uspe_db>()) {}
+    uspe::uspe(std::unique_ptr<uspe_db> &&db) : coco::coco_core(std::move(db)) {}
 } // namespace uspe
