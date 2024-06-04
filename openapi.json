@@ -1,364 +1,5 @@
 {
     "components": {
-        "messages": {
-            "causal_link_added_message": {
-                "payload": {
-                    "properties": {
-                        "flaw_id": {
-                            "description": "The ID of the flaw",
-                            "type": "integer"
-                        },
-                        "resolver_id": {
-                            "description": "The ID of the resolver",
-                            "type": "integer"
-                        },
-                        "solver_id": {
-                            "description": "The ID of the solver",
-                            "type": "integer"
-                        },
-                        "type": {
-                            "enum": [
-                                "causal_link_added"
-                            ],
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                }
-            },
-            "current_flaw_message": {
-                "payload": {
-                    "properties": {
-                        "id": {
-                            "description": "The ID of the flaw",
-                            "type": "integer"
-                        },
-                        "solver_id": {
-                            "description": "The ID of the solver",
-                            "type": "integer"
-                        },
-                        "type": {
-                            "enum": [
-                                "current_flaw"
-                            ],
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                }
-            },
-            "current_resolver_message": {
-                "payload": {
-                    "properties": {
-                        "id": {
-                            "description": "The ID of the resolver",
-                            "type": "integer"
-                        },
-                        "solver_id": {
-                            "description": "The ID of the solver",
-                            "type": "integer"
-                        },
-                        "type": {
-                            "enum": [
-                                "current_resolver"
-                            ],
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                }
-            },
-            "executor_state_message": {
-                "payload": {
-                    "properties": {
-                        "id": {
-                            "type": "string"
-                        },
-                        "state": {
-                            "enum": [
-                                "reasoning",
-                                "adapting",
-                                "idle",
-                                "executing",
-                                "finished",
-                                "failed"
-                            ],
-                            "type": "string"
-                        },
-                        "type": {
-                            "enum": [
-                                "executor_state"
-                            ],
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "id",
-                        "state"
-                    ],
-                    "type": "object"
-                }
-            },
-            "flaw_cost_changed_message": {
-                "payload": {
-                    "properties": {
-                        "cost": {
-                            "$ref": "#/components/schemas/rational"
-                        },
-                        "id": {
-                            "description": "The ID of the flaw",
-                            "type": "integer"
-                        },
-                        "solver_id": {
-                            "description": "The ID of the solver",
-                            "type": "integer"
-                        },
-                        "type": {
-                            "enum": [
-                                "flaw_cost_changed"
-                            ],
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                }
-            },
-            "flaw_created_message": {
-                "payload": {
-                    "allOf": [
-                        {
-                            "$ref": "#/components/schemas/flaw"
-                        }
-                    ],
-                    "properties": {
-                        "solver_id": {
-                            "description": "The ID of the solver",
-                            "type": "integer"
-                        },
-                        "type": {
-                            "enum": [
-                                "flaw_created"
-                            ],
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "flaw_position_changed_message": {
-                "payload": {
-                    "properties": {
-                        "id": {
-                            "description": "The ID of the flaw",
-                            "type": "integer"
-                        },
-                        "position": {
-                            "type": "integer"
-                        },
-                        "solver_id": {
-                            "description": "The ID of the solver",
-                            "type": "integer"
-                        },
-                        "type": {
-                            "enum": [
-                                "flaw_position_changed"
-                            ],
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                }
-            },
-            "flaw_state_changed_message": {
-                "payload": {
-                    "properties": {
-                        "id": {
-                            "description": "The ID of the flaw",
-                            "type": "integer"
-                        },
-                        "solver_id": {
-                            "description": "The ID of the solver",
-                            "type": "integer"
-                        },
-                        "state": {
-                            "enum": [
-                                "active",
-                                "forbidden",
-                                "inactive"
-                            ],
-                            "type": "string"
-                        },
-                        "type": {
-                            "enum": [
-                                "flaw_state_changed"
-                            ],
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                }
-            },
-            "graph_message": {
-                "payload": {
-                    "allOf": [
-                        {
-                            "$ref": "#/components/schemas/solver_graph"
-                        }
-                    ],
-                    "properties": {
-                        "id": {
-                            "description": "The ID of the solver",
-                            "type": "integer"
-                        },
-                        "type": {
-                            "enum": [
-                                "graph"
-                            ],
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "new_executor_message": {
-                "payload": {
-                    "properties": {
-                        "id": {
-                            "type": "string"
-                        },
-                        "name": {
-                            "type": "string"
-                        },
-                        "state": {
-                            "enum": [
-                                "reasoning",
-                                "adapting",
-                                "idle",
-                                "executing",
-                                "finished",
-                                "failed"
-                            ],
-                            "type": "string"
-                        },
-                        "time": {
-                            "$ref": "#/components/schemas/rational"
-                        },
-                        "type": {
-                            "enum": [
-                                "new_executor"
-                            ],
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "id",
-                        "name",
-                        "state"
-                    ],
-                    "type": "object"
-                }
-            },
-            "resolver_created_message": {
-                "payload": {
-                    "allOf": [
-                        {
-                            "$ref": "#/components/schemas/resolver"
-                        }
-                    ],
-                    "properties": {
-                        "solver_id": {
-                            "description": "The ID of the solver",
-                            "type": "integer"
-                        },
-                        "type": {
-                            "enum": [
-                                "resolver_created"
-                            ],
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "resolver_state_changed_message": {
-                "payload": {
-                    "properties": {
-                        "id": {
-                            "description": "The ID of the resolver",
-                            "type": "integer"
-                        },
-                        "solver_id": {
-                            "description": "The ID of the solver",
-                            "type": "integer"
-                        },
-                        "state": {
-                            "enum": [
-                                "active",
-                                "forbidden",
-                                "inactive"
-                            ],
-                            "type": "string"
-                        },
-                        "type": {
-                            "enum": [
-                                "resolver_state_changed"
-                            ],
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                }
-            },
-            "state_message": {
-                "payload": {
-                    "allOf": [
-                        {
-                            "$ref": "#/components/schemas/solver_state"
-                        }
-                    ],
-                    "properties": {
-                        "executing_atoms": {
-                            "description": "The IDs of the atoms that are currently executing.",
-                            "items": {
-                                "type": "integer"
-                            },
-                            "type": "array"
-                        },
-                        "id": {
-                            "type": "integer"
-                        },
-                        "timelines": {
-                            "items": {
-                                "$ref": "#/components/schemas/timeline"
-                            },
-                            "type": "array"
-                        },
-                        "type": {
-                            "enum": [
-                                "solver_state"
-                            ],
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "tick_message": {
-                "payload": {
-                    "properties": {
-                        "solver_id": {
-                            "type": "string"
-                        },
-                        "time": {
-                            "$ref": "#/components/schemas/rational"
-                        },
-                        "type": {
-                            "enum": [
-                                "tick"
-                            ],
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                }
-            }
-        },
         "schemas": {
             "agent_timeline": {
                 "description": "Schema representing an agent timeline",
@@ -1305,498 +946,189 @@
         }
     },
     "info": {
-        "description": "The Urban Sensing & Planning Engine API",
-        "title": "Urban Sensing & Planning Engine API",
+        "description": "The Urban Sensing and Planning Engine (USPE) API",
+        "title": "Urban Sensing and Planning Engine API",
         "version": "1.0"
     },
     "openapi": "3.0.0",
-    "paths": {
-        "/": {
-            "get": {
-                "description": "Index page",
-                "responses": {
-                    "200": {
-                        "description": "Index page"
-                    }
-                },
-                "summary": "Index"
-            }
-        },
-        "/assets/{file}": {
-            "get": {
-                "description": "Assets",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "file",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Index page"
-                    }
-                },
-                "summary": "Assets"
-            }
-        },
-        "/async_api": {
-            "get": {
-                "description": "Endpoint to fetch the AsyncAPI Specification document",
-                "responses": {
-                    "200": {
-                        "description": "Successful response with AsyncAPI Specification document"
-                    }
-                },
-                "summary": "Retrieve AsyncAPI Specification"
-            }
-        },
-        "/data/{item_id}": {
-            "get": {
-                "description": "Endpoint to fetch the data of the specified item. The data can be filtered by specifying the start and end date",
-                "parameters": [
-                    {
-                        "description": "ID of the item",
-                        "in": "path",
-                        "name": "item_id",
-                        "required": true,
-                        "schema": {
-                            "format": "uuid",
-                            "type": "string"
+    "paths": [
+        {
+            "/": {
+                "get": {
+                    "description": "Index page",
+                    "responses": {
+                        "200": {
+                            "description": "Index page"
                         }
                     },
-                    {
-                        "description": "Start date for filtering data",
-                        "in": "query",
-                        "name": "from",
-                        "schema": {
-                            "format": "date-time",
-                            "type": "string"
+                    "summary": "Index"
+                }
+            }
+        },
+        {
+            "/assets/{file}": {
+                "get": {
+                    "description": "Assets",
+                    "parameters": [
+                        {
+                            "in": "path",
+                            "name": "file",
+                            "required": true,
+                            "schema": {
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Index page"
                         }
                     },
-                    {
-                        "description": "End date for filtering data",
-                        "in": "query",
-                        "name": "to",
-                        "schema": {
-                            "format": "date-time",
-                            "type": "string"
+                    "summary": "Assets"
+                }
+            }
+        },
+        {
+            "/open_api": {
+                "get": {
+                    "description": "Endpoint to fetch the OpenAPI Specification document",
+                    "responses": {
+                        "200": {
+                            "description": "Successful response with OpenAPI Specification document"
                         }
-                    }
-                ],
-                "responses": {
-                    "200": {
+                    },
+                    "summary": "Retrieve OpenAPI Specification"
+                }
+            }
+        },
+        {
+            "/async_api": {
+                "get": {
+                    "description": "Endpoint to fetch the AsyncAPI Specification document",
+                    "responses": {
+                        "200": {
+                            "description": "Successful response with AsyncAPI Specification document"
+                        }
+                    },
+                    "summary": "Retrieve AsyncAPI Specification"
+                }
+            }
+        },
+        {
+            "/login": {
+                "post": {
+                    "description": "Login endpoint",
+                    "requestBody": {
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "items": {
-                                        "$ref": "#/components/schemas/data"
+                                    "properties": {
+                                        "email": {
+                                            "type": "string"
+                                        },
+                                        "password": {
+                                            "type": "string"
+                                        }
                                     },
-                                    "type": "array"
+                                    "type": "object"
                                 }
                             }
-                        },
-                        "description": "Successful response with the data of the specified item"
+                        }
                     },
-                    "404": {
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "properties": {
+                                            "token": {
+                                                "format": "uuid",
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            },
+                            "description": "Successful login"
+                        },
+                        "401": {
+                            "description": "Unauthorized"
+                        }
+                    },
+                    "summary": "Login"
+                }
+            }
+        },
+        {
+            "/types": {
+                "get": {
+                    "description": "Endpoint to fetch all the managed types",
+                    "parameters": [
+                        {
+                            "in": "header",
+                            "name": "token",
+                            "required": true,
+                            "schema": {
+                                "format": "uuid",
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "items": {
+                                            "$ref": "#/components/schemas/coco_type"
+                                        },
+                                        "type": "array"
+                                    }
+                                }
+                            },
+                            "description": "Successful response with the stored types"
+                        }
+                    },
+                    "summary": "Retrieve all the CoCo types"
+                },
+                "post": {
+                    "description": "Endpoint to create a new type",
+                    "parameters": [
+                        {
+                            "in": "header",
+                            "name": "token",
+                            "required": true,
+                            "schema": {
+                                "format": "uuid",
+                                "type": "string"
+                            }
+                        }
+                    ],
+                    "requestBody": {
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/error"
+                                    "$ref": "#/components/schemas/coco_type"
                                 }
                             }
-                        },
-                        "description": "Item not found"
-                    }
-                },
-                "summary": "Retrieve the data of the specified item"
+                        }
+                    },
+                    "responses": {
+                        "200": {
+                            "description": "Successful response"
+                        }
+                    },
+                    "summary": "Create a new type"
+                }
             },
-            "post": {
-                "description": "Endpoint to add data to the specified item",
-                "parameters": [
-                    {
-                        "description": "ID of the item",
-                        "in": "path",
-                        "name": "item_id",
-                        "required": true,
-                        "schema": {
-                            "format": "uuid",
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful response"
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/error"
-                                }
-                            }
-                        },
-                        "description": "Invalid input"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/error"
-                                }
-                            }
-                        },
-                        "description": "Item not found"
-                    }
-                },
-                "summary": "Add data to the specified item"
-            }
-        },
-        "/deliberative_rule": {
-            "get": {
-                "description": "Endpoint to fetch all the managed deliberative rules",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "items": {
-                                        "$ref": "#/components/schemas/coco_rule"
-                                    },
-                                    "type": "array"
-                                }
-                            }
-                        },
-                        "description": "Successful response with the stored deliberative rules"
-                    }
-                },
-                "summary": "Retrieve all the Urban Sensing & Planning Engine deliberative rules"
-            }
-        },
-        "/deliberative_rules": {
-            "get": {
-                "description": "Endpoint to fetch all the managed deliberative rules",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "items": {
-                                        "$ref": "#/components/schemas/coco_rule"
-                                    },
-                                    "type": "array"
-                                }
-                            }
-                        },
-                        "description": "Successful response with the stored deliberative rules"
-                    }
-                },
-                "summary": "Retrieve all the Urban Sensing & Planning Engine deliberative rules"
-            }
-        },
-        "/deliberative_rules/{rule_id}": {
-            "delete": {
-                "description": "Endpoint to delete the given deliberative rule",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "rule_id",
-                        "required": true,
-                        "schema": {
-                            "format": "uuid",
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful response with the deleted deliberative rule"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/error"
-                                }
-                            }
-                        },
-                        "description": "Rule not found"
-                    }
-                },
-                "summary": "Delete the given Urban Sensing & Planning Engine deliberative rule"
-            }
-        },
-        "/item": {
-            "post": {
-                "description": "Endpoint to create a new item",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/coco_item"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful response"
-                    },
-                    "400": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/error"
-                                }
-                            }
-                        },
-                        "description": "Invalid parameters"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/error"
-                                }
-                            }
-                        },
-                        "description": "Type not found"
-                    }
-                },
-                "summary": "Create a new item"
-            }
-        },
-        "/item/{item_id}": {
-            "delete": {
-                "description": "Endpoint to delete the given item",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "item_id",
-                        "required": true,
-                        "schema": {
-                            "format": "uuid",
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful response with the deleted item"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/error"
-                                }
-                            }
-                        },
-                        "description": "Item not found"
-                    }
-                },
-                "summary": "Delete the given item"
-            }
-        },
-        "/items": {
-            "get": {
-                "description": "Endpoint to fetch all the managed items",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "items": {
-                                        "$ref": "#/components/schemas/coco_item"
-                                    },
-                                    "type": "array"
-                                }
-                            }
-                        },
-                        "description": "Successful response with the stored items"
-                    }
-                },
-                "summary": "Retrieve all the Urban Sensing & Planning Engine items"
-            }
-        },
-        "/open_api": {
-            "get": {
-                "description": "Endpoint to fetch the OpenAPI Specification document",
-                "responses": {
-                    "200": {
-                        "description": "Successful response with OpenAPI Specification document"
-                    }
-                },
-                "summary": "Retrieve OpenAPI Specification"
-            }
-        },
-        "/reactive_rule": {
-            "post": {
-                "description": "Endpoint to create a new reactive rule",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/coco_rule"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/coco_rule"
-                                }
-                            }
-                        },
-                        "description": "Successful response with the created reactive rule"
-                    }
-                },
-                "summary": "Create a new Urban Sensing & Planning Engine reactive rule"
-            }
-        },
-        "/reactive_rules": {
-            "get": {
-                "description": "Endpoint to fetch all the managed reactive rules",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "items": {
-                                        "$ref": "#/components/schemas/coco_rule"
-                                    },
-                                    "type": "array"
-                                }
-                            }
-                        },
-                        "description": "Successful response with the stored reactive rules"
-                    }
-                },
-                "summary": "Retrieve all the Urban Sensing & Planning Engine reactive rules"
-            }
-        },
-        "/reactive_rules/{rule_id}": {
-            "delete": {
-                "description": "Endpoint to delete the given reactive rule",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "rule_id",
-                        "required": true,
-                        "schema": {
-                            "format": "uuid",
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful response with the deleted reactive rule"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/error"
-                                }
-                            }
-                        },
-                        "description": "Rule not found"
-                    }
-                },
-                "summary": "Delete the given Urban Sensing & Planning Engine reactive rule"
-            }
-        },
-        "/type": {
-            "post": {
-                "description": "Endpoint to create a new type",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/coco_type"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful response"
-                    }
-                },
-                "summary": "Create a new type"
-            }
-        },
-        "/type/{type_id}": {
-            "delete": {
-                "description": "Endpoint to delete the given type",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "type_id",
-                        "required": true,
-                        "schema": {
-                            "format": "uuid",
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful response"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/error"
-                                }
-                            }
-                        },
-                        "description": "Type not found"
-                    }
-                },
-                "summary": "Delete the given type"
-            }
-        },
-        "/types": {
-            "get": {
-                "description": "Endpoint to fetch all the managed types",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "items": {
-                                        "$ref": "#/components/schemas/coco_type"
-                                    },
-                                    "type": "array"
-                                }
-                            }
-                        },
-                        "description": "Successful response with the stored types"
-                    }
-                },
-                "summary": "Retrieve all the Urban Sensing & Planning Engine types"
+            "/types/{type_id}": {
+                "delete": {
+                    "parameters": {}
+                }
             }
         }
-    },
+    ],
     "servers": [
         {
             "url": "http://0.0.0.0:8080"
