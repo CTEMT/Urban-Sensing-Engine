@@ -17,5 +17,13 @@ namespace uspe
      * @brief Default constructor for the uspe_db class.
      */
     uspe_db();
+
+    std::string login(const std::string &email, const std::string &password);
+
+    std::string create_user(const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const std::string &role);
+
+  private:
+    mongocxx::collection users_collection;
+    std::string user_type_id;
   };
 } // namespace uspe

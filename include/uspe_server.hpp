@@ -30,12 +30,15 @@ namespace uspe
     void start() { network::server::start(); }
 
   private:
+    uspe_db &get_db() { return static_cast<uspe_db &>(*db); }
+
     std::unique_ptr<network::response> index(network::request &req);
     std::unique_ptr<network::response> assets(network::request &req);
     std::unique_ptr<network::response> open_api(network::request &req);
     std::unique_ptr<network::response> async_api(network::request &req);
 
     std::unique_ptr<network::response> login(network::request &req);
+    std::unique_ptr<network::response> create_user(network::request &req);
 
     const json::json j_open_api = make_open_api();
     const json::json j_async_api = make_async_api();

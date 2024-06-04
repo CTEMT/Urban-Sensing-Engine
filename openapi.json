@@ -995,6 +995,75 @@
                 "summary": "Retrieve AsyncAPI Specification"
             }
         },
+        "/create_user": {
+            "post": {
+                "description": "Create User endpoint",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "first_name": {
+                                        "type": "string"
+                                    },
+                                    "last_name": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "role": {
+                                        "enum": [
+                                            "Admin",
+                                            "Decision Maker",
+                                            "Technician",
+                                            "Citizen"
+                                        ],
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "first_name",
+                                    "last_name",
+                                    "role",
+                                    "email",
+                                    "password"
+                                ],
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "format": "uuid",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        },
+                        "description": "Successful login"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "summary": "Create User"
+            }
+        },
         "/data/{item_id}": {
             "get": {
                 "description": "Endpoint to fetch the data of the specified item. The data can be filtered by specifying the start and end date",
@@ -1334,6 +1403,10 @@
                                         "type": "string"
                                     }
                                 },
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
                                 "type": "object"
                             }
                         }
@@ -1355,6 +1428,9 @@
                             }
                         },
                         "description": "Successful login"
+                    },
+                    "400": {
+                        "description": "Bad Request"
                     },
                     "401": {
                         "description": "Unauthorized"
