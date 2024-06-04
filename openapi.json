@@ -951,184 +951,623 @@
         "version": "1.0"
     },
     "openapi": "3.0.0",
-    "paths": [
-        {
-            "/": {
-                "get": {
-                    "description": "Index page",
-                    "responses": {
-                        "200": {
-                            "description": "Index page"
-                        }
-                    },
-                    "summary": "Index"
-                }
+    "paths": {
+        "/": {
+            "get": {
+                "description": "Index page",
+                "responses": {
+                    "200": {
+                        "description": "Index page"
+                    }
+                },
+                "summary": "Index"
             }
         },
-        {
-            "/assets/{file}": {
-                "get": {
-                    "description": "Assets",
-                    "parameters": [
-                        {
-                            "in": "path",
-                            "name": "file",
-                            "required": true,
+        "/assets/{file}": {
+            "get": {
+                "description": "Assets",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "file",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Index page"
+                    }
+                },
+                "summary": "Assets"
+            }
+        },
+        "/async_api": {
+            "get": {
+                "description": "Endpoint to fetch the AsyncAPI Specification document",
+                "responses": {
+                    "200": {
+                        "description": "Successful response with AsyncAPI Specification document"
+                    }
+                },
+                "summary": "Retrieve AsyncAPI Specification"
+            }
+        },
+        "/data/{item_id}": {
+            "get": {
+                "description": "Endpoint to fetch the data of the specified item. The data can be filtered by specifying the start and end date",
+                "parameters": [
+                    {
+                        "description": "ID of the item",
+                        "in": "path",
+                        "name": "item_id",
+                        "required": true,
+                        "schema": {
+                            "format": "uuid",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Start date for filtering data",
+                        "in": "query",
+                        "name": "from",
+                        "schema": {
+                            "format": "date-time",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "End date for filtering data",
+                        "in": "query",
+                        "name": "to",
+                        "schema": {
+                            "format": "date-time",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "items": {
+                                        "$ref": "#/components/schemas/data"
+                                    },
+                                    "type": "array"
+                                }
+                            }
+                        },
+                        "description": "Successful response with the data of the specified item"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error"
+                                }
+                            }
+                        },
+                        "description": "Item not found"
+                    }
+                },
+                "summary": "Retrieve the data of the specified item"
+            },
+            "post": {
+                "description": "Endpoint to add data to the specified item",
+                "parameters": [
+                    {
+                        "description": "ID of the item",
+                        "in": "path",
+                        "name": "item_id",
+                        "required": true,
+                        "schema": {
+                            "format": "uuid",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
                             "schema": {
-                                "type": "string"
+                                "type": "object"
                             }
                         }
-                    ],
-                    "responses": {
-                        "200": {
-                            "description": "Index page"
-                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
                     },
-                    "summary": "Assets"
-                }
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error"
+                                }
+                            }
+                        },
+                        "description": "Invalid input"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error"
+                                }
+                            }
+                        },
+                        "description": "Item not found"
+                    }
+                },
+                "summary": "Add data to the specified item"
             }
         },
-        {
-            "/open_api": {
-                "get": {
-                    "description": "Endpoint to fetch the OpenAPI Specification document",
-                    "responses": {
-                        "200": {
-                            "description": "Successful response with OpenAPI Specification document"
+        "/deliberative_rules": {
+            "get": {
+                "description": "Endpoint to fetch all the managed deliberative rules",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "required": true,
+                        "schema": {
+                            "format": "uuid",
+                            "type": "string"
                         }
-                    },
-                    "summary": "Retrieve OpenAPI Specification"
-                }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "items": {
+                                        "$ref": "#/components/schemas/coco_rule"
+                                    },
+                                    "type": "array"
+                                }
+                            }
+                        },
+                        "description": "Successful response with the stored deliberative rules"
+                    }
+                },
+                "summary": "Retrieve all the CoCo deliberative rules"
+            },
+            "post": {
+                "description": "Endpoint to create a new deliberative rule",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "required": true,
+                        "schema": {
+                            "format": "uuid",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/coco_rule"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/coco_rule"
+                                }
+                            }
+                        },
+                        "description": "Successful response with the created deliberative rule"
+                    }
+                },
+                "summary": "Create a new CoCo deliberative rule"
             }
         },
-        {
-            "/async_api": {
-                "get": {
-                    "description": "Endpoint to fetch the AsyncAPI Specification document",
-                    "responses": {
-                        "200": {
-                            "description": "Successful response with AsyncAPI Specification document"
+        "/deliberative_rules/{rule_id}": {
+            "delete": {
+                "description": "Endpoint to delete the given deliberative rule",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "rule_id",
+                        "required": true,
+                        "schema": {
+                            "format": "uuid",
+                            "type": "string"
                         }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful response with the deleted deliberative rule"
                     },
-                    "summary": "Retrieve AsyncAPI Specification"
-                }
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error"
+                                }
+                            }
+                        },
+                        "description": "Rule not found"
+                    }
+                },
+                "summary": "Delete the given CoCo deliberative rule"
             }
         },
-        {
-            "/login": {
-                "post": {
-                    "description": "Login endpoint",
-                    "requestBody": {
+        "/items": {
+            "get": {
+                "description": "Endpoint to fetch all the managed items",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "required": true,
+                        "schema": {
+                            "format": "uuid",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "items": {
+                                        "$ref": "#/components/schemas/coco_item"
+                                    },
+                                    "type": "array"
+                                }
+                            }
+                        },
+                        "description": "Successful response with the stored items"
+                    }
+                },
+                "summary": "Retrieve all the CoCo items"
+            },
+            "post": {
+                "description": "Endpoint to create a new item",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "required": true,
+                        "schema": {
+                            "format": "uuid",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/coco_item"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error"
+                                }
+                            }
+                        },
+                        "description": "Invalid parameters"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error"
+                                }
+                            }
+                        },
+                        "description": "Type not found"
+                    }
+                },
+                "summary": "Create a new item"
+            }
+        },
+        "/items/{item_id}": {
+            "delete": {
+                "description": "Endpoint to delete the given item",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "item_id",
+                        "required": true,
+                        "schema": {
+                            "format": "uuid",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful response with the deleted item"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error"
+                                }
+                            }
+                        },
+                        "description": "Item not found"
+                    }
+                },
+                "summary": "Delete the given item"
+            }
+        },
+        "/login": {
+            "post": {
+                "description": "Login endpoint",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "email": {
-                                            "type": "string"
-                                        },
-                                        "password": {
+                                        "token": {
+                                            "format": "uuid",
                                             "type": "string"
                                         }
                                     },
                                     "type": "object"
                                 }
                             }
-                        }
-                    },
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "properties": {
-                                            "token": {
-                                                "format": "uuid",
-                                                "type": "string"
-                                            }
-                                        },
-                                        "type": "object"
-                                    }
-                                }
-                            },
-                            "description": "Successful login"
                         },
-                        "401": {
-                            "description": "Unauthorized"
-                        }
+                        "description": "Successful login"
                     },
-                    "summary": "Login"
-                }
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "summary": "Login"
             }
         },
-        {
-            "/types": {
-                "get": {
-                    "description": "Endpoint to fetch all the managed types",
-                    "parameters": [
-                        {
-                            "in": "header",
-                            "name": "token",
-                            "required": true,
-                            "schema": {
-                                "format": "uuid",
-                                "type": "string"
-                            }
-                        }
-                    ],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {
-                                    "schema": {
-                                        "items": {
-                                            "$ref": "#/components/schemas/coco_type"
-                                        },
-                                        "type": "array"
-                                    }
-                                }
-                            },
-                            "description": "Successful response with the stored types"
-                        }
-                    },
-                    "summary": "Retrieve all the CoCo types"
+        "/open_api": {
+            "get": {
+                "description": "Endpoint to fetch the OpenAPI Specification document",
+                "responses": {
+                    "200": {
+                        "description": "Successful response with OpenAPI Specification document"
+                    }
                 },
-                "post": {
-                    "description": "Endpoint to create a new type",
-                    "parameters": [
-                        {
-                            "in": "header",
-                            "name": "token",
-                            "required": true,
-                            "schema": {
-                                "format": "uuid",
-                                "type": "string"
-                            }
+                "summary": "Retrieve OpenAPI Specification"
+            }
+        },
+        "/reactive_rules": {
+            "get": {
+                "description": "Endpoint to fetch all the managed reactive rules",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "required": true,
+                        "schema": {
+                            "format": "uuid",
+                            "type": "string"
                         }
-                    ],
-                    "requestBody": {
+                    }
+                ],
+                "responses": {
+                    "200": {
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/coco_type"
+                                    "items": {
+                                        "$ref": "#/components/schemas/coco_rule"
+                                    },
+                                    "type": "array"
                                 }
                             }
-                        }
-                    },
-                    "responses": {
-                        "200": {
-                            "description": "Successful response"
-                        }
-                    },
-                    "summary": "Create a new type"
-                }
+                        },
+                        "description": "Successful response with the stored reactive rules"
+                    }
+                },
+                "summary": "Retrieve all the CoCo reactive rules"
             },
-            "/types/{type_id}": {
-                "delete": {
-                    "parameters": {}
-                }
+            "post": {
+                "description": "Endpoint to create a new reactive rule",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "required": true,
+                        "schema": {
+                            "format": "uuid",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/coco_rule"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/coco_rule"
+                                }
+                            }
+                        },
+                        "description": "Successful response with the created reactive rule"
+                    }
+                },
+                "summary": "Create a new CoCo reactive rule"
+            }
+        },
+        "/reactive_rules/{rule_id}": {
+            "delete": {
+                "description": "Endpoint to delete the given reactive rule",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "rule_id",
+                        "required": true,
+                        "schema": {
+                            "format": "uuid",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful response with the deleted reactive rule"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error"
+                                }
+                            }
+                        },
+                        "description": "Rule not found"
+                    }
+                },
+                "summary": "Delete the given CoCo reactive rule"
+            }
+        },
+        "/types": {
+            "get": {
+                "description": "Endpoint to fetch all the managed types",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "required": true,
+                        "schema": {
+                            "format": "uuid",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "items": {
+                                        "$ref": "#/components/schemas/coco_type"
+                                    },
+                                    "type": "array"
+                                }
+                            }
+                        },
+                        "description": "Successful response with the stored types"
+                    }
+                },
+                "summary": "Retrieve all the CoCo types"
+            },
+            "post": {
+                "description": "Endpoint to create a new type",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "required": true,
+                        "schema": {
+                            "format": "uuid",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/coco_type"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    }
+                },
+                "summary": "Create a new type"
+            }
+        },
+        "/types/{type_id}": {
+            "delete": {
+                "description": "Endpoint to delete the given type",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "type_id",
+                        "required": true,
+                        "schema": {
+                            "format": "uuid",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful response"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error"
+                                }
+                            }
+                        },
+                        "description": "Type not found"
+                    }
+                },
+                "summary": "Delete the given type"
             }
         }
-    ],
+    },
     "servers": [
         {
             "url": "http://0.0.0.0:8080"

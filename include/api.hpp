@@ -6,6 +6,7 @@
 #include "state_variable.hpp"
 #include "reusable_resource.hpp"
 #include "consumable_resource.hpp"
+#include "logging.hpp"
 
 namespace uspe
 {
@@ -131,37 +132,37 @@ namespace uspe
 
   inline json::json make_open_api() noexcept
   {
-    auto types_path = coco::types_path;
-    types_path["/types"]["get"]["parameters"] = std::vector<json::json>{{{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}}};
-    types_path["/types"]["post"]["parameters"] = std::vector<json::json>{{{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}}};
+    auto types_path = coco::types_path["/types"];
+    types_path["get"]["parameters"] = std::vector<json::json>{{{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}}};
+    types_path["post"]["parameters"] = std::vector<json::json>{{{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}}};
 
-    auto types_id_path = coco::types_id_path;
-    static_cast<std::vector<json::json>>(types_path["/types/{type_id}"]["delete"]["parameters"]).push_back({{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}});
+    auto types_id_path = coco::types_id_path["/types/{type_id}"];
+    static_cast<std::vector<json::json>>(types_id_path["delete"]["parameters"]).push_back({{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}});
 
-    auto items_path = coco::items_path;
-    items_path["/items"]["get"]["parameters"] = std::vector<json::json>{{{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}}};
-    items_path["/items"]["post"]["parameters"] = std::vector<json::json>{{{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}}};
+    auto items_path = coco::items_path["/items"];
+    items_path["get"]["parameters"] = std::vector<json::json>{{{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}}};
+    items_path["post"]["parameters"] = std::vector<json::json>{{{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}}};
 
-    auto items_id_path = coco::items_id_path;
-    static_cast<std::vector<json::json>>(items_path["/items/{item_id}"]["delete"]["parameters"]).push_back({{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}});
+    auto items_id_path = coco::items_id_path["/items/{item_id}"];
+    static_cast<std::vector<json::json>>(items_id_path["delete"]["parameters"]).push_back({{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}});
 
-    auto data_path = coco::data_path;
-    static_cast<std::vector<json::json>>(data_path["/data/{item_id}"]["get"]["parameters"]).push_back({{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}});
-    static_cast<std::vector<json::json>>(data_path["/data/{item_id}"]["post"]["parameters"]).push_back({{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}});
+    auto data_path = coco::data_path["/data/{item_id}"];
+    static_cast<std::vector<json::json>>(data_path["get"]["parameters"]).push_back({{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}});
+    static_cast<std::vector<json::json>>(data_path["post"]["parameters"]).push_back({{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}});
 
-    auto reactive_rules_path = coco::reactive_rules_path;
-    reactive_rules_path["/reactive_rules"]["get"]["parameters"] = std::vector<json::json>{{{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}}};
-    reactive_rules_path["/reactive_rules"]["post"]["parameters"] = std::vector<json::json>{{{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}}};
+    auto reactive_rules_path = coco::reactive_rules_path["/reactive_rules"];
+    reactive_rules_path["get"]["parameters"] = std::vector<json::json>{{{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}}};
+    reactive_rules_path["post"]["parameters"] = std::vector<json::json>{{{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}}};
 
-    auto reactive_rules_id_path = coco::reactive_rules_id_path;
-    static_cast<std::vector<json::json>>(reactive_rules_id_path["/reactive_rules/{rule_id}"]["delete"]["parameters"]).push_back({{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}});
+    auto reactive_rules_id_path = coco::reactive_rules_id_path["/reactive_rules/{rule_id}"];
+    static_cast<std::vector<json::json>>(reactive_rules_id_path["delete"]["parameters"]).push_back({{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}});
 
-    auto deliberative_rules_path = coco::deliberative_rules_path;
-    deliberative_rules_path["/deliberative_rules"]["get"]["parameters"] = std::vector<json::json>{{{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}}};
-    deliberative_rules_path["/deliberative_rules"]["post"]["parameters"] = std::vector<json::json>{{{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}}};
+    auto deliberative_rules_path = coco::deliberative_rules_path["/deliberative_rules"];
+    deliberative_rules_path["get"]["parameters"] = std::vector<json::json>{{{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}}};
+    deliberative_rules_path["post"]["parameters"] = std::vector<json::json>{{{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}}};
 
-    auto deliberative_rules_id_path = coco::deliberative_rules_id_path;
-    static_cast<std::vector<json::json>>(deliberative_rules_id_path["/deliberative_rules/{rule_id}"]["delete"]["parameters"]).push_back({{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}});
+    auto deliberative_rules_id_path = coco::deliberative_rules_id_path["/deliberative_rules/{rule_id}"];
+    static_cast<std::vector<json::json>>(deliberative_rules_id_path["delete"]["parameters"]).push_back({{"name", "token"}, {"in", "header"}, {"required", true}, {"schema", {{"type", "string"}, {"format", "uuid"}}}});
 
     json::json open_api{
         {"openapi", "3.0.0"},
@@ -213,15 +214,15 @@ namespace uspe
                  {{"description", "Successful login"},
                   {"content", {{"application/json", {{"schema", {{"type", "object"}, {"properties", {{"token", {{"type", "string"}, {"format", "uuid"}}}}}}}}}}}}},
                 {"401", {{"description", "Unauthorized"}}}}}}}}},
-          types_path,
-          types_id_path,
-          items_path,
-          items_id_path,
-          data_path,
-          reactive_rules_path,
-          reactive_rules_id_path,
-          deliberative_rules_path,
-          deliberative_rules_id_path}},
+          {"/types", types_path},
+          {"/types/{type_id}", types_id_path},
+          {"/items", items_path},
+          {"/items/{item_id}", items_id_path},
+          {"/data/{item_id}", data_path},
+          {"/reactive_rules", reactive_rules_path},
+          {"/reactive_rules/{rule_id}", reactive_rules_id_path},
+          {"/deliberative_rules", deliberative_rules_path},
+          {"/deliberative_rules/{rule_id}", deliberative_rules_id_path}}},
         {"components", schemas}};
     return open_api;
   }
@@ -230,9 +231,9 @@ namespace uspe
   {
     json::json async_api{
         {"asyncapi", "3.0.0"},
-        {"info", {{"title", "CoCo API"}, {"description", "The combined deduCtiOn and abduCtiOn (CoCo) WebSocket API"}, {"version", "1.0"}}},
-        {"servers", {"coco", {{"host", SERVER_HOST ":" + std::to_string(SERVER_PORT)}, {"pathname", "/coco"}, {"protocol", "ws"}}}},
-        {"channels", {{"coco", {{"address", "/"}}}}},
+        {"info", {{"title", "Urban Sensing & Planning Engine WebSocket API"}, {"description", "The Urban Sensing & Planning Engine (USPE) WebSocket API"}, {"version", "1.0"}}},
+        {"servers", {"uspe", {{"host", SERVER_HOST ":" + std::to_string(SERVER_PORT)}, {"pathname", "/uspe"}, {"protocol", "ws"}}}},
+        {"channels", {{"uspe", {{"address", "/"}}}}},
         {"components", {schemas, messages}}};
     return async_api;
   }

@@ -1,7 +1,7 @@
 {
     "asyncapi": "3.0.0",
     "channels": {
-        "coco": {
+        "uspe": {
             "address": "/"
         }
     },
@@ -1311,14 +1311,14 @@
         }
     },
     "info": {
-        "description": "The Urban Sensing & Planning Engine WebSocket API",
-        "title": "Urban Sensing & Planning Engine API",
+        "description": "The Urban Sensing & Planning Engine (USPE) WebSocket API",
+        "title": "Urban Sensing & Planning Engine WebSocket API",
         "version": "1.0"
     },
     "servers": {
-        "coco": {
+        "uspe": {
             "host": "0.0.0.0:8080",
-            "pathname": "/coco",
+            "pathname": "/uspe",
             "protocol": "ws"
         }
     }
