@@ -9,10 +9,10 @@ namespace uspe
         auto types = get_types();
         if (types.empty())
         {
-            std::vector<std::unique_ptr<coco::parameter>> user_static_pars;
-            user_static_pars.push_back(std::make_unique<coco::string_parameter>("first_name"));
-            user_static_pars.push_back(std::make_unique<coco::string_parameter>("last_name"));
-            user_static_pars.push_back(std::make_unique<coco::symbol_parameter>("role", std::vector<std::string>{"Admin", "Decision Maker", "Technician", "Citizen"}));
+            std::unordered_map<std::string, std::unique_ptr<coco::parameter>> user_static_pars;
+            user_static_pars.emplace("first_name", std::make_unique<coco::string_parameter>("first_name"));
+            user_static_pars.emplace("last_name", std::make_unique<coco::string_parameter>("last_name"));
+            user_static_pars.emplace("role", std::make_unique<coco::symbol_parameter>("role", std::vector<std::string>{"Admin", "Decision Maker", "Technician", "Citizen"}));
             user_type_id = create_type("User", "A user of the House of the Emerging Technologies.", std::move(user_static_pars), {}).get_id();
         }
         else

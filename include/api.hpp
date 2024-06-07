@@ -130,6 +130,73 @@ namespace uspe
                               ratio::current_resolver_message,
                               ratio::causal_link_added_message}}};
 
+  const json::json users_path{"/users",
+                              {{"post",
+                                {{"summary", "Create User"},
+                                 {"description", "Create User endpoint"},
+                                 {"requestBody",
+                                  {{"content",
+                                    {{"application/json",
+                                      {{"schema",
+                                        {{"type", "object"},
+                                         {"properties",
+                                          {{"first_name", {{"type", "string"}}},
+                                           {"last_name", {{"type", "string"}}},
+                                           {"role", {{"type", "string"}, {"enum", {"Admin", "Decision Maker", "Technician", "Citizen"}}}},
+                                           {"email", {{"type", "string"}}},
+                                           {"password", {{"type", "string"}}}}},
+                                         {"required", {"first_name", "last_name", "role", "email", "password"}}}}}}}}}},
+                                 {"responses",
+                                  {{"200",
+                                    {{"description", "Successful login"},
+                                     {"content", {{"application/json", {{"schema", {{"type", "object"}, {"properties", {{"token", {{"type", "string"}, {"format", "uuid"}}}}}}}}}}}}},
+                                   {"400", {{"description", "Bad Request"}}}}}}}}};
+  const json::json users_id_path{"/users/{user_id}",
+                                 {{"put",
+                                   {{"summary", "Update User"},
+                                    {"description", "Update User endpoint"},
+                                    {"requestBody",
+                                     {{"content",
+                                       {{"application/json",
+                                         {{"schema",
+                                           {{"type", "object"},
+                                            {"properties",
+                                             {{"first_name", {{"type", "string"}}},
+                                              {"last_name", {{"type", "string"}}},
+                                              {"role", {{"type", "string"}, {"enum", {"Admin", "Decision Maker", "Technician", "Citizen"}}}},
+                                              {"email", {{"type", "string"}}},
+                                              {"password", {{"type", "string"}}}}},
+                                            {"required", {"first_name", "last_name", "role", "email", "password"}}}}}}}}}},
+                                    {"parameters",
+                                     {{{"name", "token"},
+                                       {"in", "header"},
+                                       {"required", true},
+                                       {"schema", {{"type", "string"}, {"format", "uuid"}}}},
+                                      {{"name", "user_id"},
+                                       {"in", "path"},
+                                       {"required", true},
+                                       {"schema", {{"type", "string"}, {"format", "uuid"}}}}}},
+                                    {"responses",
+                                     {{"200", {{"description", "Successful update"}}},
+                                      {"400", {{"description", "Bad Request"}}},
+                                      {"401", {{"description", "Unauthorized"}}}}}}}},
+                                 {{"delete",
+                                   {{"summary", "Delete User"},
+                                    {"description", "Delete User endpoint"},
+                                    {"parameters",
+                                     {{{"name", "token"},
+                                       {"in", "header"},
+                                       {"required", true},
+                                       {"schema", {{"type", "string"}, {"format", "uuid"}}}},
+                                      {{"name", "user_id"},
+                                       {"in", "path"},
+                                       {"required", true},
+                                       {"schema", {{"type", "string"}, {"format", "uuid"}}}}}},
+                                    {"responses",
+                                     {{"200", {{"description", "Successful delete"}}},
+                                      {"400", {{"description", "Bad Request"}}},
+                                      {"401", {{"description", "Unauthorized"}}}}}}}}};
+
   inline json::json make_open_api() noexcept
   {
     auto types_path = coco::types_path["/types"];
@@ -216,28 +283,8 @@ namespace uspe
                   {"content", {{"application/json", {{"schema", {{"type", "object"}, {"properties", {{"token", {{"type", "string"}, {"format", "uuid"}}}}}}}}}}}}},
                 {"400", {{"description", "Bad Request"}}},
                 {"401", {{"description", "Unauthorized"}}}}}}}}},
-          {"/create_user",
-           {{"post",
-             {{"summary", "Create User"},
-              {"description", "Create User endpoint"},
-              {"requestBody",
-               {{"content",
-                 {{"application/json",
-                   {{"schema",
-                     {{"type", "object"},
-                      {"properties",
-                       {{"first_name", {{"type", "string"}}},
-                        {"last_name", {{"type", "string"}}},
-                        {"role", {{"type", "string"}, {"enum", {"Admin", "Decision Maker", "Technician", "Citizen"}}}},
-                        {"email", {{"type", "string"}}},
-                        {"password", {{"type", "string"}}}}},
-                      {"required", {"first_name", "last_name", "role", "email", "password"}}}}}}}}}},
-              {"responses",
-               {{"200",
-                 {{"description", "Successful login"},
-                  {"content", {{"application/json", {{"schema", {{"type", "object"}, {"properties", {{"token", {{"type", "string"}, {"format", "uuid"}}}}}}}}}}}}},
-                {"400", {{"description", "Bad Request"}}},
-                {"401", {{"description", "Unauthorized"}}}}}}}}},
+          users_path,
+          users_id_path,
           {"/types", types_path},
           {"/types/{type_id}", types_id_path},
           {"/items", items_path},
@@ -260,5 +307,18 @@ namespace uspe
         {"channels", {{"uspe", {{"address", "/"}}}}},
         {"components", {schemas, messages}}};
     return async_api;
+  }
+
+  inline int role_to_int(const std::string &role) noexcept
+  {
+    if (role == "Citizen")
+      return 0;
+    if (role == "Technician")
+      return 1;
+    if (role == "Decision Maker")
+      return 2;
+    if (role == "Admin")
+      return 3;
+    return -1;
   }
 } // namespace uspe

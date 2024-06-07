@@ -39,6 +39,8 @@ namespace uspe
 
     std::unique_ptr<network::response> login(network::request &req);
     std::unique_ptr<network::response> create_user(network::request &req);
+    std::unique_ptr<network::response> update_user(network::request &req);
+    std::unique_ptr<network::response> delete_user(network::request &req);
 
     const json::json j_open_api = make_open_api();
     const json::json j_async_api = make_async_api();
