@@ -19,13 +19,13 @@ namespace uspe
         add_route(network::Delete, "^/users/.$", std::bind(&uspe_server::delete_user, this, std::placeholders::_1));
     }
 
-    std::unique_ptr<network::response> uspe_server::index(network::request &) { return std::make_unique<network::file_response>("client/dist/index.html"); }
+    std::unique_ptr<network::response> uspe_server::index(network::request &) { return std::make_unique<network::file_response>(DASHBOARD_FOLDER "/dist/index.html"); }
     std::unique_ptr<network::response> uspe_server::assets(network::request &req)
     {
         std::string target = req.get_target();
         if (target.find('?') != std::string::npos)
             target = target.substr(0, target.find('?'));
-        return std::make_unique<network::file_response>("client/dist" + target);
+        return std::make_unique<network::file_response>(DASHBOARD_FOLDER "/dist" + target);
     }
     std::unique_ptr<network::response> uspe_server::open_api(network::request &) { return std::make_unique<network::json_response>(j_open_api); }
     std::unique_ptr<network::response> uspe_server::async_api(network::request &) { return std::make_unique<network::json_response>(j_async_api); }
