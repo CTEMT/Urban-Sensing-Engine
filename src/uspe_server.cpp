@@ -17,6 +17,8 @@ namespace uspe
         add_route(network::Post, "^/users$", std::bind(&uspe_server::create_user, this, std::placeholders::_1));
         add_route(network::Put, "^/users/.$", std::bind(&uspe_server::update_user, this, std::placeholders::_1));
         add_route(network::Delete, "^/users/.$", std::bind(&uspe_server::delete_user, this, std::placeholders::_1));
+
+        add_ws_route("/uspe").on_open(std::bind(&uspe_server::on_ws_open, this, std::placeholders::_1)).on_message(std::bind(&uspe_server::on_ws_message, this, std::placeholders::_1, std::placeholders::_2)).on_close(std::bind(&uspe_server::on_ws_close, this, std::placeholders::_1)).on_error(std::bind(&uspe_server::on_ws_error, this, std::placeholders::_1, std::placeholders::_2));
     }
 
     std::unique_ptr<network::response> uspe_server::index(network::request &) { return std::make_unique<network::file_response>(DASHBOARD_FOLDER "/dist/index.html"); }
@@ -44,7 +46,8 @@ namespace uspe
             return std::make_unique<network::json_response>(json::json({{"code", 400}, {"message", "Bad Request. Empty email or password fields"}}), network::bad_request);
         try
         {
-            return std::make_unique<network::json_response>(json::json({{"token", get_db().login(email, password)}}));
+            auto &user = get_db().get_item(get_db().login(email, password));
+            return std::make_unique<network::json_response>(json::json({{"token", user.get_id()}}));
         }
         catch (const std::exception &e)
         {
@@ -67,7 +70,7 @@ namespace uspe
             return std::make_unique<network::json_response>(json::json({{"code", 400}, {"message", "Bad Request. Empty first_name, last_name, email, or password fields"}}), network::bad_request);
         try
         {
-            return std::make_unique<network::json_response>(json::json({{"item_id", get_db().create_user(first_name, last_name, email, password, "Citizen")}}));
+            return std::make_unique<network::json_response>(json::json({{"token", get_db().create_user(first_name, last_name, email, password, "Citizen")}}));
         }
         catch (const std::exception &e)
         {
@@ -121,4 +124,45 @@ namespace uspe
             }
         return std::make_unique<network::json_response>(json::json({{"code", 401}, {"message", "Unauthorized. Missing token"}}), network::unauthorized);
     }
+
+    void uspe_server::on_ws_open(network::ws_session &ws)
+    { // Add the WebSocket session to the WebSocket session to user map.
+        ws_to_user[&ws] = "";
+        LOG_DEBUG("WebSocket sessions: " << ws_to_user.size());
+    }
+    void uspe_server::on_ws_message(network::ws_session &ws, const std::string &msg)
+    {
+        auto x = json::load(msg);
+        if (!x.contains("type"))
+            ws.close();
+        if (!x.contains("token"))
+            ws.close();
+
+        if (x["type"] == "connect")
+        {
+            try
+            {
+                auto &user = get_db().get_item(x["token"]);
+                ws_to_user[&ws] = user.get_id();
+                user_to_wss[user.get_id()].insert(&ws);
+            }
+            catch (const std::exception &e)
+            {
+                ws.close();
+            }
+        }
+    }
+    void uspe_server::on_ws_close(network::ws_session &ws)
+    {
+        auto user_id = ws_to_user[&ws];
+        if (auto it = user_to_wss.find(user_id); it != user_to_wss.end())
+        { // Remove the WebSocket session from the user's set of WebSocket sessions.
+            it->second.erase(&ws);
+            if (it->second.empty()) // If the user has no more WebSocket sessions, remove the user from the user to WebSocket sessions map.
+                user_to_wss.erase(it);
+        }
+        ws_to_user.erase(&ws); // Remove the WebSocket session from the WebSocket session to user map.
+        LOG_DEBUG("WebSocket sessions: " << ws_to_user.size());
+    }
+    void uspe_server::on_ws_error([[maybe_unused]] network::ws_session &ws, [[maybe_unused]] const boost::system::error_code &ec) { LOG_ERR("WebSocket error: " << ec.message()); }
 } // namespace uspe

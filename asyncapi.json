@@ -2,7 +2,15 @@
     "asyncapi": "3.0.0",
     "channels": {
         "uspe": {
-            "address": "/"
+            "address": "/",
+            "messages": {
+                "connect": {
+                    "$ref": "#/components/messages/connect"
+                },
+                "connection": {
+                    "$ref": "#/components/messages/connection"
+                }
+            }
         }
     },
     "components": {
@@ -25,6 +33,54 @@
                         "type": {
                             "enum": [
                                 "causal_link_added"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
+            "connect": {
+                "payload": {
+                    "properties": {
+                        "token": {
+                            "format": "uuid",
+                            "type": "string"
+                        },
+                        "type": {
+                            "enum": [
+                                "connect"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
+            "connection": {
+                "payload": {
+                    "properties": {
+                        "email": {
+                            "type": "string"
+                        },
+                        "first_name": {
+                            "type": "string"
+                        },
+                        "last_name": {
+                            "type": "string"
+                        },
+                        "role": {
+                            "enum": [
+                                "Admin",
+                                "Decision Maker",
+                                "Technician",
+                                "Citizen"
+                            ],
+                            "type": "string"
+                        },
+                        "type": {
+                            "enum": [
+                                "connection"
                             ],
                             "type": "string"
                         }
@@ -1315,9 +1371,37 @@
         "title": "Urban Sensing & Planning Engine WebSocket API",
         "version": "1.0"
     },
+    "operations": {
+        "connect": {
+            "action": "send",
+            "channel": {
+                "$ref": "#/channels/uspe"
+            },
+            "description": "Connect to the USPE WebSocket API",
+            "messages": [
+                {
+                    "$ref": "#/channels/uspe/messages/connect"
+                }
+            ],
+            "summary": "Connect"
+        },
+        "connections": {
+            "action": "receive",
+            "channel": {
+                "$ref": "#/channels/uspe"
+            },
+            "description": "Notifies the client of a successful connections",
+            "messages": [
+                {
+                    "$ref": "#/channels/uspe/messages/connection"
+                }
+            ],
+            "summary": "Connections"
+        }
+    },
     "servers": {
         "uspe": {
-            "host": "0.0.0.0:8080",
+            "host": "0.0.0.0:8081",
             "pathname": "/uspe",
             "protocol": "ws"
         }

@@ -42,7 +42,15 @@ namespace uspe
     std::unique_ptr<network::response> update_user(network::request &req);
     std::unique_ptr<network::response> delete_user(network::request &req);
 
+    void on_ws_open(network::ws_session &ws);
+    void on_ws_message(network::ws_session &ws, const std::string &msg);
+    void on_ws_close(network::ws_session &ws);
+    void on_ws_error(network::ws_session &ws, const boost::system::error_code &);
+
     const json::json j_open_api = make_open_api();
     const json::json j_async_api = make_async_api();
+
+    std::unordered_map<network::ws_session *, std::string> ws_to_user;
+    std::unordered_map<std::string, std::unordered_set<network::ws_session *>> user_to_wss;
   };
 } // namespace uspe
