@@ -129,6 +129,8 @@ namespace uspe
                               ratio::resolver_state_changed_message,
                               ratio::current_resolver_message,
                               ratio::causal_link_added_message,
+                              coco::types_message,
+                              coco::items_message,
                               {"connect",
                                {"payload",
                                 {{"type", "object"},
@@ -328,7 +330,11 @@ namespace uspe
              {{"connect",
                {{"$ref", "#/components/messages/connect"}}},
               {"connection",
-               {{"$ref", "#/components/messages/connection"}}}}}}}}},
+               {{"$ref", "#/components/messages/connection"}}},
+              {"types",
+               {{"$ref", "#/components/messages/types"}}},
+              {"items",
+               {{"$ref", "#/components/messages/items"}}}}}}}}},
         {"operations",
          {{"connect",
            {{"summary", "Connect"},
@@ -341,7 +347,7 @@ namespace uspe
             {"description", "Notifies the client of a successful connections"},
             {"action", "receive"},
             {"channel", {"$ref", "#/channels/uspe"}},
-            {"messages", std::vector<json::json>{{"$ref", "#/channels/uspe/messages/connection"}}}}}}},
+            {"messages", std::vector<json::json>{{"$ref", "#/channels/uspe/messages/connection"}, {"$ref", "#/channels/uspe/messages/types"}, {"$ref", "#/channels/uspe/messages/items"}}}}}}},
         {"components", {schemas, messages}}};
     return async_api;
   }

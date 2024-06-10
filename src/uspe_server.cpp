@@ -46,6 +46,7 @@ namespace uspe
             return std::make_unique<network::json_response>(json::json({{"code", 400}, {"message", "Bad Request. Empty email or password fields"}}), network::bad_request);
         try
         {
+            std::lock_guard<std::recursive_mutex> _(mtx);
             auto &user = get_db().get_item(get_db().login(email, password));
             return std::make_unique<network::json_response>(json::json({{"token", user.get_id()}}));
         }
@@ -70,6 +71,7 @@ namespace uspe
             return std::make_unique<network::json_response>(json::json({{"code", 400}, {"message", "Bad Request. Empty first_name, last_name, email, or password fields"}}), network::bad_request);
         try
         {
+            std::lock_guard<std::recursive_mutex> _(mtx);
             return std::make_unique<network::json_response>(json::json({{"token", get_db().create_user(first_name, last_name, email, password, "Citizen")}}));
         }
         catch (const std::exception &e)
@@ -89,6 +91,7 @@ namespace uspe
         if (auto token = req.get_headers().find("token"); token != req.get_headers().end())
             try
             {
+                std::lock_guard<std::recursive_mutex> _(mtx);
                 auto &caller = get_db().get_item(token->second);
                 auto &updating_user = get_db().get_item(req.get_target().substr(7));
                 if (role_to_int(caller.get_parameters()["role"]) < role_to_int(updating_user.get_parameters()["role"]))
@@ -111,6 +114,7 @@ namespace uspe
         if (auto token = req.get_headers().find("token"); token != req.get_headers().end())
             try
             {
+                std::lock_guard<std::recursive_mutex> _(mtx);
                 auto &caller = get_db().get_item(token->second);
                 auto &deleting_user = get_db().get_item(req.get_target().substr(7));
                 if (role_to_int(caller.get_parameters()["role"]) < role_to_int(deleting_user.get_parameters()["role"]))
@@ -126,12 +130,14 @@ namespace uspe
     }
 
     void uspe_server::on_ws_open(network::ws_session &ws)
-    { // Add the WebSocket session to the WebSocket session to user map.
-        ws_to_user[&ws] = "";
+    {
+        std::lock_guard<std::recursive_mutex> _(mtx);
+        ws_to_user[&ws] = ""; // Add the WebSocket session to the WebSocket session to user map.
         LOG_DEBUG("WebSocket sessions: " << ws_to_user.size());
     }
     void uspe_server::on_ws_message(network::ws_session &ws, const std::string &msg)
     {
+        std::lock_guard<std::recursive_mutex> _(mtx);
         auto x = json::load(msg);
         if (!x.contains("type"))
             ws.close();
@@ -145,6 +151,9 @@ namespace uspe
                 auto &user = get_db().get_item(x["token"]);
                 ws_to_user[&ws] = user.get_id();
                 user_to_wss[user.get_id()].insert(&ws);
+
+                ws.send(make_types_message(*this).dump());
+                ws.send(make_items_message(*this).dump());
             }
             catch (const std::exception &e)
             {
@@ -154,6 +163,7 @@ namespace uspe
     }
     void uspe_server::on_ws_close(network::ws_session &ws)
     {
+        std::lock_guard<std::recursive_mutex> _(mtx);
         auto user_id = ws_to_user[&ws];
         if (auto it = user_to_wss.find(user_id); it != user_to_wss.end())
         { // Remove the WebSocket session from the user's set of WebSocket sessions.
