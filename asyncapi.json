@@ -9,6 +9,12 @@
                 },
                 "connection": {
                     "$ref": "#/components/messages/connection"
+                },
+                "items": {
+                    "$ref": "#/components/messages/items"
+                },
+                "types": {
+                    "$ref": "#/components/messages/types"
                 }
             }
         }
@@ -280,6 +286,25 @@
                     }
                 }
             },
+            "items_message": {
+                "payload": {
+                    "properties": {
+                        "items": {
+                            "items": {
+                                "$ref": "#/components/schemas/coco_type"
+                            },
+                            "type": "array"
+                        },
+                        "type": {
+                            "enum": [
+                                "items"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
             "new_executor_message": {
                 "payload": {
                     "properties": {
@@ -415,6 +440,25 @@
                                 "tick"
                             ],
                             "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            },
+            "types_message": {
+                "payload": {
+                    "properties": {
+                        "type": {
+                            "enum": [
+                                "types"
+                            ],
+                            "type": "string"
+                        },
+                        "types": {
+                            "items": {
+                                "$ref": "#/components/schemas/coco_type"
+                            },
+                            "type": "array"
                         }
                     },
                     "type": "object"
@@ -696,6 +740,13 @@
                 ],
                 "type": "object"
             },
+            "coordinates": {
+                "description": "An array of two or three numbers representing the x, y, and optionally z coordinates of the position.",
+                "items": {
+                    "type": "number"
+                },
+                "type": "array"
+            },
             "data": {
                 "properties": {
                     "data": {
@@ -744,6 +795,40 @@
                 },
                 "type": "object"
             },
+            "feature": {
+                "properties": {
+                    "geometry": {
+                        "$ref": "#/components/schemas/geometry"
+                    },
+                    "properties": {
+                        "type": "object"
+                    },
+                    "type": {
+                        "enum": [
+                            "Feature"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "feature_collection": {
+                "properties": {
+                    "features": {
+                        "items": {
+                            "$ref": "#/components/schemas/feature"
+                        },
+                        "type": "array"
+                    },
+                    "type": {
+                        "enum": [
+                            "FeatureCollection"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "flaw": {
                 "properties": {
                     "causes": {
@@ -785,6 +870,48 @@
                     "phi",
                     "cost"
                 ],
+                "type": "object"
+            },
+            "geometry": {
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/point"
+                    },
+                    {
+                        "$ref": "#/components/schemas/line_string"
+                    },
+                    {
+                        "$ref": "#/components/schemas/polygon"
+                    },
+                    {
+                        "$ref": "#/components/schemas/multi_point"
+                    },
+                    {
+                        "$ref": "#/components/schemas/multi_line_string"
+                    },
+                    {
+                        "$ref": "#/components/schemas/multi_polygon"
+                    },
+                    {
+                        "$ref": "#/components/schemas/geometry_collection"
+                    }
+                ]
+            },
+            "geometry_collection": {
+                "properties": {
+                    "geometries": {
+                        "items": {
+                            "$ref": "#/components/schemas/geometry"
+                        },
+                        "type": "array"
+                    },
+                    "type": {
+                        "enum": [
+                            "GeometryCollection"
+                        ],
+                        "type": "string"
+                    }
+                },
                 "type": "object"
             },
             "inf_rational": {
@@ -882,6 +1009,87 @@
                 ],
                 "type": "object"
             },
+            "line_string": {
+                "properties": {
+                    "coordinates": {
+                        "items": {
+                            "$ref": "#/components/schemas/coordinates"
+                        },
+                        "type": "array"
+                    },
+                    "type": {
+                        "enum": [
+                            "LineString"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "linear_ring": {
+                "description": "A linear ring is a closed LineString with four or more positions. The first and last positions are equivalent (they represent equivalent points). It MUST follow the right-hand rule with respect to the area it bounds, i.e., exterior rings are counterclockwise, and holes are clockwise.",
+                "items": {
+                    "$ref": "#/components/schemas/coordinates"
+                },
+                "type": "array"
+            },
+            "multi_line_string": {
+                "properties": {
+                    "coordinates": {
+                        "items": {
+                            "items": {
+                                "$ref": "#/components/schemas/coordinates"
+                            },
+                            "type": "array"
+                        },
+                        "type": "array"
+                    },
+                    "type": {
+                        "enum": [
+                            "MultiLineString"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "multi_point": {
+                "properties": {
+                    "coordinates": {
+                        "items": {
+                            "$ref": "#/components/schemas/coordinates"
+                        },
+                        "type": "array"
+                    },
+                    "type": {
+                        "enum": [
+                            "MultiPoint"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "multi_polygon": {
+                "properties": {
+                    "coordinates": {
+                        "items": {
+                            "items": {
+                                "$ref": "#/components/schemas/linear_ring"
+                            },
+                            "type": "array"
+                        },
+                        "type": "array"
+                    },
+                    "type": {
+                        "enum": [
+                            "MultiPolygon"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "object_value": {
                 "properties": {
                     "type": {
@@ -919,8 +1127,43 @@
                     },
                     {
                         "$ref": "#/components/schemas/array_parameter"
+                    },
+                    {
+                        "$ref": "#/components/schemas/geometry"
                     }
                 ]
+            },
+            "point": {
+                "description": "A point is a position in coordinate space.",
+                "properties": {
+                    "coordinates": {
+                        "$ref": "#/components/schemas/coordinates"
+                    },
+                    "type": {
+                        "enum": [
+                            "Point"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "polygon": {
+                "properties": {
+                    "coordinates": {
+                        "items": {
+                            "$ref": "#/components/schemas/linear_ring"
+                        },
+                        "type": "array"
+                    },
+                    "type": {
+                        "enum": [
+                            "Polygon"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "type": "object"
             },
             "rational": {
                 "properties": {
@@ -1394,6 +1637,12 @@
             "messages": [
                 {
                     "$ref": "#/channels/uspe/messages/connection"
+                },
+                {
+                    "$ref": "#/channels/uspe/messages/types"
+                },
+                {
+                    "$ref": "#/channels/uspe/messages/items"
                 }
             ],
             "summary": "Connections"
@@ -1401,7 +1650,7 @@
     },
     "servers": {
         "uspe": {
-            "host": "0.0.0.0:8081",
+            "host": "0.0.0.0:8080",
             "pathname": "/uspe",
             "protocol": "ws"
         }

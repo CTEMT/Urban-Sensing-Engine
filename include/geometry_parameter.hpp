@@ -19,15 +19,15 @@ namespace uspe
     std::unique_ptr<coco::coco_parameter> from_bson(const bsoncxx::v_noabi::document::view &doc) const override;
   };
 
-  const json::json geometry_schema{{"geometry",
-                                    {{"oneOf", std::vector<json::json>{
-                                                   {"$ref", "#/components/schemas/point"},
-                                                   {"$ref", "#/components/schemas/line_string"},
-                                                   {"$ref", "#/components/schemas/polygon"},
-                                                   {"$ref", "#/components/schemas/multi_point"},
-                                                   {"$ref", "#/components/schemas/multi_line_string"},
-                                                   {"$ref", "#/components/schemas/multi_polygon"},
-                                                   {"$ref", "#/components/schemas/geometry_collection"}}}}}};
+  const json::json geometry_parameter_schema{{"geometry_parameter",
+                                              {{"oneOf", std::vector<json::json>{
+                                                             {"$ref", "#/components/schemas/point"},
+                                                             {"$ref", "#/components/schemas/line_string"},
+                                                             {"$ref", "#/components/schemas/polygon"},
+                                                             {"$ref", "#/components/schemas/multi_point"},
+                                                             {"$ref", "#/components/schemas/multi_line_string"},
+                                                             {"$ref", "#/components/schemas/multi_polygon"},
+                                                             {"$ref", "#/components/schemas/geometry_collection"}}}}}};
   const json::json coordinate_schema{"coordinates",
                                      {{"type", "array"},
                                       {"description", "An array of two or three numbers representing the x, y, and optionally z coordinates of the position."},
@@ -71,5 +71,5 @@ namespace uspe
                                               {{"type", "object"},
                                                {"properties",
                                                 {{"type", {{"type", "string"}, {"enum", {"GeometryCollection"}}}},
-                                                 {"geometries", {{"type", "array"}, {"items", {{"$ref", "#/components/schemas/geometry"}}}}}}}}};
+                                                 {"geometries", {{"type", "array"}, {"items", {{"$ref", "#/components/schemas/geometry_parameter"}}}}}}}}};
 } // namespace uspe
