@@ -47,6 +47,7 @@ namespace uspe
     void on_ws_close(network::ws_session &ws);
     void on_ws_error(network::ws_session &ws, const boost::system::error_code &);
 
+  private:
     const json::json j_open_api = make_open_api();
     const json::json j_async_api = make_async_api();
 

@@ -15,7 +15,7 @@ configure_file(.env.in ${DASHBOARD_FOLDER}/.env.local @ONLY)
 execute_process(COMMAND npm install WORKING_DIRECTORY ${DASHBOARD_FOLDER})
 execute_process(COMMAND npm run build WORKING_DIRECTORY ${DASHBOARD_FOLDER})
 
-add_executable(UrbanSensingAndPlanningEngine src/main.cpp src/uspe_server.cpp src/uspe_db.cpp)
+add_executable(UrbanSensingAndPlanningEngine src/main.cpp src/uspe_server.cpp src/uspe_db.cpp src/geometry_parameter.cpp)
 target_include_directories(UrbanSensingAndPlanningEngine PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 add_dependencies(UrbanSensingAndPlanningEngine CoCo ratioNet)
 target_link_libraries(UrbanSensingAndPlanningEngine CoCo ratioNet)

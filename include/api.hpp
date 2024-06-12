@@ -1,6 +1,7 @@
 #pragma once
 
 #include "coco_core.hpp"
+#include "geometry_parameter.hpp"
 #include "graph.hpp"
 #include "agent.hpp"
 #include "state_variable.hpp"
@@ -10,59 +11,6 @@
 
 namespace uspe
 {
-  const json::json geometry_schema{{"geometry",
-                                    {{"oneOf", std::vector<json::json>{
-                                                   {"$ref", "#/components/schemas/point"},
-                                                   {"$ref", "#/components/schemas/line_string"},
-                                                   {"$ref", "#/components/schemas/polygon"},
-                                                   {"$ref", "#/components/schemas/multi_point"},
-                                                   {"$ref", "#/components/schemas/multi_line_string"},
-                                                   {"$ref", "#/components/schemas/multi_polygon"},
-                                                   {"$ref", "#/components/schemas/geometry_collection"}}}}}};
-  const json::json coordinate_schema{"coordinates",
-                                     {{"type", "array"},
-                                      {"description", "An array of two or three numbers representing the x, y, and optionally z coordinates of the position."},
-                                      {"items", {{"type", "number"}}}}};
-  const json::json linear_ring_schema{"linear_ring",
-                                      {{"type", "array"},
-                                       {"description", "A linear ring is a closed LineString with four or more positions. The first and last positions are equivalent (they represent equivalent points). It MUST follow the right-hand rule with respect to the area it bounds, i.e., exterior rings are counterclockwise, and holes are clockwise."},
-                                       {"items", {{"$ref", "#/components/schemas/coordinates"}}}}};
-  const json::json point_schema{"point",
-                                {{"type", "object"},
-                                 {"description", "A point is a position in coordinate space."},
-                                 {"properties",
-                                  {{"type", {{"type", "string"}, {"enum", {"Point"}}}},
-                                   {"coordinates", {{"$ref", "#/components/schemas/coordinates"}}}}}}};
-  const json::json line_string_schema{"line_string",
-                                      {{"type", "object"},
-                                       {"properties",
-                                        {{"type", {{"type", "string"}, {"enum", {"LineString"}}}},
-                                         {"coordinates", {{"type", "array"}, {"items", {{"$ref", "#/components/schemas/coordinates"}}}}}}}}};
-  const json::json polygon_schema{"polygon",
-                                  {{"type", "object"},
-                                   {"properties",
-                                    {{"type", {{"type", "string"}, {"enum", {"Polygon"}}}},
-                                     {"coordinates", {{"type", "array"}, {"items", {{"$ref", "#/components/schemas/linear_ring"}}}}}}}}};
-  const json::json multi_point_schema{"multi_point",
-                                      {{"type", "object"},
-                                       {"properties",
-                                        {{"type", {{"type", "string"}, {"enum", {"MultiPoint"}}}},
-                                         {"coordinates", {{"type", "array"}, {"items", {{"$ref", "#/components/schemas/coordinates"}}}}}}}}};
-  const json::json multi_line_string_schema{"multi_line_string",
-                                            {{"type", "object"},
-                                             {"properties",
-                                              {{"type", {{"type", "string"}, {"enum", {"MultiLineString"}}}},
-                                               {"coordinates", {{"type", "array"}, {"items", {{"type", "array"}, {"items", {{"$ref", "#/components/schemas/coordinates"}}}}}}}}}}};
-  const json::json multi_polygon_schema{"multi_polygon",
-                                        {{"type", "object"},
-                                         {"properties",
-                                          {{"type", {{"type", "string"}, {"enum", {"MultiPolygon"}}}},
-                                           {"coordinates", {{"type", "array"}, {"items", {{"type", "array"}, {"items", {{"$ref", "#/components/schemas/linear_ring"}}}}}}}}}}};
-  const json::json geometry_collection_schema{"geometry_collection",
-                                              {{"type", "object"},
-                                               {"properties",
-                                                {{"type", {{"type", "string"}, {"enum", {"GeometryCollection"}}}},
-                                                 {"geometries", {{"type", "array"}, {"items", {{"$ref", "#/components/schemas/geometry"}}}}}}}}};
   const json::json feature_schema{"feature",
                                   {{"type", "object"},
                                    {"properties",
@@ -76,13 +24,31 @@ namespace uspe
                                                 {"features", {{"type", "array"}, {"items", {{"$ref", "#/components/schemas/feature"}}}}}}}}};
   const json::json schemas{"schemas",
                            {
-                               coco::parameter_schema,
+                               {{"parameter",
+                                 {{"oneOf", std::vector<json::json>{
+                                                {{"$ref", "#/components/schemas/integer_parameter"}},
+                                                {{"$ref", "#/components/schemas/real_parameter"}},
+                                                {{"$ref", "#/components/schemas/boolean_parameter"}},
+                                                {{"$ref", "#/components/schemas/symbol_parameter"}},
+                                                {{"$ref", "#/components/schemas/string_parameter"}},
+                                                {{"$ref", "#/components/schemas/array_parameter"}},
+                                                {{"$ref", "#/components/schemas/geometry"}}}}}}},
                                coco::integer_parameter_schema,
                                coco::real_parameter_schema,
                                coco::boolean_parameter_schema,
                                coco::symbol_parameter_schema,
                                coco::string_parameter_schema,
                                coco::array_parameter_schema,
+                               geometry_schema,
+                               coordinate_schema,
+                               linear_ring_schema,
+                               point_schema,
+                               line_string_schema,
+                               polygon_schema,
+                               multi_point_schema,
+                               multi_line_string_schema,
+                               feature_schema,
+                               feature_collection_schema,
                                coco::coco_type_schema,
                                coco::coco_item_schema,
                                coco::data_schema,
