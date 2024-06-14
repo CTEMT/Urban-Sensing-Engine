@@ -20,15 +20,8 @@ namespace uspe
             user_static_pars.emplace("first_name", std::make_unique<coco::string_parameter>("first_name"));
             user_static_pars.emplace("last_name", std::make_unique<coco::string_parameter>("last_name"));
             user_static_pars.emplace("role", std::make_unique<coco::symbolic_parameter>("role", std::vector<std::string>{"Admin", "Decision Maker", "Technician", "Citizen"}));
-            user_type_id = create_type("User", "A user of the House of the Emerging Technologies.", std::move(user_static_pars), {}).get_id();
+            [[maybe_unused]] auto &user_type = create_type("user", "A user of the House of the Emerging Technologies.", std::move(user_static_pars), {});
         }
-        else
-            for (auto &type : types)
-                if (type.get().get_name() == "User")
-                {
-                    user_type_id = type.get().get_id();
-                    break;
-                }
     }
 
     std::string uspe_db::login(const std::string &email, const std::string &password)
@@ -46,7 +39,7 @@ namespace uspe
 
     std::string uspe_db::create_user(const std::string &first_name, const std::string &last_name, const std::string &email, const std::string &password, const std::string &role)
     {
-        auto user_item = create_item(get_type(user_type_id), email, {{"first_name", first_name}, {"last_name", last_name}, {"role", role}});
+        auto user_item = create_item(get_type_by_name("user"), email, {{"first_name", first_name}, {"last_name", last_name}, {"role", role}});
 
         using bsoncxx::builder::basic::kvp;
         bsoncxx::builder::basic::document doc{};

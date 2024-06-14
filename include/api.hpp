@@ -14,12 +14,14 @@ namespace uspe
                                   {{"type", "object"},
                                    {"properties",
                                     {{"type", {{"type", "string"}, {"enum", {"Feature"}}}},
-                                     {"geometry", {{"$ref", "#/components/schemas/geometry"}}},
+                                     {"bbox", {{"type", "array"}, {"items", {{"type", "number"}}}}},
+                                     {"geometry", {{"$ref", "#/components/schemas/geometry_parameter"}}},
                                      {"properties", {{"type", "object"}}}}}}};
   const json::json feature_collection_schema{"feature_collection",
                                              {{"type", "object"},
                                               {"properties",
                                                {{"type", {{"type", "string"}, {"enum", {"FeatureCollection"}}}},
+                                                {"bbox", {{"type", "array"}, {"items", {{"type", "number"}}}}},
                                                 {"features", {{"type", "array"}, {"items", {{"$ref", "#/components/schemas/feature"}}}}}}}}};
   const json::json schemas{"schemas",
                            {
@@ -290,10 +292,10 @@ namespace uspe
                {{"$ref", "#/components/messages/connect"}}},
               {"connection",
                {{"$ref", "#/components/messages/connection"}}},
-              {"types",
-               {{"$ref", "#/components/messages/types"}}},
-              {"items",
-               {{"$ref", "#/components/messages/items"}}}}}}}}},
+              {"types_message",
+               {{"$ref", "#/components/messages/types_message"}}},
+              {"items_message",
+               {{"$ref", "#/components/messages/items_message"}}}}}}}}},
         {"operations",
          {{"connect",
            {{"summary", "Connect"},
@@ -306,7 +308,7 @@ namespace uspe
             {"description", "Notifies the client of a successful connections"},
             {"action", "receive"},
             {"channel", {"$ref", "#/channels/uspe"}},
-            {"messages", std::vector<json::json>{{"$ref", "#/channels/uspe/messages/connection"}, {"$ref", "#/channels/uspe/messages/types"}, {"$ref", "#/channels/uspe/messages/items"}}}}}}},
+            {"messages", std::vector<json::json>{{"$ref", "#/channels/uspe/messages/connection"}, {"$ref", "#/channels/uspe/messages/types_message"}, {"$ref", "#/channels/uspe/messages/items_message"}}}}}}},
         {"components", {schemas, messages}}};
     return async_api;
   }

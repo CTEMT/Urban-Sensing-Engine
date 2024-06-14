@@ -10,11 +10,11 @@
                 "connection": {
                     "$ref": "#/components/messages/connection"
                 },
-                "items": {
-                    "$ref": "#/components/messages/items"
+                "items_message": {
+                    "$ref": "#/components/messages/items_message"
                 },
-                "types": {
-                    "$ref": "#/components/messages/types"
+                "types_message": {
+                    "$ref": "#/components/messages/types_message"
                 }
             }
         }
@@ -499,6 +499,7 @@
                 "type": "object"
             },
             "array_parameter": {
+                "description": "An array parameter. It has a name, an array type, and a shape.",
                 "properties": {
                     "array_type": {
                         "$ref": "#/components/schemas/parameter"
@@ -597,6 +598,7 @@
                 "type": "object"
             },
             "boolean_parameter": {
+                "description": "A boolean parameter. It has a name.",
                 "properties": {
                     "name": {
                         "type": "string"
@@ -797,8 +799,14 @@
             },
             "feature": {
                 "properties": {
+                    "bbox": {
+                        "items": {
+                            "type": "number"
+                        },
+                        "type": "array"
+                    },
                     "geometry": {
-                        "$ref": "#/components/schemas/geometry"
+                        "$ref": "#/components/schemas/geometry_parameter"
                     },
                     "properties": {
                         "type": "object"
@@ -814,6 +822,12 @@
             },
             "feature_collection": {
                 "properties": {
+                    "bbox": {
+                        "items": {
+                            "type": "number"
+                        },
+                        "type": "array"
+                    },
                     "features": {
                         "items": {
                             "$ref": "#/components/schemas/feature"
@@ -872,36 +886,11 @@
                 ],
                 "type": "object"
             },
-            "geometry": {
-                "oneOf": [
-                    {
-                        "$ref": "#/components/schemas/point"
-                    },
-                    {
-                        "$ref": "#/components/schemas/line_string"
-                    },
-                    {
-                        "$ref": "#/components/schemas/polygon"
-                    },
-                    {
-                        "$ref": "#/components/schemas/multi_point"
-                    },
-                    {
-                        "$ref": "#/components/schemas/multi_line_string"
-                    },
-                    {
-                        "$ref": "#/components/schemas/multi_polygon"
-                    },
-                    {
-                        "$ref": "#/components/schemas/geometry_collection"
-                    }
-                ]
-            },
             "geometry_collection": {
                 "properties": {
                     "geometries": {
                         "items": {
-                            "$ref": "#/components/schemas/geometry"
+                            "$ref": "#/components/schemas/geometry_parameter"
                         },
                         "type": "array"
                     },
@@ -913,6 +902,31 @@
                     }
                 },
                 "type": "object"
+            },
+            "geometry_parameter": {
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/point"
+                    },
+                    {
+                        "$ref": "#/components/schemas/multi_point"
+                    },
+                    {
+                        "$ref": "#/components/schemas/line_string"
+                    },
+                    {
+                        "$ref": "#/components/schemas/multi_line_string"
+                    },
+                    {
+                        "$ref": "#/components/schemas/polygon"
+                    },
+                    {
+                        "$ref": "#/components/schemas/multi_polygon"
+                    },
+                    {
+                        "$ref": "#/components/schemas/geometry_collection"
+                    }
+                ]
             },
             "inf_rational": {
                 "properties": {
@@ -961,6 +975,7 @@
                 "type": "object"
             },
             "integer_parameter": {
+                "description": "An integer parameter. It has a name and, optionally, a minimum and maximum value.",
                 "properties": {
                     "max": {
                         "type": "integer"
@@ -1129,7 +1144,7 @@
                         "$ref": "#/components/schemas/array_parameter"
                     },
                     {
-                        "$ref": "#/components/schemas/geometry"
+                        "$ref": "#/components/schemas/geometry_parameter"
                     }
                 ]
             },
@@ -1181,6 +1196,7 @@
                 "type": "object"
             },
             "real_parameter": {
+                "description": "A real parameter. It has a name and, optionally, a minimum and maximum value.",
                 "properties": {
                     "max": {
                         "type": "number"
@@ -1472,6 +1488,7 @@
                 "type": "object"
             },
             "string_parameter": {
+                "description": "A string parameter. It has a name.",
                 "properties": {
                     "name": {
                         "type": "string"
@@ -1508,6 +1525,7 @@
                 "type": "object"
             },
             "symbol_parameter": {
+                "description": "A symbolic parameter. It has a name and a list of allowed symbols. If multiple is true, the parameter can have multiple values among the symbols.",
                 "properties": {
                     "multiple": {
                         "type": "boolean"
@@ -1639,10 +1657,10 @@
                     "$ref": "#/channels/uspe/messages/connection"
                 },
                 {
-                    "$ref": "#/channels/uspe/messages/types"
+                    "$ref": "#/channels/uspe/messages/types_message"
                 },
                 {
-                    "$ref": "#/channels/uspe/messages/items"
+                    "$ref": "#/channels/uspe/messages/items_message"
                 }
             ],
             "summary": "Connections"
@@ -1650,7 +1668,7 @@
     },
     "servers": {
         "uspe": {
-            "host": "0.0.0.0:8080",
+            "host": "0.0.0.0:8081",
             "pathname": "/uspe",
             "protocol": "ws"
         }

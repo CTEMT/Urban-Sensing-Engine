@@ -24,6 +24,5 @@ namespace uspe
 
   private:
     mongocxx::collection users_collection;
-    std::string user_type_id;
   };
 } // namespace uspe
