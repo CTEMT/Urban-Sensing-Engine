@@ -179,13 +179,15 @@ namespace uspe
             ws.close();
 
         if (x["type"] == "connect")
-        {
+        { // A user is connecting.
             try
             {
-                auto &user = get_db().get_item(x["token"]);
-                ws_to_user[&ws] = user.get_id();
-                user_to_wss[user.get_id()].insert(&ws);
+                auto &user_item = get_db().get_item(x["token"]);
+                ws_to_user[&ws] = user_item.get_id();
+                user_to_wss[user_item.get_id()].insert(&ws);
 
+                // Send the user's information to the user.
+                ws.send(json::json{{"type", "connection"}, {"email", user_item.get_name()}, {"first_name", user_item.get_parameters()["first_name"]}, {"last_name", user_item.get_parameters()["last_name"]}, {"role", user_item.get_parameters()["role"]}}.dump());
                 ws.send(make_types_message(*this).dump());
                 ws.send(make_items_message(*this).dump());
             }

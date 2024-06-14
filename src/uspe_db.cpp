@@ -21,6 +21,12 @@ namespace uspe
             user_static_pars.emplace("last_name", std::make_unique<coco::string_parameter>("last_name"));
             user_static_pars.emplace("role", std::make_unique<coco::symbolic_parameter>("role", std::vector<std::string>{"Admin", "Decision Maker", "Technician", "Citizen"}));
             [[maybe_unused]] auto &user_type = create_type("user", "A user of the House of the Emerging Technologies.", std::move(user_static_pars), {});
+
+            [[maybe_unused]] auto &sensor_type = create_type("sensor", "A sensor of the House of the Emerging Technologies.", {}, {});
+
+            std::unordered_map<std::string, std::unique_ptr<coco::coco_parameter>> movable_sensor_dynamic_pars;
+            movable_sensor_dynamic_pars.emplace("location", std::make_unique<coco::geometry_parameter>("location"));
+            [[maybe_unused]] auto &movable_sensor_type = create_type("movable_sensor", "A movable sensor of the House of the Emerging Technologies.", {}, std::move(movable_sensor_dynamic_pars));
         }
     }
 
