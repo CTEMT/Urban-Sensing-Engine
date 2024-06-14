@@ -129,13 +129,37 @@ namespace uspe
         return std::make_unique<network::json_response>(json::json({{"code", 401}, {"message", "Unauthorized. Missing token"}}), network::unauthorized);
     }
 
-    void uspe_server::new_type(const coco::type &tp) {}
-    void uspe_server::updated_type(const coco::type &tp) {}
-    void uspe_server::deleted_type(const std::string &tp_id) {}
+    void uspe_server::new_type(const coco::type &tp)
+    {
+        std::lock_guard<std::recursive_mutex> _(mtx);
+        broadcast(make_new_type_message(tp));
+    }
+    void uspe_server::updated_type(const coco::type &tp)
+    {
+        std::lock_guard<std::recursive_mutex> _(mtx);
+        broadcast(make_updated_type_message(tp));
+    }
+    void uspe_server::deleted_type(const std::string &tp_id)
+    {
+        std::lock_guard<std::recursive_mutex> _(mtx);
+        broadcast(coco::make_deleted_type_message(tp_id));
+    }
 
-    void uspe_server::new_item(const coco::item &itm) {}
-    void uspe_server::updated_item(const coco::item &itm) {}
-    void uspe_server::deleted_item(const std::string &itm_id) {}
+    void uspe_server::new_item(const coco::item &itm)
+    {
+        std::lock_guard<std::recursive_mutex> _(mtx);
+        broadcast(make_new_item_message(itm));
+    }
+    void uspe_server::updated_item(const coco::item &itm)
+    {
+        std::lock_guard<std::recursive_mutex> _(mtx);
+        broadcast(make_updated_item_message(itm));
+    }
+    void uspe_server::deleted_item(const std::string &itm_id)
+    {
+        std::lock_guard<std::recursive_mutex> _(mtx);
+        broadcast(coco::make_deleted_item_message(itm_id));
+    }
 
     void uspe_server::new_data(const coco::item &itm, const std::chrono::system_clock::time_point &timestamp, const json::json &data) {}
 
@@ -185,4 +209,13 @@ namespace uspe
         LOG_DEBUG("WebSocket sessions: " << ws_to_user.size());
     }
     void uspe_server::on_ws_error([[maybe_unused]] network::ws_session &ws, [[maybe_unused]] const boost::system::error_code &ec) { LOG_ERR("WebSocket error: " << ec.message()); }
+
+    void uspe_server::broadcast(const json::json &msg)
+    {
+        std::lock_guard<std::recursive_mutex> _(mtx);
+        auto msg_ptr = std::make_shared<std::string>(msg.dump());
+        for (auto &[_, wss] : user_to_wss)
+            for (auto ws : wss)
+                ws->send(msg_ptr);
+    }
 } // namespace uspe
