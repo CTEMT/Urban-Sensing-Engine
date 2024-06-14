@@ -1,5 +1,4 @@
 #include "uspe_db.hpp"
-#include "geometry_parameter.hpp"
 #include "logging.hpp"
 #include <bsoncxx/json.hpp>
 #include <bsoncxx/builder/stream/document.hpp>
@@ -8,8 +7,6 @@ namespace uspe
 {
     uspe_db::uspe_db() : users_collection{db["users"]}
     {
-        new_parameter_converter<geometry_parameter_converter>();
-
         if (users_collection.list_indexes().begin() == users_collection.list_indexes().end())
         {
             LOG_DEBUG("Creating indexes for the users collection.");

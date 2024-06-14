@@ -1,7 +1,6 @@
 #pragma once
 
 #include "coco_core.hpp"
-#include "geometry_parameter.hpp"
 #include "graph.hpp"
 #include "agent.hpp"
 #include "state_variable.hpp"
@@ -24,31 +23,23 @@ namespace uspe
                                                 {"features", {{"type", "array"}, {"items", {{"$ref", "#/components/schemas/feature"}}}}}}}}};
   const json::json schemas{"schemas",
                            {
-                               {{"parameter",
-                                 {{"oneOf", std::vector<json::json>{
-                                                {{"$ref", "#/components/schemas/integer_parameter"}},
-                                                {{"$ref", "#/components/schemas/real_parameter"}},
-                                                {{"$ref", "#/components/schemas/boolean_parameter"}},
-                                                {{"$ref", "#/components/schemas/symbol_parameter"}},
-                                                {{"$ref", "#/components/schemas/string_parameter"}},
-                                                {{"$ref", "#/components/schemas/array_parameter"}},
-                                                {{"$ref", "#/components/schemas/geometry_parameter"}}}}}}},
+                               coco::parameter_schema,
                                coco::integer_parameter_schema,
                                coco::real_parameter_schema,
                                coco::boolean_parameter_schema,
                                coco::symbol_parameter_schema,
                                coco::string_parameter_schema,
                                coco::array_parameter_schema,
-                               geometry_parameter_schema,
-                               coordinate_schema,
-                               linear_ring_schema,
-                               point_schema,
-                               line_string_schema,
-                               polygon_schema,
-                               multi_point_schema,
-                               multi_line_string_schema,
-                               multi_polygon_schema,
-                               geometry_collection_schema,
+                               coco::geometry_parameter_schema,
+                               coco::coordinate_schema,
+                               coco::linear_ring_schema,
+                               coco::point_schema,
+                               coco::line_string_schema,
+                               coco::polygon_schema,
+                               coco::multi_point_schema,
+                               coco::multi_line_string_schema,
+                               coco::multi_polygon_schema,
+                               coco::geometry_collection_schema,
                                feature_schema,
                                feature_collection_schema,
                                coco::coco_type_schema,
