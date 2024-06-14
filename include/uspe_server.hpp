@@ -42,6 +42,16 @@ namespace uspe
     std::unique_ptr<network::response> update_user(network::request &req);
     std::unique_ptr<network::response> delete_user(network::request &req);
 
+    void new_type(const coco::type &tp) override;
+    void updated_type(const coco::type &tp) override;
+    void deleted_type(const std::string &tp_id) override;
+
+    void new_item(const coco::item &itm) override;
+    void updated_item(const coco::item &itm) override;
+    void deleted_item(const std::string &itm_id) override;
+
+    void new_data(const coco::item &itm, const std::chrono::system_clock::time_point &timestamp, const json::json &data) override;
+
     void on_ws_open(network::ws_session &ws);
     void on_ws_message(network::ws_session &ws, const std::string &msg);
     void on_ws_close(network::ws_session &ws);

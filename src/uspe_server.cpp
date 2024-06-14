@@ -129,6 +129,16 @@ namespace uspe
         return std::make_unique<network::json_response>(json::json({{"code", 401}, {"message", "Unauthorized. Missing token"}}), network::unauthorized);
     }
 
+    void uspe_server::new_type(const coco::type &tp) {}
+    void uspe_server::updated_type(const coco::type &tp) {}
+    void uspe_server::deleted_type(const std::string &tp_id) {}
+
+    void uspe_server::new_item(const coco::item &itm) {}
+    void uspe_server::updated_item(const coco::item &itm) {}
+    void uspe_server::deleted_item(const std::string &itm_id) {}
+
+    void uspe_server::new_data(const coco::item &itm, const std::chrono::system_clock::time_point &timestamp, const json::json &data) {}
+
     void uspe_server::on_ws_open(network::ws_session &ws)
     {
         std::lock_guard<std::recursive_mutex> _(mtx);
