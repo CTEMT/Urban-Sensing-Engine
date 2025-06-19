@@ -1,4 +1,5 @@
 #include "uspe_server.hpp"
+#include "logging.hpp"
 
 namespace uspe
 {

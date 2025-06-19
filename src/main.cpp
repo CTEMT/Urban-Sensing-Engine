@@ -2,6 +2,7 @@
 #include "uspe.hpp"
 #include "coco_auth.hpp"
 #include "uspe_server.hpp"
+#include "logging.hpp"
 #include <thread>
 
 int main()
