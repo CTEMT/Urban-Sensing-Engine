@@ -23,7 +23,7 @@ int main()
                              { srv.start(); });
 
 #ifndef NDEBUG
-    std::this_thread::sleep_for(std::chrono::seconds(20));
+    std::this_thread::sleep_for(std::chrono::seconds(120));
 
     db.drop();  // drop the database
     srv.stop(); // stop the server

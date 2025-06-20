@@ -1,7 +1,13 @@
 import sys
 import requests
 import logging
+import warnings
+from urllib3.exceptions import InsecureRequestWarning
 
+# Suppress InsecureRequestWarning from urllib3
+warnings.filterwarnings('ignore', category=InsecureRequestWarning)
+
+# Configure logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -11,10 +17,62 @@ logger.addHandler(handler)
 
 
 def create_types(session: requests.Session, url: str):
+    # Create the 'Vehicle' type
+    response = session.post(url + '/types', json={
+        'name': 'Vehicle',
+        'static_properties': {
+            'vehicle_id': {'type': 'string'},
+            'vehicle_type': {'type': 'string'}
+        }
+    }, verify=False)
+    if response.status_code != 204:
+        logger.error('Failed to create Vehicle type')
+        return
+
+    # Create the 'Location' type
+    response = session.post(url + '/types', json={
+        'name': 'Location',
+        'static_properties': {
+            'lat': {'type': 'float'},
+            'lng': {'type': 'float'},
+            'name': {'type': 'string'}
+        }
+    }, verify=False)
+    if response.status_code != 204:
+        logger.error('Failed to create Location type')
+        return
+
+    # Create the 'BusStop' type
+    response = session.post(url + '/types', json={
+        'name': 'BusStop',
+        'static_properties': {
+            'name': {'type': 'string'},
+            'location': {'type': 'item', 'domain': 'Location'},
+            'stop_id': {'type': 'string'}
+        }
+    }, verify=False)
+    if response.status_code != 204:
+        logger.error('Failed to create BusStop type')
+        return
+
+    # Create the 'Road' type
+    response = session.post(url + '/types', json={
+        'name': 'Road',
+        'static_properties': {
+            'name': {'type': 'string'},
+            'length': {'type': 'float'},
+            'start': {'type': 'item', 'domain': 'Location'},
+            'end': {'type': 'item', 'domain': 'Location'}
+        }
+    }, verify=False)
+    if response.status_code != 204:
+        logger.error('Failed to create Road type')
+        return
+
     # Create the 'Sensor' type..
     response = session.post(url + '/types', json={
         'name': 'Sensor'
-    })
+    }, verify=False)
     if response.status_code != 204:
         logger.error('Failed to create Sensor type')
         return
@@ -24,12 +82,32 @@ def create_types(session: requests.Session, url: str):
         'name': 'FixedSensor',
         'parents': ['Sensor'],
         'static_properties': {
-            'lat': {'type': 'float'},
-            'lng': {'type': 'float'}
+            'location': {'type': 'item', 'domain': 'Location'}
         }
-    })
+    }, verify=False)
     if response.status_code != 204:
         logger.error('Failed to create FixedSensor type')
+        return
+
+    # Create the 'EnvironmentalSensor' type
+    response = session.post(url + '/types', json={
+        'name': 'EnvironmentalSensor',
+        'parents': ['Sensor']
+    }, verify=False)
+    if response.status_code != 204:
+        logger.error('Failed to create EnvironmentalSensor type')
+        return
+
+    # Create the 'TemperatureSensor' type
+    response = session.post(url + '/types', json={
+        'name': 'TemperatureSensor',
+        'parents': ['EnvironmentalSensor'],
+        'dynamic_properties': {
+            'temperature': {'type': 'float'}
+        }
+    }, verify=False)
+    if response.status_code != 204:
+        logger.error('Failed to create TemperatureSensor type')
         return
 
     # Create the 'MobileSensor' type
@@ -40,9 +118,43 @@ def create_types(session: requests.Session, url: str):
             'lat': {'type': 'float'},
             'lng': {'type': 'float'}
         }
-    })
+    }, verify=False)
     if response.status_code != 204:
         logger.error('Failed to create MobileSensor type')
+        return
+
+    # Create the 'Bus' type
+    response = session.post(url + '/types', json={
+        'name': 'Bus',
+        'parents': ['Vehicle'],
+        'static_properties': {
+            'capacity': {'type': 'int'},
+            'gps': {'type': 'item', 'domain': 'MobileSensor'}
+        },
+        'dynamic_properties': {
+            'route': {'type': 'string'},
+            'current_stop': {'type': 'string'},
+            'next_stop': {'type': 'string'}
+        }
+    }, verify=False)
+    if response.status_code != 204:
+        logger.error('Failed to create Bus type')
+        return
+
+    # Create the 'Event' type
+    response = session.post(url + '/types', json={
+        'name': 'Event'
+    }, verify=False)
+    if response.status_code != 204:
+        logger.error('Failed to create Event type')
+        return
+
+    # Create the 'Service' type
+    response = session.post(url + '/types', json={
+        'name': 'Service'
+    }, verify=False)
+    if response.status_code != 204:
+        logger.error('Failed to create Service type')
         return
 
 
