@@ -27,7 +27,7 @@ def import_roads(session: requests.Session, url: str, locations_url: str = None,
     osmid_to_id = {}
 
     for location in locations:
-        response = session.post(url + '/items', json={
+        response = requests.post(url + '/items', json={
             'type': 'Location',
             'properties': {
                 'lat': location['properties']['y'],
@@ -49,7 +49,7 @@ def import_roads(session: requests.Session, url: str, locations_url: str = None,
     logger.info('Fetched %d roads', len(roads))
 
     for road in roads:
-        response = session.post(url + '/items', json={
+        response = requests.post(url + '/items', json={
             'type': 'Road',
             'properties': {
                 'name': road['properties'].get('name'),
@@ -57,6 +57,10 @@ def import_roads(session: requests.Session, url: str, locations_url: str = None,
                 'end': osmid_to_id.get(road['properties'].get('v')),
                 'length': road['properties'].get('length')
             }}, verify=False)
+        if response.status_code != 201:
+            logger.error('Failed to create road for u %s, v %s',
+                         road['properties'].get('u'),
+                         road['properties'].get('v'))
 
 
 if __name__ == '__main__':
