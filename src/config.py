@@ -18,7 +18,7 @@ logger.addHandler(handler)
 
 def create_types(session: requests.Session, url: str):
     # Create the 'Vehicle' type
-    response = session.post(url + '/types', json={
+    response = requests.post(url + '/types', json={
         'name': 'Vehicle',
         'static_properties': {
             'vehicle_id': {'type': 'string'},
@@ -30,7 +30,7 @@ def create_types(session: requests.Session, url: str):
         return
 
     # Create the 'Location' type
-    response = session.post(url + '/types', json={
+    response = requests.post(url + '/types', json={
         'name': 'Location',
         'static_properties': {
             'lat': {'type': 'float'},
@@ -42,8 +42,35 @@ def create_types(session: requests.Session, url: str):
         logger.error('Failed to create Location type')
         return
 
+    # Create the 'TrafficLight' type
+    response = requests.post(url + '/types', json={
+        'name': 'TrafficLight',
+        'static_properties': {
+            'location': {'type': 'item', 'domain': 'Location'}
+        },
+        'dynamic_properties': {
+            'state': {'type': 'string', 'enum': ['red', 'green', 'yellow']}
+        }
+    }, verify=False)
+    if response.status_code != 204:
+        logger.error('Failed to create TrafficLight type')
+        return
+
+    # Create the 'PointOfInterest' type
+    response = requests.post(url + '/types', json={
+        'name': 'PointOfInterest',
+        'static_properties': {
+            'name': {'type': 'string'},
+            'location': {'type': 'item', 'domain': 'Location'},
+            'category': {'type': 'symbol', 'values': ['church', 'hotel', 'museum', 'historical_site', 'palace', 'facility', 'square', 'monastery', 'convent', 'terrace', 'park', 'library', 'castle', 'tower', 'mall', 'abandoned_populated_place', 'restaurant', 'cafe', 'fast_food', 'cultural_site']}
+        }
+    }, verify=False)
+    if response.status_code != 204:
+        logger.error('Failed to create PointOfInterest type')
+        return
+
     # Create the 'BusStop' type
-    response = session.post(url + '/types', json={
+    response = requests.post(url + '/types', json={
         'name': 'BusStop',
         'static_properties': {
             'name': {'type': 'string'},
@@ -56,7 +83,7 @@ def create_types(session: requests.Session, url: str):
         return
 
     # Create the 'Road' type
-    response = session.post(url + '/types', json={
+    response = requests.post(url + '/types', json={
         'name': 'Road',
         'static_properties': {
             'name': {'type': 'string'},
@@ -70,7 +97,7 @@ def create_types(session: requests.Session, url: str):
         return
 
     # Create the 'Sensor' type..
-    response = session.post(url + '/types', json={
+    response = requests.post(url + '/types', json={
         'name': 'Sensor'
     }, verify=False)
     if response.status_code != 204:
@@ -78,7 +105,7 @@ def create_types(session: requests.Session, url: str):
         return
 
     # Create the 'FixedSensor' type
-    response = session.post(url + '/types', json={
+    response = requests.post(url + '/types', json={
         'name': 'FixedSensor',
         'parents': ['Sensor'],
         'static_properties': {
@@ -90,16 +117,16 @@ def create_types(session: requests.Session, url: str):
         return
 
     # Create the 'EnvironmentalSensor' type
-    response = session.post(url + '/types', json={
+    response = requests.post(url + '/types', json={
         'name': 'EnvironmentalSensor',
-        'parents': ['Sensor']
+        'parents': ['FixedSensor']
     }, verify=False)
     if response.status_code != 204:
         logger.error('Failed to create EnvironmentalSensor type')
         return
 
     # Create the 'TemperatureSensor' type
-    response = session.post(url + '/types', json={
+    response = requests.post(url + '/types', json={
         'name': 'TemperatureSensor',
         'parents': ['EnvironmentalSensor'],
         'dynamic_properties': {
@@ -111,7 +138,7 @@ def create_types(session: requests.Session, url: str):
         return
 
     # Create the 'MobileSensor' type
-    response = session.post(url + '/types', json={
+    response = requests.post(url + '/types', json={
         'name': 'MobileSensor',
         'parents': ['Sensor'],
         'dynamic_properties': {
@@ -123,13 +150,24 @@ def create_types(session: requests.Session, url: str):
         logger.error('Failed to create MobileSensor type')
         return
 
-    # Create the 'Bus' type
-    response = session.post(url + '/types', json={
-        'name': 'Bus',
+    # Create the 'TrackedVehicle' type
+    response = requests.post(url + '/types', json={
+        'name': 'TrackedVehicle',
         'parents': ['Vehicle'],
         'static_properties': {
-            'capacity': {'type': 'int'},
             'gps': {'type': 'item', 'domain': 'MobileSensor'}
+        }
+    }, verify=False)
+    if response.status_code != 204:
+        logger.error('Failed to create TrackedVehicle type')
+        return
+
+    # Create the 'Bus' type
+    response = requests.post(url + '/types', json={
+        'name': 'Bus',
+        'parents': ['TrackedVehicle'],
+        'static_properties': {
+            'capacity': {'type': 'int'}
         },
         'dynamic_properties': {
             'route': {'type': 'string'},
@@ -142,7 +180,7 @@ def create_types(session: requests.Session, url: str):
         return
 
     # Create the 'Event' type
-    response = session.post(url + '/types', json={
+    response = requests.post(url + '/types', json={
         'name': 'Event'
     }, verify=False)
     if response.status_code != 204:
@@ -150,7 +188,7 @@ def create_types(session: requests.Session, url: str):
         return
 
     # Create the 'Service' type
-    response = session.post(url + '/types', json={
+    response = requests.post(url + '/types', json={
         'name': 'Service'
     }, verify=False)
     if response.status_code != 204:
