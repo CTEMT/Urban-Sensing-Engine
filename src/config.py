@@ -25,7 +25,7 @@ def create_types(session: requests.Session, url: str):
             'vehicle_type': {'type': 'string'}
         }
     }, verify=False)
-    if response.status_code != 204:
+    if response.status_code != 201:
         logger.error('Failed to create Vehicle type')
         return
 
@@ -38,7 +38,7 @@ def create_types(session: requests.Session, url: str):
             'name': {'type': 'string'}
         }
     }, verify=False)
-    if response.status_code != 204:
+    if response.status_code != 201:
         logger.error('Failed to create Location type')
         return
 
@@ -52,7 +52,7 @@ def create_types(session: requests.Session, url: str):
             'state': {'type': 'string', 'enum': ['red', 'green', 'yellow']}
         }
     }, verify=False)
-    if response.status_code != 204:
+    if response.status_code != 201:
         logger.error('Failed to create TrafficLight type')
         return
 
@@ -63,10 +63,38 @@ def create_types(session: requests.Session, url: str):
             'name': {'type': 'string'},
             'location': {'type': 'item', 'domain': 'Location'},
             'category': {'type': 'symbol', 'values': ['church', 'hotel', 'museum', 'historical_site', 'palace', 'facility', 'square', 'monastery', 'convent', 'terrace', 'park', 'library', 'castle', 'tower', 'mall', 'abandoned_populated_place', 'restaurant', 'cafe', 'fast_food', 'cultural_site']}
+        },
+        'data': {
+            'iconUrl': 'poi.png'
         }
     }, verify=False)
-    if response.status_code != 204:
+    if response.status_code != 201:
         logger.error('Failed to create PointOfInterest type')
+        return
+
+    # Create the 'Tree' type
+    response = requests.post(url + '/types', json={
+        'name': 'Tree',
+        'static_properties': {
+            'species': {'type': 'string'},
+            'location': {'type': 'item', 'domain': 'Location'},
+            'height': {'type': 'float'},
+            'diameter': {'type': 'float'},
+            'color': {'type': 'string'},
+            'status': {'type': 'symbol', 'values': ['healthy', 'diseased', 'dead']}
+        }
+    }, verify=False)
+    if response.status_code != 201:
+        logger.error('Failed to create Tree type')
+        return
+
+    # Create the 'TreeColor' reactive rule
+    response = requests.post(url + '/reactive_rules', json={
+        'name': 'TreeColor',
+        'content': '(defrule tree_color (Tree_status (item_id ?tree) (status ?status)) => (add_data ?tree (create$ color) (create$ (if (eq ?status healthy) "green" (if (eq ?status diseased) "yellow" "brown")))))',
+    }, verify=False)
+    if response.status_code != 201:
+        logger.error('Failed to create TreeColor rule')
         return
 
     # Create the 'BusStop' type
@@ -78,7 +106,7 @@ def create_types(session: requests.Session, url: str):
             'stop_id': {'type': 'string'}
         }
     }, verify=False)
-    if response.status_code != 204:
+    if response.status_code != 201:
         logger.error('Failed to create BusStop type')
         return
 
@@ -92,7 +120,7 @@ def create_types(session: requests.Session, url: str):
             'end': {'type': 'item', 'domain': 'Location'}
         }
     }, verify=False)
-    if response.status_code != 204:
+    if response.status_code != 201:
         logger.error('Failed to create Road type')
         return
 
@@ -100,7 +128,7 @@ def create_types(session: requests.Session, url: str):
     response = requests.post(url + '/types', json={
         'name': 'Sensor'
     }, verify=False)
-    if response.status_code != 204:
+    if response.status_code != 201:
         logger.error('Failed to create Sensor type')
         return
 
@@ -112,7 +140,7 @@ def create_types(session: requests.Session, url: str):
             'location': {'type': 'item', 'domain': 'Location'}
         }
     }, verify=False)
-    if response.status_code != 204:
+    if response.status_code != 201:
         logger.error('Failed to create FixedSensor type')
         return
 
@@ -121,7 +149,7 @@ def create_types(session: requests.Session, url: str):
         'name': 'EnvironmentalSensor',
         'parents': ['FixedSensor']
     }, verify=False)
-    if response.status_code != 204:
+    if response.status_code != 201:
         logger.error('Failed to create EnvironmentalSensor type')
         return
 
@@ -133,7 +161,7 @@ def create_types(session: requests.Session, url: str):
             'temperature': {'type': 'float'}
         }
     }, verify=False)
-    if response.status_code != 204:
+    if response.status_code != 201:
         logger.error('Failed to create TemperatureSensor type')
         return
 
@@ -146,7 +174,7 @@ def create_types(session: requests.Session, url: str):
             'lng': {'type': 'float'}
         }
     }, verify=False)
-    if response.status_code != 204:
+    if response.status_code != 201:
         logger.error('Failed to create MobileSensor type')
         return
 
@@ -158,7 +186,7 @@ def create_types(session: requests.Session, url: str):
             'gps': {'type': 'item', 'domain': 'MobileSensor'}
         }
     }, verify=False)
-    if response.status_code != 204:
+    if response.status_code != 201:
         logger.error('Failed to create TrackedVehicle type')
         return
 
@@ -175,7 +203,7 @@ def create_types(session: requests.Session, url: str):
             'next_stop': {'type': 'string'}
         }
     }, verify=False)
-    if response.status_code != 204:
+    if response.status_code != 201:
         logger.error('Failed to create Bus type')
         return
 
@@ -183,7 +211,7 @@ def create_types(session: requests.Session, url: str):
     response = requests.post(url + '/types', json={
         'name': 'Event'
     }, verify=False)
-    if response.status_code != 204:
+    if response.status_code != 201:
         logger.error('Failed to create Event type')
         return
 
@@ -191,7 +219,7 @@ def create_types(session: requests.Session, url: str):
     response = requests.post(url + '/types', json={
         'name': 'Service'
     }, verify=False)
-    if response.status_code != 204:
+    if response.status_code != 201:
         logger.error('Failed to create Service type')
         return
 
