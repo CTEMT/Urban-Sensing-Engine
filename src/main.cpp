@@ -23,7 +23,15 @@ int main()
                              { srv.start(); });
 
 #ifndef NDEBUG
-    std::this_thread::sleep_for(std::chrono::seconds(300));
+    std::string user_input;
+    do
+    {
+        std::cout << "Enter a command (d to drop the database, q to quit): ";
+        std::getline(std::cin, user_input);
+        if (user_input == "d")
+            db.drop();
+    } while (user_input != "d" && user_input != "q");
+    // std::this_thread::sleep_for(std::chrono::seconds(300));
 
     db.drop();  // drop the database
     srv.stop(); // stop the server
