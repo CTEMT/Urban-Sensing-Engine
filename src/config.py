@@ -90,7 +90,7 @@ def create_types(session: requests.Session, url: str):
 
     # Create the 'TreeColor' reactive rule
     response = requests.post(url + '/reactive_rules', json={
-        'name': 'TreeColor',
+        'name': 'tree_color',
         'content': '(defrule tree_color (Tree_status (item_id ?tree) (status ?status)) => (bind ?color (if (eq ?status healthy) then "green" else (if (eq ?status diseased) then "yellow" else "brown"))) (set_properties ?tree (create$ color) (create$ ?color)))',
     }, verify=False)
     if response.status_code != 204:
