@@ -3,7 +3,5 @@
 
 namespace uspe
 {
-    uspe::uspe(uspe_db &db) noexcept : coco::coco(db)
-    {
-    }
+    uspe::uspe(coco::coco &cc) noexcept : coco_module(cc) {}
 } // namespace uspe

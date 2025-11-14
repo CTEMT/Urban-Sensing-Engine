@@ -1,40 +1,33 @@
-#include <mongocxx/instance.hpp>
+#include "USPE_config.hpp"
 #include "uspe.hpp"
-#include "coco_auth.hpp"
+#include "coco.hpp"
+#include "mongo_db.hpp"
 #include "uspe_server.hpp"
 #include "logging.hpp"
+#include <mongocxx/instance.hpp>
 #include <thread>
 
 int main()
 {
     mongocxx::instance inst{}; // This should be done only once.
+    LOG_INFO("Starting Urban Sensing and Planning Engine (USPE)...");
+    coco::mongo_db db;
+    LOG_DEBUG("Connected to MongoDB database");
+    LOG_DEBUG("Initializing CoCo framework");
+    coco::coco cc(db);
+    LOG_DEBUG("Adding USPE module");
+    auto &uspe = cc.add_module<uspe::uspe>(cc);
 
-    uspe::uspe_db db; // the Urban Sensing and Planning Engine (USPE) database
+    LOG_DEBUG("Loading USPE configuration");
+    coco::config(cc);
 
-    uspe::uspe uspe(db);                    // the Urban Sensing and Planning Engine (USPE) instance
-    uspe.add_module<coco::coco_auth>(uspe); // add the authentication module
+    LOG_INFO("Starting USPE server...");
+    coco::coco_server srv(cc);
+    LOG_DEBUG("Adding USPE server module");
+    srv.add_module<uspe::uspe_server>(srv, uspe);
 
-    uspe::uspe_server srv(uspe);            // the Urban Sensing and Planning Engine (USPE) server
-    srv.add_module<coco::server_auth>(srv); // add the authentication module to the server
-    srv.load_certificate("extern/coco/tests/cert.pem", "extern/coco/tests/key.pem");
-
-    // Start the server in a separate thread
     auto srv_ft = std::async(std::launch::async, [&srv]
                              { srv.start(); });
 
-#ifndef NDEBUG
-    std::string user_input;
-    do
-    {
-        std::cout << "Enter a command (d to drop the database, q to quit): ";
-        std::getline(std::cin, user_input);
-        if (user_input == "d")
-            db.drop();
-    } while (user_input != "d" && user_input != "q");
-    // std::this_thread::sleep_for(std::chrono::seconds(300));
-
-    db.drop();  // drop the database
-    srv.stop(); // stop the server
-#endif
     return 0;
 }

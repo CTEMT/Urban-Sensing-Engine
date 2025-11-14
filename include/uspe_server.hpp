@@ -1,10 +1,15 @@
+#pragma once
 #include "coco_server.hpp"
+#include "uspe.hpp"
 
 namespace uspe
 {
-  class uspe_server : public coco::coco_server
+  class uspe_server : public coco::server_module
   {
   public:
-    uspe_server(coco::coco &cc, std::string_view host = SERVER_HOST, unsigned short port = SERVER_PORT);
+    uspe_server(coco::coco_server &srv, uspe &spe) noexcept;
+
+  private:
+    uspe &spe;
   };
 } // namespace uspe

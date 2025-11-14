@@ -1,10 +1,11 @@
-#include "mongo_db.hpp"
+#pragma once
+#include "coco_db.hpp"
 
 namespace uspe
 {
-  class uspe_db : public coco::mongo_db
+  class uspe_db : public coco::db_module
   {
   public:
-    uspe_db(json::json &&cnfg = {{"name", COCO_NAME}}, std::string_view mongodb_uri = MONGODB_URI(MONGODB_HOST, MONGODB_PORT)) noexcept;
+    uspe_db(coco::coco_db &db) noexcept;
   };
 } // namespace uspe

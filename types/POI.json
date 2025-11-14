@@ -1,0 +1,17 @@
+{
+  "name": "POI",
+  "static_properties": {
+    "name": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "lat": {
+      "type": "float"
+    },
+    "lng": {
+      "type": "float"
+    }
+  }
+}

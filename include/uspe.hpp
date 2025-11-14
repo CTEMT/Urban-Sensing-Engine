@@ -1,11 +1,12 @@
-#include "coco.hpp"
-#include "uspe_db.hpp"
+#pragma once
+
+#include "coco_module.hpp"
 
 namespace uspe
 {
-  class uspe : public coco::coco
+  class uspe : public coco::coco_module
   {
   public:
-    uspe(uspe_db &db) noexcept;
+    uspe(coco::coco &cc) noexcept;
   };
 } // namespace uspe

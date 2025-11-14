@@ -3,7 +3,5 @@
 
 namespace uspe
 {
-    uspe_server::uspe_server(coco::coco &cc, std::string_view host, unsigned short port) : coco::coco_server(cc, host, port)
-    {
-    }
+    uspe_server::uspe_server(coco::coco_server &srv, uspe &spe) noexcept : server_module(srv), spe(spe) {}
 } // namespace uspe
