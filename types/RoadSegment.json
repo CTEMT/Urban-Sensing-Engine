@@ -1,6 +1,12 @@
 {
   "name": "RoadSegment",
   "static_properties": {
+    "name": {
+      "type": "string"
+    },
+    "length": {
+      "type": "float"
+    },
     "from": {
       "type": "item",
       "domain": "Location"
