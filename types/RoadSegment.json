@@ -1,3 +1,13 @@
 {
-  "name": "RoadSegment"
+  "name": "RoadSegment",
+  "static_properties": {
+    "from": {
+      "type": "item",
+      "domain": "Location"
+    },
+    "to": {
+      "type": "item",
+      "domain": "Location"
+    }
+  }
 }
