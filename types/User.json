@@ -1,0 +1,8 @@
+{
+  "name": "User",
+  "static_properties": {
+    "name": {
+      "type": "string"
+    }
+  }
+}

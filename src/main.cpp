@@ -30,7 +30,7 @@ int main()
         auto &rock_church_tp = cc.get_type("RockChurch");
 
         auto &loc0 = cc.create_item({loc_tp}, {{"lat", 40.662238}, {"lng", 16.611671}, {"name", "San Leonardo"}, {"address", "Sasso Caveoso, Matera, Italy"}});
-        auto &rc0 = cc.create_item({rock_church_tp}, {{"name", "Chiesa di San Leonardo"}, {"location", loc0.get_id()}});
+        [[maybe_unused]] auto &rc0 = cc.create_item({rock_church_tp}, {{"name", "Chiesa di San Leonardo"}, {"location", loc0.get_id()}});
 
         LOG_INFO("Default items created.");
     }
