@@ -12,8 +12,8 @@ set(LOGGING_LEVEL "TRACE" CACHE STRING "Logging level for CoCo" FORCE)
 
 add_subdirectory(extern/coco)
 
-set(USPE_CONFIG_TYPES types/Location.json types/POI.json types/Church.json)
-set(USPE_CONFIG_RULES rules/uspe.clp)
+set(USPE_CONFIG_TYPES types/Location.json types/POI.json types/Church.json types/RockChurch.json)
+set(USPE_CONFIG_RULES rules/rock_church.clp)
 coco_config(USPE "${USPE_CONFIG_TYPES}" "${USPE_CONFIG_RULES}")
 
 add_executable(uspe src/main.cpp src/uspe.cpp src/uspe_db.cpp src/uspe_server.cpp)
