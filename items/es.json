@@ -1,6 +1,6 @@
 {
   "types": [
-    "RockChurch"
+    "EnvironmentalSensor"
   ],
   "properties": {
     "location": "loc0"
