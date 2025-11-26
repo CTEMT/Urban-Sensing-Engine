@@ -32,6 +32,12 @@ int main()
         auto &loc0 = cc.create_item({loc_tp}, {{"lat", 40.662238}, {"lng", 16.611671}, {"name", "San Leonardo"}, {"address", "Sasso Caveoso, Matera, Italy"}});
         [[maybe_unused]] auto &rc0 = cc.create_item({rock_church_tp}, {{"name", "Chiesa di San Leonardo"}, {"location", loc0.get_id()}});
 
+        auto &user_tp = cc.get_type("User");
+        [[maybe_unused]] auto &user0 = cc.create_item({user_tp}, {{"name", "Riccardo"}});
+
+        auto &env_sensor_tp = cc.get_type("EnvironmentalSensor");
+        [[maybe_unused]] auto &env_sensor0 = cc.create_item({env_sensor_tp}, {{"location", loc0.get_id()}});
+
         LOG_INFO("Default items created.");
     }
 

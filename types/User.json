@@ -4,5 +4,10 @@
     "name": {
       "type": "string"
     }
+  },
+  "dynamic_properties": {
+    "message": {
+      "type": "string"
+    }
   }
 }

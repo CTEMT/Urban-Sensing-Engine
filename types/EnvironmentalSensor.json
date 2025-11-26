@@ -1,0 +1,10 @@
+{
+  "name": "EnvironmentalSensor",
+  "dynamic_properties": {
+    "temperature": {
+      "type": "float",
+      "min": -50.0,
+      "max": 150.0
+    }
+  }
+}
