@@ -1,0 +1,11 @@
+{
+  "types": [
+    "RockChurch"
+  ],
+  "properties": {
+    "lat": 40.662238,
+    "lng": 16.611671,
+    "name": "San Leonardo",
+    "address": "Sasso Caveoso, Matera, Italy"
+  }
+}

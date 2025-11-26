@@ -14,7 +14,14 @@ add_subdirectory(extern/coco)
 
 set(USPE_CONFIG_TYPES types/Location.json types/POI.json types/Church.json types/RockChurch.json types/Sensor.json types/User.json types/Building.json types/Residence.json types/CommercialBuilding.json types/GovernmentBuilding.json types/Vehicle.json types/Bus.json types/CityArea.json types/RoadSegment.json)
 set(USPE_CONFIG_RULES rules/rock_church.clp rules/commercial_building.clp rules/government_building.clp rules/bus.clp)
-coco_config(USPE "${USPE_CONFIG_TYPES}" "${USPE_CONFIG_RULES}")
+file(GLOB USPE_CONFIG_ITEMS "items/*.json")
+# Convert to relative paths
+set(USPE_CONFIG_ITEMS_REL)
+foreach(item ${USPE_CONFIG_ITEMS})
+    file(RELATIVE_PATH rel_item "${CMAKE_CURRENT_SOURCE_DIR}" "${item}")
+    list(APPEND USPE_CONFIG_ITEMS_REL "${rel_item}")
+endforeach()
+coco_config(USPE "${USPE_CONFIG_TYPES}" "${USPE_CONFIG_RULES}" "${USPE_CONFIG_ITEMS}")
 
 add_executable(uspe src/main.cpp src/uspe.cpp src/uspe_db.cpp src/uspe_server.cpp)
 target_compile_features(uspe PUBLIC cxx_std_17)
