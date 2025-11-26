@@ -1,7 +1,5 @@
 #include "USPE_config.hpp"
 #include "uspe.hpp"
-#include "coco.hpp"
-#include "coco_item.hpp"
 #include "mongo_db.hpp"
 #include "uspe_server.hpp"
 #include "logging.hpp"
@@ -21,25 +19,6 @@ int main()
 
     LOG_DEBUG("Loading USPE configuration");
     coco::config(cc);
-
-    auto itms = cc.get_items();
-    if (itms.empty())
-    {
-        LOG_WARN("No items found in the database. Creating default items.");
-        auto &loc_tp = cc.get_type("Location");
-        auto &rock_church_tp = cc.get_type("RockChurch");
-
-        auto &loc0 = cc.create_item({loc_tp}, {{"lat", 40.662238}, {"lng", 16.611671}, {"name", "San Leonardo"}, {"address", "Sasso Caveoso, Matera, Italy"}});
-        [[maybe_unused]] auto &rc0 = cc.create_item({rock_church_tp}, {{"name", "Chiesa di San Leonardo"}, {"location", loc0.get_id()}});
-
-        auto &user_tp = cc.get_type("User");
-        [[maybe_unused]] auto &user0 = cc.create_item({user_tp}, {{"name", "Riccardo"}});
-
-        auto &env_sensor_tp = cc.get_type("EnvironmentalSensor");
-        [[maybe_unused]] auto &env_sensor0 = cc.create_item({env_sensor_tp}, {{"location", loc0.get_id()}});
-
-        LOG_INFO("Default items created.");
-    }
 
     LOG_INFO("Starting USPE server...");
     coco::coco_server srv(cc);

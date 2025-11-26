@@ -3,6 +3,8 @@
     "RockChurch"
   ],
   "properties": {
-    "location": "loc0"
+    "location": {
+      "item": "loc0"
+    }
   }
 }
