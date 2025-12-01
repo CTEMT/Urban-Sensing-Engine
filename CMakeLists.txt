@@ -12,8 +12,8 @@ set(LOGGING_LEVEL "TRACE" CACHE STRING "Logging level for CoCo" FORCE)
 
 add_subdirectory(extern/coco)
 
-set(USPE_CONFIG_TYPES types/Location.json types/POI.json types/Church.json types/RockChurch.json types/Sensor.json types/EnvironmentalSensor.json types/User.json types/Building.json types/Residence.json types/CommercialBuilding.json types/GovernmentBuilding.json types/Vehicle.json types/Bus.json types/CityArea.json types/RoadSegment.json)
-set(USPE_CONFIG_RULES rules/rock_church.clp rules/commercial_building.clp rules/government_building.clp rules/bus.clp rules/env_sensor.clp rules/env_sensor_high.clp)
+set(USPE_CONFIG_TYPES types/Location.json types/POI.json types/Church.json types/RockChurch.json types/Sensor.json types/EnvironmentalSensor.json types/PedestrianSensor.json types/VehicularSensor.json types/User.json types/Building.json types/Residence.json types/CommercialBuilding.json types/GovernmentBuilding.json types/Vehicle.json types/Bus.json types/CityArea.json types/RoadSegment.json)
+set(USPE_CONFIG_RULES rules/rock_church.clp rules/commercial_building.clp rules/government_building.clp rules/bus.clp rules/env_sensor.clp rules/ped_sensor.clp rules/pm10.clp rules/pm2_5.clp)
 file(GLOB USPE_CONFIG_ITEMS "items/*.json")
 coco_config(PROJ_NAME USPE TYPE_FILES "${USPE_CONFIG_TYPES}" RULE_FILES "${USPE_CONFIG_RULES}" ITEM_FILES "${USPE_CONFIG_ITEMS}")
 

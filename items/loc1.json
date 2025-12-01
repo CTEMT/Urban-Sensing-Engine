@@ -1,0 +1,11 @@
+{
+  "types": [
+    "Location"
+  ],
+  "properties": {
+    "lat": 40.66963,
+    "lng": 16.57702,
+    "name": "Martella",
+    "address": "Intersezione Via La Martella - Via Giardinelle"
+  }
+}

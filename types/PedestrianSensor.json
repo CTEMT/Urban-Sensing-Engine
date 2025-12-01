@@ -1,0 +1,14 @@
+{
+  "name": "PedestrianSensor",
+  "static_properties": {
+    "id": {
+      "type": "string"
+    }
+  },
+  "dynamic_properties": {
+    "pedestrian_count": {
+      "type": "int",
+      "min": 0
+    }
+  }
+}

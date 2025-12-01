@@ -5,6 +5,66 @@
       "type": "float",
       "min": -50.0,
       "max": 150.0
+    },
+    "humidity": {
+      "type": "float",
+      "min": 0.0,
+      "max": 100.0
+    },
+    "wind_direction": {
+      "type": "float",
+      "min": 0.0,
+      "max": 360.0
+    },
+    "co": {
+      "type": "float",
+      "min": 0.0,
+      "max": 10000.0
+    },
+    "no": {
+      "type": "float",
+      "min": 0.0,
+      "max": 10000.0
+    },
+    "no2": {
+      "type": "float",
+      "min": 0.0,
+      "max": 10000.0
+    },
+    "o3": {
+      "type": "float",
+      "min": 0.0,
+      "max": 10000.0
+    },
+    "so2": {
+      "type": "float",
+      "min": 0.0,
+      "max": 10000.0
+    },
+    "voc": {
+      "type": "float",
+      "min": 0.0,
+      "max": 10000.0
+    },
+    "pm1": {
+      "type": "float",
+      "min": 0.0,
+      "max": 10000.0
+    },
+    "pm2_5": {
+      "type": "float",
+      "min": 0.0,
+      "max": 10000.0
+    },
+    "pm10": {
+      "type": "float",
+      "min": 0.0,
+      "max": 10000.0
+    },
+    "athmospheric_pressure": {
+      "type": "float",
+      "min": 800.0,
+      "max": 1200.0
     }
   }
 }

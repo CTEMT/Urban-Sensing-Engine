@@ -1,8 +1,9 @@
 {
   "types": [
-    "EnvironmentalSensor"
+    "PedestrianSensor"
   ],
   "properties": {
+    "id": "A40005133",
     "location": {
       "item": "loc0"
     }
