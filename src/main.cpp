@@ -2,6 +2,7 @@
 #include "uspe.hpp"
 #include "mongo_db.hpp"
 #include "uspe_server.hpp"
+#include "coco_mqtt.hpp"
 #include "logging.hpp"
 #include <mongocxx/instance.hpp>
 #include <thread>
@@ -19,6 +20,13 @@ int main()
 
     LOG_DEBUG("Loading USPE configuration");
     coco::config(cc);
+
+    LOG_DEBUG("Adding MQTT module");
+    auto &mqtt = cc.add_module<coco::coco_mqtt>(cc);
+    do
+    { // wait for mqtt to connect
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    } while (!mqtt.is_connected());
 
     LOG_INFO("Starting USPE server...");
     coco::coco_server srv(cc);
