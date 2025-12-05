@@ -34,6 +34,8 @@ services:
 
   uspe:
     image: istc_uspe:latest
+    build:
+      context: .
     container_name: uspe
     networks:
       - uspe-net
@@ -41,7 +43,8 @@ services:
       - "8080:8080"
     environment:
       - SERVER_PORT=8080
-      - MONGODB_HOST=${MONGODB_HOST}
+      - MONGODB_HOST=uspe-mongo
+      - MQTT_HOST=uspe-mqtt
     restart: unless-stopped
 
 networks:

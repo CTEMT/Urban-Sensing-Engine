@@ -12,7 +12,7 @@ EXPOSE 8080
 ARG CLIENT_DIR=/gui
 
 # Clone and build USPE
-RUN git clone --recursive https://github.com/CTEMT/Urban-Sensing-Engine \
+RUN git clone --branch final --recursive https://github.com/CTEMT/Urban-Sensing-Engine \
     && cd Urban-Sensing-Engine \
     && mkdir build && cd build \
     && cmake -DCLIENT_DIR=${CLIENT_DIR} -DCMAKE_BUILD_TYPE=Release .. \
@@ -22,10 +22,9 @@ RUN git clone --recursive https://github.com/CTEMT/Urban-Sensing-Engine \
 RUN npm --prefix /Urban-Sensing-Engine/gui install && npm --prefix /Urban-Sensing-Engine/gui run build
 
 # Move the built COCO files to the /app directory
-RUN mv /Urban-Sensing-Engine/build/Urban-Sensing-Engine /cdt \
-    && mv /Urban-Sensing-Engine/rules /rules \
+RUN mv /Urban-Sensing-Engine/build/uspe /uspe \
     && mkdir -p /gui && mv /Urban-Sensing-Engine/gui/dist /gui \
     && rm -rf /Urban-Sensing-Engine
 
 # Start the USPE application
-CMD ["/cdt"]
+CMD ["/uspe"]

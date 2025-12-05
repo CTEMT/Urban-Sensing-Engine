@@ -2,6 +2,7 @@
 #include "uspe.hpp"
 #include "mongo_db.hpp"
 #include "uspe_server.hpp"
+#include "cors.hpp"
 #include "coco_mqtt.hpp"
 #include "logging.hpp"
 #include <mongocxx/instance.hpp>
@@ -30,6 +31,7 @@ int main()
 
     LOG_INFO("Starting USPE server...");
     coco::coco_server srv(cc);
+    srv.add_middleware<network::cors>(srv);
     LOG_DEBUG("Adding USPE server module");
     srv.add_module<uspe::uspe_server>(srv, uspe);
 
