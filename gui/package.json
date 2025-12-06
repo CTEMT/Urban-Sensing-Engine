@@ -16,6 +16,7 @@
   "dependencies": {
     "@ratiosolver/coco": "^0.0.83",
     "@ratiosolver/flick": "^0.1.13",
-    "bootstrap": "^5.3.8"
+    "bootstrap": "^5.3.8",
+    "echarts": "^6.0.0"
   }
 }
