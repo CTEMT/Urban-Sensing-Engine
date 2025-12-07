@@ -12,7 +12,7 @@ EXPOSE 8080
 ARG CLIENT_DIR=/gui
 
 # Clone and build USPE
-RUN git clone --branch final --recursive https://github.com/CTEMT/Urban-Sensing-Engine \
+RUN git clone --recursive https://github.com/CTEMT/Urban-Sensing-Engine \
     && cd Urban-Sensing-Engine \
     && mkdir build && cd build \
     && cmake -DCLIENT_DIR=${CLIENT_DIR} -DCMAKE_BUILD_TYPE=Release .. \
