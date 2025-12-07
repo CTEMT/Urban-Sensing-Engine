@@ -1,0 +1,22 @@
+{
+  "name": "uspe",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/bootstrap": "^5.2.10",
+    "typescript": "~5.9.3",
+    "vite": "^7.2.2"
+  },
+  "dependencies": {
+    "@ratiosolver/coco": "^0.0.83",
+    "@ratiosolver/flick": "^0.1.13",
+    "bootstrap": "^5.3.8",
+    "echarts": "^6.0.0"
+  }
+}

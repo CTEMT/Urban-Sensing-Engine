@@ -1,0 +1,10 @@
+{
+  "types": [
+    "RockChurch"
+  ],
+  "properties": {
+    "location": {
+      "item": "loc0"
+    }
+  }
+}

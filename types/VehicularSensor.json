@@ -1,0 +1,22 @@
+{
+  "name": "VehicularSensor",
+  "static_properties": {
+    "id": {
+      "type": "string"
+    }
+  },
+  "dynamic_properties": {
+    "type": {
+      "type": "symbol",
+      "values": [
+        "car"
+      ]
+    },
+    "speed": {
+      "type": "float"
+    },
+    "length": {
+      "type": "float"
+    }
+  }
+}

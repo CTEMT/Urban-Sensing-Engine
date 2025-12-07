@@ -1,0 +1,9 @@
+{
+  "name": "Sensor",
+  "static_properties": {
+    "location": {
+      "type": "item",
+      "domain": "Location"
+    }
+  }
+}

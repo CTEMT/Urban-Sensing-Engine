@@ -1,0 +1,21 @@
+{
+  "name": "User",
+  "static_properties": {
+    "name": {
+      "type": "string"
+    },
+    "role": {
+      "type": "symbol",
+      "values": [
+        "admin",
+        "user",
+        "guest"
+      ]
+    }
+  },
+  "dynamic_properties": {
+    "message": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "Church",
+  "static_properties": {
+    "name": {
+      "type": "string"
+    },
+    "location": {
+      "type": "item",
+      "domain": "Location"
+    }
+  }
+}

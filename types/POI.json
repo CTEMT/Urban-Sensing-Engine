@@ -1,0 +1,9 @@
+{
+  "name": "POI",
+  "static_properties": {
+    "location": {
+      "type": "item",
+      "domain": "Location"
+    }
+  }
+}

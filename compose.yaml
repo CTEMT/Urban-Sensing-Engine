@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  uspe-swagger-ui: # Swagger UI service
+    image: swaggerapi/swagger-ui
+    container_name: uspe-swagger-ui
+    networks:
+      - uspe-net
+    ports:
+      - "8081:8080"
+    environment:
+      SWAGGER_JSON_URL: http://localhost:8080/openapi
+    restart: unless-stopped
+
+  uspe-mongo: # MongoDB service
+    image: mongo
+    container_name: uspe-mongo
+    networks:
+      - uspe-net
+    ports:
+      - "27017:27017"
+    restart: unless-stopped
+
+  uspe-mqtt: # MQTT broker service
+    image: eclipse-mosquitto
+    container_name: uspe-mqtt
+    networks:
+      - uspe-net
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+    restart: unless-stopped
+
+  uspe:
+    image: istc_uspe:latest
+    build:
+      context: .
+    container_name: uspe
+    networks:
+      - uspe-net
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_PORT=8080
+      - MONGODB_HOST=uspe-mongo
+      - MQTT_HOST=uspe-mqtt
+    restart: unless-stopped
+
+networks:
+  uspe-net:
