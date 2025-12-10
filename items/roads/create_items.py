@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from tqdm import tqdm
 import requests
 
 session = requests.Session()
@@ -10,7 +11,7 @@ nodes = {}
 path = Path('nodes.json')
 with path.open('r', encoding='utf-8') as f:
     data = json.load(f)
-    for feature in data[0]['features']:
+    for feature in tqdm(data[0]["features"], desc="Creating nodes"):
         node = {'types': ['Location'],
                 'properties': {'lat': feature['geometry']['coordinates'][1],
                                'lng': feature['geometry']['coordinates'][0]}}
@@ -21,7 +22,7 @@ with path.open('r', encoding='utf-8') as f:
 path = Path('edges.json')
 with path.open('r', encoding='utf-8') as f:
     data = json.load(f)
-    for feature in data[0]['features']:
+    for feature in tqdm(data[0]["features"], desc="Creating road segments"):
         road = {'types': ['RoadSegment'],
                 'properties': {'from': nodes[feature['properties']['u']],
                                'to': nodes[feature['properties']['v']],

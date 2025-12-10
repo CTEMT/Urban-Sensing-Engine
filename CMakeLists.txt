@@ -9,7 +9,7 @@ set(BUILD_TESTING OFF CACHE BOOL "Build tests" FORCE)
 set(BUILD_MONGODB ON CACHE BOOL "Build MongoDB connection" FORCE)
 set(BUILD_MQTT ON CACHE BOOL "Build MQTT connection" FORCE)
 set(BUILD_COCO_SERVER ON CACHE BOOL "Build the CoCo server" FORCE)
-# set(LOGGING_LEVEL "TRACE" CACHE STRING "Logging level for CoCo" FORCE)
+set(LOGGING_LEVEL "TRACE" CACHE STRING "Logging level for CoCo" FORCE)
 
 add_subdirectory(extern/coco)
 

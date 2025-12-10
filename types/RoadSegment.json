@@ -16,5 +16,25 @@
       "type": "item",
       "domain": "Location"
     }
+  },
+  "dynamic_properties": {
+    "shadow": {
+      "type": "float",
+      "min": 0,
+      "max": 1
+    },
+    "traffic_density": {
+      "type": "float",
+      "min": 0,
+      "max": 1
+    },
+    "state": {
+      "type": "symbol",
+      "values": [
+        "normal",
+        "congested",
+        "closed"
+      ]
+    }
   }
 }
