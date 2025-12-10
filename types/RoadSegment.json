@@ -2,7 +2,8 @@
   "name": "RoadSegment",
   "static_properties": {
     "name": {
-      "type": "string"
+      "type": "string",
+      "nullable": true
     },
     "length": {
       "type": "float"
@@ -14,6 +15,51 @@
     "to": {
       "type": "item",
       "domain": "Location"
+    },
+    "highway": {
+      "type": "symbol",
+      "values": [
+        "cycleway",
+        "footway",
+        "path",
+        "pedestrian",
+        "primary",
+        "primary_link",
+        "residential",
+        "secondary",
+        "secondary_link",
+        "service",
+        "steps",
+        "tertiary",
+        "tertiary_link",
+        "track",
+        "trunk",
+        "trunk_link",
+        "unclassified"
+      ]
+    },
+    "oneway": {
+      "type": "bool"
+    }
+  },
+  "dynamic_properties": {
+    "shadow": {
+      "type": "float",
+      "min": 0,
+      "max": 1
+    },
+    "traffic_density": {
+      "type": "float",
+      "min": 0,
+      "max": 1
+    },
+    "state": {
+      "type": "symbol",
+      "values": [
+        "normal",
+        "congested",
+        "closed"
+      ]
     }
   }
 }

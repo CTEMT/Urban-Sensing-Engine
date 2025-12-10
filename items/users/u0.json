@@ -1,0 +1,9 @@
+{
+  "types": [
+    "User"
+  ],
+  "properties": {
+    "name": "Riccardo",
+    "role": "admin"
+  }
+}
