@@ -15,6 +15,31 @@
     "to": {
       "type": "item",
       "domain": "Location"
+    },
+    "highway": {
+      "type": "symbol",
+      "values": [
+        "cycleway",
+        "footway",
+        "path",
+        "pedestrian",
+        "primary",
+        "primary_link",
+        "residential",
+        "secondary",
+        "secondary_link",
+        "service",
+        "steps",
+        "tertiary",
+        "tertiary_link",
+        "track",
+        "trunk",
+        "trunk_link",
+        "unclassified"
+      ]
+    },
+    "oneway": {
+      "type": "bool"
     }
   },
   "dynamic_properties": {

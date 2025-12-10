@@ -27,7 +27,9 @@ with path.open('r', encoding='utf-8') as f:
                 'properties': {'from': nodes[feature['properties']['u']],
                                'to': nodes[feature['properties']['v']],
                                'name': feature['properties']['name'],
-                               'length': feature['properties']['length']}}
+                               'length': feature['properties']['length'],
+                               'highway': feature['properties']['highway'],
+                               'oneway': feature['properties']['oneway']}}
         response = session.post('http://localhost:8080/items', json=road)
         response.raise_for_status()
 
