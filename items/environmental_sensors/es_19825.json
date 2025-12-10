@@ -1,0 +1,11 @@
+{
+  "types": [
+    "EnvironmentalSensor"
+  ],
+  "properties": {
+    "id": "19825",
+    "location": {
+      "item": "loc0"
+    }
+  }
+}

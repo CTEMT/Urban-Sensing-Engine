@@ -2,7 +2,8 @@
   "name": "RoadSegment",
   "static_properties": {
     "name": {
-      "type": "string"
+      "type": "string",
+      "nullable": true
     },
     "length": {
       "type": "float"
