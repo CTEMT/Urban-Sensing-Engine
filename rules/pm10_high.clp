@@ -1,4 +1,4 @@
-(defrule env_sensor_high
+(defrule pm10_high
     (EnvironmentalSensor (item_id ?id) (pm10 ?pm10))
     =>
     (do-for-all-facts ((?u User)) TRUE
