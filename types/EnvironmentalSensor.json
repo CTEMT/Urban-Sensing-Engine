@@ -16,6 +16,11 @@
       "min": 0.0,
       "max": 360.0
     },
+    "wind_speed": {
+      "type": "float",
+      "min": 0.0,
+      "max": 150.0
+    },
     "co": {
       "type": "float",
       "min": 0.0,

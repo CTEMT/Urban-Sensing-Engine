@@ -107,7 +107,7 @@ export class TemperatureComponent extends Component<HTMLDivElement> {
           offsetCenter: [0, '-15%'],
           fontSize: 30,
           fontWeight: 'bolder',
-          formatter: '{value} °C',
+          formatter: (value: number) => `${value.toFixed(1)} °C`,
           color: 'inherit'
         },
         data: [

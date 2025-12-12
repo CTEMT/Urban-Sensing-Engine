@@ -40,7 +40,7 @@ class EnvDataFetcher:
         if device['id']:
             return
         response = requests.get(
-            f'{self.coco_url}/items?type=EnvironmentalSensor&id={device["serial"]}')
+            f'{self.coco_url}/items?type=EnvironmentalSensor&name={device["serial"]}')
         if response.status_code != 200:
             print(
                 f'Failed to query device {device["serial"]}: {response.status_code}')
@@ -84,6 +84,9 @@ class EnvDataFetcher:
                 if row['Wind Direction 4 (Medium) GN']:
                     data['wind_direction'] = float(
                         row['Wind Direction 4 (Medium) GN'])
+                if row['Wind Speed 9 (Medium) m/s']:
+                    data['wind_speed'] = float(
+                        row['Wind Speed 9 (Medium) m/s'])
                 if row['CO 34 (Medium) ppm']:
                     data['co'] = float(row['CO 34 (Medium) ppm'])
                 if row['NO 35 (Medium) ppm']:

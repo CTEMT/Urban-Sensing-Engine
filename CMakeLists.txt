@@ -17,7 +17,7 @@ add_subdirectory(extern/coco)
 file(GLOB USPE_CONFIG_TYPES "types/*.json")
 file(GLOB USPE_CONFIG_RULES "rules/*.clp")
 file(GLOB USPE_CONFIG_ITEMS "items/*.json")
-coco_config(PROJ_NAME USPE TYPE_FILES "${USPE_CONFIG_TYPES}" RULE_FILES "${USPE_CONFIG_RULES}" ITEM_FILES "${USPE_CONFIG_ITEMS}" ITEM_FOLDERS "items/users" "items/environmental_sensors")
+coco_config(PROJ_NAME USPE TYPE_FILES "${USPE_CONFIG_TYPES}" RULE_FILES "${USPE_CONFIG_RULES}" ITEM_FILES "${USPE_CONFIG_ITEMS}" ITEM_FOLDERS "items/users" "items/environmental_sensors" "items/pedestrian_sensors" "items/vehicular_sensors")
 
 add_executable(uspe src/main.cpp src/uspe.cpp src/uspe_db.cpp src/uspe_server.cpp)
 target_compile_features(uspe PUBLIC cxx_std_17)

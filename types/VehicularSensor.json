@@ -1,10 +1,5 @@
 {
   "name": "VehicularSensor",
-  "static_properties": {
-    "id": {
-      "type": "string"
-    }
-  },
   "dynamic_properties": {
     "type": {
       "type": "symbol",

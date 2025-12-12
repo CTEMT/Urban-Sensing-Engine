@@ -3,7 +3,7 @@
     "EnvironmentalSensor"
   ],
   "properties": {
-    "id": "19822",
+    "name": "19822",
     "location": {
       "item": "loc0"
     }

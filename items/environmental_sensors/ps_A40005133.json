@@ -3,7 +3,7 @@
     "PedestrianSensor"
   ],
   "properties": {
-    "id": "A40005133",
+    "name": "A40005133",
     "location": {
       "item": "loc0"
     }

@@ -3,7 +3,7 @@
     "VehicularSensor"
   ],
   "properties": {
-    "id": "24B3023-Martella",
+    "name": "24B3023-Martella",
     "location": {
       "item": "loc1"
     }
