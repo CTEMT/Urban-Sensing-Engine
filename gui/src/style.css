@@ -24,3 +24,37 @@ body {
   animation: blink 0.5s ease-in-out;
   border-radius: 15px;
 }
+
+.sensor-panels {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1.5rem;
+  width: 100%;
+  padding: 1rem 0;
+}
+
+.sensor-panels > * {
+  flex: 1 1 100%;
+}
+
+@media (min-width: 768px) {
+  .sensor-panels {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .sensor-panels > * {
+    flex: 1 1 45%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .sensor-panels {
+    flex-wrap: nowrap;
+  }
+
+  .sensor-panels > * {
+    flex: 1 1 0;
+  }
+}

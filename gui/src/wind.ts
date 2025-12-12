@@ -10,7 +10,7 @@ export class WindComponent extends Component<HTMLDivElement> {
 
   constructor() {
     super(document.createElement('div'));
-    this.node.id = 'temperature-component';
+    this.node.id = 'wind-component';
     Object.assign(this.node.style, { width: '350px', height: '300px', margin: '1rem auto' });
 
     this.initializeChartWhenReady();

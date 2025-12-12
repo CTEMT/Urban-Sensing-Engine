@@ -50,6 +50,7 @@ export class HomeComponent extends Component<HTMLDivElement> implements coco.CoC
 
   constructor() {
     super(document.createElement('div'));
+    this.node.classList.add('sensor-panels');
     this.temperature_component = new TemperatureComponent();
     this.wind_direction_component = new WindComponent();
     this.add_child(this.temperature_component);
