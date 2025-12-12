@@ -110,7 +110,7 @@ class EnvDataFetcher:
                     data['pm10'] = float(
                         row['Auxiliary Measurement 191 (Medium) ppm'])
                 if 'Atmospheric pressure 2013 (Medium) hPa' in row and row['Atmospheric pressure 2013 (Medium) hPa'].strip() != '':
-                    data['athmospheric_pressure'] = float(
+                    data['atmospheric_pressure'] = float(
                         row['Atmospheric pressure 2013 (Medium) hPa'])
                 response = requests.post(
                     f'{self.coco_url}/data/{device["id"]}', json=data)

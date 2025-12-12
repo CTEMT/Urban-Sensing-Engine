@@ -1,4 +1,4 @@
-import { Component } from "@ratiosolver/flick";
+import { Component } from '@ratiosolver/flick';
 import * as echarts from 'echarts';
 import type { ECharts, EChartsOption } from 'echarts';
 
@@ -56,10 +56,6 @@ export class GaugeComponent extends Component<HTMLDivElement> {
   }
 
   private buildOption(): EChartsOption {
-    console.log(this.min);
-    console.log(this.max);
-    console.log(this.formatter);
-
     return {
       series: [{
         type: 'gauge',

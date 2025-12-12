@@ -1,10 +1,10 @@
-import { App, Component, SelectorGroup, type Selector } from "@ratiosolver/flick";
-import { GaugeComponent } from "./gauge";
-import { WindComponent } from "./wind";
-import { coco } from "@ratiosolver/coco";
+import { App, Component, SelectorGroup, type Selector } from '@ratiosolver/flick';
+import { GaugeComponent } from './gauge';
+import { WindComponent } from './wind';
+import { coco } from '@ratiosolver/coco';
 import { library, icon } from '@fortawesome/fontawesome-svg-core'
 import { faHome } from '@fortawesome/free-solid-svg-icons'
-import { EnvironmentComparisonComponent } from "./co_comparison";
+import { EnvironmentComparisonComponent } from './co_comparison';
 
 library.add(faHome);
 
@@ -54,20 +54,20 @@ export class HomeComponent extends Component<HTMLDivElement> implements coco.CoC
   constructor() {
     super(document.createElement('div'));
     this.node.classList.add('sensor-panels');
-    this.temperature_component = new GaugeComponent("temperature-component", -10, 50, (value: number) => `${value.toFixed(1)} °C`, 12);
-    this.humidity_component = new GaugeComponent("humidity-component", 0, 100, (value: number) => `${value.toFixed(1)} %`, 10);
+    this.temperature_component = new GaugeComponent('temperature-component', -10, 50, (value: number) => `${value.toFixed(1)} °C`, 12);
+    this.humidity_component = new GaugeComponent('humidity-component', 0, 100, (value: number) => `${value.toFixed(1)} %`, 10);
     this.wind_component = new WindComponent();
-    this.pressure_component = new GaugeComponent("pressure-component", 900, 1100, (value: number) => `${value.toFixed(1)} hPa`, 8);
+    this.pressure_component = new GaugeComponent('pressure-component', 900, 1100, (value: number) => `${value.toFixed(1)} hPa`, 8);
     this.add_child(this.temperature_component);
-    this.add_child(new EnvironmentComparisonComponent("Temperature", "temperature"));
+    this.add_child(new EnvironmentComparisonComponent('Temperature', 'temperature'));
     this.add_child(this.humidity_component);
-    this.add_child(new EnvironmentComparisonComponent("Humidity", "humidity"));
+    this.add_child(new EnvironmentComparisonComponent('Humidity', 'humidity'));
     this.add_child(this.wind_component);
     this.add_child(this.pressure_component);
-    this.add_child(new EnvironmentComparisonComponent("Atmospheric Pressure", "atmospheric_pressure"));
-    this.add_child(new EnvironmentComparisonComponent("PM1", "pm1"));
-    this.add_child(new EnvironmentComparisonComponent("PM2.5", "pm2_5"));
-    this.add_child(new EnvironmentComparisonComponent("PM10", "pm10"));
+    this.add_child(new EnvironmentComparisonComponent('Atmospheric Pressure', 'atmospheric_pressure'));
+    this.add_child(new EnvironmentComparisonComponent('PM1', 'pm1'));
+    this.add_child(new EnvironmentComparisonComponent('PM2.5', 'pm2_5'));
+    this.add_child(new EnvironmentComparisonComponent('PM10', 'pm10'));
 
     coco.CoCo.get_instance().add_coco_listener(this);
     for (const item of coco.CoCo.get_instance().get_items())
@@ -171,6 +171,7 @@ export class HomeComponent extends Component<HTMLDivElement> implements coco.CoC
         count++;
       }
     }
+    console.log(`Pressure count: ${count}, total: ${pres}`);
     return count > 0 ? pres / count : 0;
   }
 
