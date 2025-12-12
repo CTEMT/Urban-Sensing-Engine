@@ -80,40 +80,40 @@ class EnvDataFetcher:
         collection = db["item_data"]
         for row in reader:
             data = {}
-            if 'Temperature 1 (Medium) °C' in row:
+            if 'Temperature 1 (Medium) °C' in row and row['Temperature 1 (Medium) °C'].strip() != '':
                 data['temperature'] = float(
                     row['Temperature 1 (Medium) °C'])
-            if 'Humidity 2 (Medium) RH%' in row:
+            if 'Humidity 2 (Medium) RH%' in row and row['Humidity 2 (Medium) RH%'].strip() != '':
                 data['humidity'] = float(row['Humidity 2 (Medium) RH%'])
-            if 'Wind Direction 4 (Medium) GN' in row:
+            if 'Wind Direction 4 (Medium) GN' in row and row['Wind Direction 4 (Medium) GN'].strip() != '':
                 data['wind_direction'] = float(
                     row['Wind Direction 4 (Medium) GN'])
-            if 'Wind Speed 9 (Medium) m/s' in row:
+            if 'Wind Speed 9 (Medium) m/s' in row and row['Wind Speed 9 (Medium) m/s'].strip() != '':
                 data['wind_speed'] = float(
                     row['Wind Speed 9 (Medium) m/s'])
-            if 'CO 34 (Medium) ppm' in row:
+            if 'CO 34 (Medium) ppm' in row and row['CO 34 (Medium) ppm'].strip() != '':
                 data['co'] = float(row['CO 34 (Medium) ppm'])
-            if 'NO 35 (Medium) ppm' in row:
+            if 'NO 35 (Medium) ppm' in row and row['NO 35 (Medium) ppm'].strip() != '':
                 data['no'] = float(row['NO 35 (Medium) ppm'])
-            if 'NO2 37 (Medium) ppm' in row:
+            if 'NO2 37 (Medium) ppm' in row and row['NO2 37 (Medium) ppm'].strip() != '':
                 data['no2'] = float(row['NO2 37 (Medium) ppm'])
-            if 'O3 38 (Medium) ppm' in row:
+            if 'O3 38 (Medium) ppm' in row and row['O3 38 (Medium) ppm'].strip() != '':
                 data['o3'] = float(row['O3 38 (Medium) ppm'])
-            if 'SO2 39 (Medium) ppm' in row:
+            if 'SO2 39 (Medium) ppm' in row and row['SO2 39 (Medium) ppm'].strip() != '':
                 data['so2'] = float(row['SO2 39 (Medium) ppm'])
-            if 'Auxiliary Measurement 41 (Medium) ppm' in row:
+            if 'Auxiliary Measurement 41 (Medium) ppm' in row and row['Auxiliary Measurement 41 (Medium) ppm'].strip() != '':
                 data['voc'] = float(
                     row['Auxiliary Measurement 41 (Medium) ppm'])
-            if 'Auxiliary Measurement 91 (Medium) ppm' in row:
+            if 'Auxiliary Measurement 91 (Medium) ppm' in row and row['Auxiliary Measurement 91 (Medium) ppm'].strip() != '':
                 data['pm1'] = float(
                     row['Auxiliary Measurement 91 (Medium) ppm'])
-            if 'Auxiliary Measurement 141 (Medium) ppm' in row:
+            if 'Auxiliary Measurement 141 (Medium) ppm' in row and row['Auxiliary Measurement 141 (Medium) ppm'].strip() != '':
                 data['pm2_5'] = float(
                     row['Auxiliary Measurement 141 (Medium) ppm'])
-            if 'Auxiliary Measurement 191 (Medium) ppm' in row:
+            if 'Auxiliary Measurement 191 (Medium) ppm' in row and row['Auxiliary Measurement 191 (Medium) ppm'].strip() != '':
                 data['pm10'] = float(
                     row['Auxiliary Measurement 191 (Medium) ppm'])
-            if 'Atmospheric pressure 2013 (Medium) hPa' in row:
+            if 'Atmospheric pressure 2013 (Medium) hPa' in row and row['Atmospheric pressure 2013 (Medium) hPa'].strip() != '':
                 data['athmospheric_pressure'] = float(
                     row['Atmospheric pressure 2013 (Medium) hPa'])
             collection.insert_one({
