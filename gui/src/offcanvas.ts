@@ -1,10 +1,11 @@
-import { TaxonomyElement, TypeList } from "@ratiosolver/coco";
+import { MapElement, TaxonomyElement, TypeList } from "@ratiosolver/coco";
 import { Component, SelectorGroup } from "@ratiosolver/flick";
 import { HomeElement } from "./home";
 
 class ULComponent extends Component<HTMLUListElement> {
 
   readonly home_element: HomeElement;
+  readonly map_element: MapElement;
 
   constructor(group: SelectorGroup) {
     super(document.createElement('ul'));
@@ -12,6 +13,8 @@ class ULComponent extends Component<HTMLUListElement> {
 
     this.home_element = new HomeElement(group);
     this.add_child(this.home_element);
+    this.map_element = new MapElement(group);
+    this.add_child(this.map_element);
     this.add_child(new TaxonomyElement(group));
   }
 }

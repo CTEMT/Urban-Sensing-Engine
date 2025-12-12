@@ -76,27 +76,42 @@ class EnvDataFetcher:
             print(row['Device serial'], row['Date '])
             if row['Date '] > device['date']:
                 data = {}
-                if row['Temperature 1 (Medium) °C']:
+                if 'Temperature 1 (Medium) °C' in row:
                     data['temperature'] = float(
                         row['Temperature 1 (Medium) °C'])
-                if row['Humidity 2 (Medium) RH%']:
+                if 'Humidity 2 (Medium) RH%' in row:
                     data['humidity'] = float(row['Humidity 2 (Medium) RH%'])
-                if row['Wind Direction 4 (Medium) GN']:
+                if 'Wind Direction 4 (Medium) GN' in row:
                     data['wind_direction'] = float(
                         row['Wind Direction 4 (Medium) GN'])
-                if row['Wind Speed 9 (Medium) m/s']:
+                if 'Wind Speed 9 (Medium) m/s' in row:
                     data['wind_speed'] = float(
                         row['Wind Speed 9 (Medium) m/s'])
-                if row['CO 34 (Medium) ppm']:
+                if 'CO 34 (Medium) ppm' in row:
                     data['co'] = float(row['CO 34 (Medium) ppm'])
-                if row['NO 35 (Medium) ppm']:
+                if 'NO 35 (Medium) ppm' in row:
                     data['no'] = float(row['NO 35 (Medium) ppm'])
-                if row['NO2 37 (Medium) ppm']:
+                if 'NO2 37 (Medium) ppm' in row:
                     data['no2'] = float(row['NO2 37 (Medium) ppm'])
-                if row['O3 38 (Medium) ppm']:
+                if 'O3 38 (Medium) ppm' in row:
                     data['o3'] = float(row['O3 38 (Medium) ppm'])
-                if row['SO2 39 (Medium) ppm']:
+                if 'SO2 39 (Medium) ppm' in row:
                     data['so2'] = float(row['SO2 39 (Medium) ppm'])
+                if 'Auxiliary_Measurement_41_(Medium)_ppm' in row:
+                    data['voc'] = float(
+                        row['Auxiliary_Measurement_41_(Medium)_ppm'])
+                if 'Auxiliary_Measurement_91_(Medium)_ppm' in row:
+                    data['pm1'] = float(
+                        row['Auxiliary_Measurement_91_(Medium)_ppm'])
+                if 'Auxiliary_Measurement_141_(Medium)_ppm' in row:
+                    data['pm2_5'] = float(
+                        row['Auxiliary_Measurement_141_(Medium)_ppm'])
+                if 'Auxiliary_Measurement_191_(Medium)_ppm' in row:
+                    data['pm10'] = float(
+                        row['Auxiliary_Measurement_191_(Medium)_ppm'])
+                if 'Atmospheric_pressure_2013_(Medium)_hPa' in row:
+                    data['athmospheric_pressure'] = float(
+                        row['Atmospheric_pressure_2013_(Medium)_hPa'])
                 response = requests.post(
                     f'{self.coco_url}/data/{device["id"]}', json=data)
                 device['date'] = row['Date ']

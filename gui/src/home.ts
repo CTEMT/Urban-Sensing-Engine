@@ -4,6 +4,7 @@ import { WindComponent } from "./wind";
 import { coco } from "@ratiosolver/coco";
 import { library, icon } from '@fortawesome/fontawesome-svg-core'
 import { faHome } from '@fortawesome/free-solid-svg-icons'
+import { EnvironmentComparisonComponent } from "./co_comparison";
 
 library.add(faHome);
 
@@ -55,6 +56,9 @@ export class HomeComponent extends Component<HTMLDivElement> implements coco.CoC
     this.wind_direction_component = new WindComponent();
     this.add_child(this.temperature_component);
     this.add_child(this.wind_direction_component);
+    this.add_child(new EnvironmentComparisonComponent("PM1", "pm1"));
+    this.add_child(new EnvironmentComparisonComponent("PM2.5", "pm2_5"));
+    this.add_child(new EnvironmentComparisonComponent("PM10", "pm10"));
 
     coco.CoCo.get_instance().add_coco_listener(this);
     for (const item of coco.CoCo.get_instance().get_items())
