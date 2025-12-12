@@ -1,5 +1,5 @@
 import { App, Component, SelectorGroup, type Selector } from "@ratiosolver/flick";
-import { TemperatureComponent } from "./temperature";
+import { GaugeComponent } from "./gauge";
 import { WindComponent } from "./wind";
 import { coco } from "@ratiosolver/coco";
 import { library, icon } from '@fortawesome/fontawesome-svg-core'
@@ -45,17 +45,26 @@ export class HomeElement extends Component<HTMLLIElement> implements Selector {
 
 export class HomeComponent extends Component<HTMLDivElement> implements coco.CoCoListener, coco.taxonomy.ItemListener {
 
-  private readonly temperature_component: TemperatureComponent;
-  private readonly wind_direction_component: WindComponent;
+  private readonly temperature_component: GaugeComponent;
+  private readonly humidity_component: GaugeComponent;
+  private readonly wind_component: WindComponent;
+  private readonly pressure_component: GaugeComponent;
   private readonly env_sensors: Set<coco.taxonomy.Item> = new Set();
 
   constructor() {
     super(document.createElement('div'));
     this.node.classList.add('sensor-panels');
-    this.temperature_component = new TemperatureComponent();
-    this.wind_direction_component = new WindComponent();
+    this.temperature_component = new GaugeComponent("temperature-component", -10, 50, (value: number) => `${value.toFixed(1)} °C`, 12);
+    this.humidity_component = new GaugeComponent("humidity-component", 0, 100, (value: number) => `${value.toFixed(1)} %`, 10);
+    this.wind_component = new WindComponent();
+    this.pressure_component = new GaugeComponent("pressure-component", 900, 1100, (value: number) => `${value.toFixed(1)} hPa`, 8);
     this.add_child(this.temperature_component);
-    this.add_child(this.wind_direction_component);
+    this.add_child(new EnvironmentComparisonComponent("Temperature", "temperature"));
+    this.add_child(this.humidity_component);
+    this.add_child(new EnvironmentComparisonComponent("Humidity", "humidity"));
+    this.add_child(this.wind_component);
+    this.add_child(this.pressure_component);
+    this.add_child(new EnvironmentComparisonComponent("Atmospheric Pressure", "atmospheric_pressure"));
     this.add_child(new EnvironmentComparisonComponent("PM1", "pm1"));
     this.add_child(new EnvironmentComparisonComponent("PM2.5", "pm2_5"));
     this.add_child(new EnvironmentComparisonComponent("PM10", "pm10"));
@@ -95,11 +104,15 @@ export class HomeComponent extends Component<HTMLDivElement> implements coco.CoC
   new_value(item: coco.taxonomy.Item, v: coco.taxonomy.Datum): void {
     if (this.env_sensors.has(item)) {
       if (v.data['temperature'] !== undefined)
-        this.temperature_component.set_temperature(this.get_temperature());
+        this.temperature_component.set_value(this.get_temperature());
       if (v.data['wind_direction'] !== undefined && v.data['wind_speed'] !== undefined) {
         const wind = this.get_wind();
-        this.wind_direction_component.set_wind(wind.direction, wind.speed);
+        this.wind_component.set_wind(wind.direction, wind.speed);
       }
+      if (v.data['humidity'] !== undefined)
+        this.humidity_component.set_value(this.get_humidity());
+      if (v.data['atmospheric_pressure'] !== undefined)
+        this.pressure_component.set_value(this.get_pressure());
     }
   }
 
@@ -114,6 +127,19 @@ export class HomeComponent extends Component<HTMLDivElement> implements coco.CoC
       }
     }
     return count > 0 ? temp / count : 0;
+  }
+
+  private get_humidity(): number {
+    let hum = 0;
+    let count = 0;
+    for (const sensor of this.env_sensors) {
+      const datum = sensor.get_datum();
+      if (datum && datum.data['humidity'] !== undefined) {
+        hum += datum.data['humidity'] as number;
+        count++;
+      }
+    }
+    return count > 0 ? hum / count : 0;
   }
 
   private get_wind(): { direction: number, speed: number } {
@@ -133,6 +159,19 @@ export class HomeComponent extends Component<HTMLDivElement> implements coco.CoC
     } else {
       return { direction: 0, speed: 0 };
     }
+  }
+
+  private get_pressure(): number {
+    let pres = 0;
+    let count = 0;
+    for (const sensor of this.env_sensors) {
+      const datum = sensor.get_datum();
+      if (datum && datum.data['atmospheric_pressure'] !== undefined) {
+        pres += datum.data['atmospheric_pressure'] as number;
+        count++;
+      }
+    }
+    return count > 0 ? pres / count : 0;
   }
 
   override unmounting(): void {

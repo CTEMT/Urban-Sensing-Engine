@@ -2,22 +2,30 @@ import { Component } from "@ratiosolver/flick";
 import * as echarts from 'echarts';
 import type { ECharts, EChartsOption } from 'echarts';
 
-export class TemperatureComponent extends Component<HTMLDivElement> {
+export class GaugeComponent extends Component<HTMLDivElement> {
 
   private gaugeChart?: ECharts;
-  private temperature: number = 20;
+  private value = 12;
+  private readonly min: number;
+  private readonly max: number;
+  private readonly split_number;
+  private readonly formatter: (value: number) => string;
 
-  constructor() {
+  constructor(id: string, min: number, max: number, formatter: (value: number) => string, split_number: number = 12) {
     super(document.createElement('div'));
-    this.node.id = 'temperature-component';
+    this.node.id = id;
+    this.min = min;
+    this.max = max;
+    this.split_number = split_number;
+    this.formatter = formatter;
     Object.assign(this.node.style, { width: '350px', height: '300px', margin: '1rem auto' });
 
     this.initializeChartWhenReady();
     window.addEventListener('resize', this.handleResize);
   }
 
-  public set_temperature(value: number): void {
-    this.temperature = value;
+  public set_value(value: number): void {
+    this.value = value;
     this.updateGauge();
   }
 
@@ -48,15 +56,19 @@ export class TemperatureComponent extends Component<HTMLDivElement> {
   }
 
   private buildOption(): EChartsOption {
+    console.log(this.min);
+    console.log(this.max);
+    console.log(this.formatter);
+
     return {
       series: [{
         type: 'gauge',
         center: ['50%', '60%'],
         startAngle: 200,
         endAngle: -20,
-        min: -10,
-        max: 50,
-        splitNumber: 12,
+        min: this.min,
+        max: this.max,
+        splitNumber: this.split_number,
         itemStyle: {
           color: '#FFAB91'
         },
@@ -107,12 +119,12 @@ export class TemperatureComponent extends Component<HTMLDivElement> {
           offsetCenter: [0, '-15%'],
           fontSize: 30,
           fontWeight: 'bolder',
-          formatter: (value: number) => `${value.toFixed(1)} °C`,
+          formatter: this.formatter,
           color: 'inherit'
         },
         data: [
           {
-            value: this.temperature
+            value: this.value
           }
         ]
       },
@@ -121,8 +133,8 @@ export class TemperatureComponent extends Component<HTMLDivElement> {
         center: ['50%', '60%'],
         startAngle: 200,
         endAngle: -20,
-        min: -10,
-        max: 50,
+        min: this.min,
+        max: this.max,
         itemStyle: {
           color: '#FD7347'
         },
@@ -150,7 +162,7 @@ export class TemperatureComponent extends Component<HTMLDivElement> {
         },
         data: [
           {
-            value: this.temperature
+            value: this.value
           }
         ]
       }]

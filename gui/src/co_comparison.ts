@@ -17,7 +17,7 @@ export class EnvironmentComparisonComponent extends Component<HTMLDivElement> im
     this.name = name;
     this.par = par;
     this.node.id = 'co-comparison-component';
-    Object.assign(this.node.style, { width: '700px', height: '300px', margin: '1rem auto' });
+    Object.assign(this.node.style, { width: '350px', height: '300px', margin: '1rem auto' });
 
     this.initializeChartWhenReady();
     window.addEventListener('resize', this.handleResize);

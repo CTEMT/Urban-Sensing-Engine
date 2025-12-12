@@ -50,11 +50,7 @@ body {
 }
 
 @media (min-width: 1200px) {
-  .sensor-panels {
-    flex-wrap: nowrap;
-  }
-
   .sensor-panels > * {
-    flex: 1 1 0;
+    flex: 1 1 30%;
   }
 }
