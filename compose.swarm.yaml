@@ -52,7 +52,7 @@ services:
         condition: on-failure
 
   uspe:
-    image: istc_uspe:latest
+    image: urban-sensing-engine:latest
     networks:
       - uspe-net
     ports:

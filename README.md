@@ -2,6 +2,73 @@
 
 The Urban Sensing & Planning Engine is a software component which is able to react to the dynamic changes which happen into the urban environment and to plan interventions to solve the problems which are detected.
 
+# Installation Guide
+
+This guide describes how to install the Urban Sensing & Planning Engine on a Docker container or on a native Linux machine.
+
+## Docker Installation (Recommended)
+
+The Urban Sensing & Planning Engine can be installed on a Docker container through the provided compose files depending on the desired configuration.
+
+ - `compose.dev.yml`: it installs the Urban Sensing & Planning Engine with a MongoDB instance for development purposes.
+ - `compose.swarm.yml`: it installs the Urban Sensing & Planning Engine with a MongoDB instance for production purposes on a Docker Swarm cluster.
+
+To install the Urban Sensing & Planning Engine on a Docker container, move to a desired folder and clone the repository
+```shell
+git clone https://github.com/CTEMT/Urban-Sensing-Engine
+cd Urban-Sensing-Engine
+```
+
+Then, depending on the desired configuration, run the following command.
+
+**Development installation**
+```shell
+docker-compose -f compose.dev.yaml up -d
+```
+
+**Production installation on Docker Swarm**
+Before deploying the stack, make sure to initialize the Docker swarm and add the required secrets for Firebase authentication and Hugging Face API access.
+
+To initialize the Docker swarm, run
+```shell
+docker swarm init
+```
+
+To add the required secrets for Firebase authentication, run
+```shell
+docker secret create fcm_json /path/to/your/firebase_credentials.json
+```
+
+To add the required secrets for Hugging Face API access, run
+```shell
+echo "your_hugging_face_api_key" | docker secret create llm_api_key -
+```
+
+Build the Docker images required for the Urban Sensing & Planning Engine through the following command
+```shell
+docker build --build-arg BUILD_FCM=ON --build-arg BUILD_LLM=ON -t urban-sensing-engine:latest .
+```
+
+Finally, deploy the stack through the following command
+
+```shell
+docker stack deploy -c compose.swarm.yaml urban-sensing-engine
+```
+
+To stop and remove the Urban Sensing & Planning Engine from the Docker container, run the following command depending on the used configuration.
+**Development removal**
+```shell
+docker-compose -f compose.dev.yaml down
+```
+
+**Production removal on Docker Swarm**
+```shell
+docker stack rm urban-sensing-engine
+```
+
+## Native Installation
+
+This section describes how to install the Urban Sensing & Planning Engine on a native Linux machine.
 
 ### CLIPS
 
@@ -66,6 +133,8 @@ sudo make install
 ```
 
 ## Attributions
+
+This work is supported by the project "House of emerging technologies of Matera" (CTE-MT) funded by the Ministry of Economic Development of Italy, CUP I14E20000020001. 
 
 The Urban Sensing & Planning Engine has incorporated the following libraries into its source.
 
