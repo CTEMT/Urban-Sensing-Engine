@@ -10,12 +10,14 @@ EXPOSE 8080
 
 # Set build arguments
 ARG CLIENT_DIR=/gui
+ARG BUILD_FCM=OFF
+ARG BUILD_LLM=OFF
 
 # Clone and build USPE
 RUN git clone --recursive https://github.com/CTEMT/Urban-Sensing-Engine \
     && cd Urban-Sensing-Engine \
     && mkdir build && cd build \
-    && cmake -DCLIENT_DIR=${CLIENT_DIR} -DCMAKE_BUILD_TYPE=Release .. \
+    && cmake -DCLIENT_DIR=${CLIENT_DIR} -DBUILD_FCM=${BUILD_FCM} -DBUILD_LLM=${BUILD_LLM} -DCMAKE_BUILD_TYPE=Release .. \
     && make -j$(nproc)
 
 # Build the GUI application
