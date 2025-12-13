@@ -10,7 +10,7 @@ set(BUILD_MONGODB ON CACHE BOOL "Build MongoDB connection" FORCE)
 set(BUILD_MQTT ON CACHE BOOL "Build MQTT connection" FORCE)
 set(MQTT_MAX_BUFFERED_MSGS 100000 CACHE STRING "Maximum buffered messages when offline" FORCE)
 set(BUILD_COCO_SERVER ON CACHE BOOL "Build the CoCo server" FORCE)
-set(CLIENT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/gui" CACHE STRING "Path to the CoCo client directory" FORCE)
+set(CLIENT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/gui" CACHE STRING "Path to the CoCo client directory")
 set(LOGGING_LEVEL "TRACE" CACHE STRING "Logging level for CoCo" FORCE)
 
 add_subdirectory(extern/coco)
