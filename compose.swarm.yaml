@@ -1,0 +1,87 @@
+version: "3.9"
+
+services:
+  uspe-swagger-ui: # Swagger UI service
+    image: swaggerapi/swagger-ui
+    networks:
+      - uspe-net
+    ports:
+      - target: 8080
+        published: 8081
+        protocol: tcp
+        mode: ingress
+    environment:
+      SWAGGER_JSON_URL: http://localhost:8080/openapi
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  uspe-mongo: # MongoDB service
+    image: mongo
+    networks:
+      - uspe-net
+    ports:
+      - target: 27017
+        published: 27017
+        protocol: tcp
+        mode: ingress
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  uspe-mqtt: # MQTT broker service
+    image: eclipse-mosquitto
+    networks:
+      - uspe-net
+    ports:
+      - target: 1883
+        published: 1883
+        protocol: tcp
+        mode: ingress
+    configs:
+      - source: mosquitto-conf
+        target: /mosquitto/config/mosquitto.conf
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  uspe:
+    image: istc_uspe:latest
+    networks:
+      - uspe-net
+    ports:
+      - target: 8080
+        published: 8080
+        protocol: tcp
+        mode: ingress
+    environment:
+      - SERVER_PORT=8080
+      - MONGODB_HOST=uspe-mongo
+      - MQTT_HOST=uspe-mqtt
+    secrets:
+      - fcm_json
+      - llm_api_key
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+networks:
+  uspe-net:
+
+secrets:
+  fcm_json:
+    external: true
+  llm_api_key:
+    external: true
+
+configs:
+  mosquitto-conf:
+    file: ./mosquitto.conf
