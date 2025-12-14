@@ -1,4 +1,4 @@
-package it.cnr.uspe;
+package it.cnr.istc.ctemt.uspe;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
