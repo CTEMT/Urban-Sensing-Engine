@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = 'it.cnr.nanodroid'
+    namespace = 'it.cnr.uspe'
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "it.cnr.nanodroid"
+        applicationId = "it.cnr.uspe"
         minSdk = 26
         targetSdk = 34
         versionCode = 1

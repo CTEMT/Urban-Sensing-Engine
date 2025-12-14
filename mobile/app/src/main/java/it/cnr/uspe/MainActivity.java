@@ -1,4 +1,4 @@
-package it.cnr.nanodroid;
+package it.cnr.uspe;
 
 import android.app.Activity;
 import android.os.Bundle;

@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "315160928809",
-    "project_id": "nanodroid-6e43e",
-    "storage_bucket": "nanodroid-6e43e.firebasestorage.app"
+    "project_number": "540865598160",
+    "project_id": "ctemt-uspe",
+    "storage_bucket": "ctemt-uspe.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:315160928809:android:3420599861e24c8925b238",
+        "mobilesdk_app_id": "1:540865598160:android:a1b385a456a0a33c6904d5",
         "android_client_info": {
-          "package_name": "it.cnr.nanodroid"
+          "package_name": "it.cnr.istc.ctemt.uspe"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD-JWv9WjVA_pjAJ-gvfaUs__HXlmFjzDM"
+          "current_key": "AIzaSyAbQOA6suscS9ULrNOtHXKeiBe9iFG4Rag"
         }
       ],
       "services": {
