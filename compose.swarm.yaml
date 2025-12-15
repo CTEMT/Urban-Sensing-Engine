@@ -22,6 +22,8 @@ services:
     image: mongo
     networks:
       - uspe-net
+    volumes:
+      - uspe-data:/data/db
     ports:
       - target: 27017
         published: 27017
@@ -81,6 +83,10 @@ secrets:
     external: true
   llm_api_key:
     external: true
+
+volumes:
+  uspe-data:
+    driver: local
 
 configs:
   mosquitto-conf:
